@@ -1,0 +1,1574 @@
+[
+  {
+    "figure": "Atlas",
+    "word": "atlas",
+    "act": "storm",
+    "kind": "classical-myth",
+    "card": "To the ancient Greeks, Atlas was a Titan who held up the sky. Later tellings made him a wise king of Mauretania who studied the stars. Gerardus Mercator named his book of maps Atlas in that king's honour. It came out in 1595, the year after he died, and the word came to mean any book of maps.",
+    "sources": [
+      {
+        "type": "primary",
+        "ref": "Hesiod, Theogony (Atlas holds up the sky)",
+        "url": "https://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:1999.01.0130:card%3D767",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "primary",
+        "ref": "Gerardus Mercator, Atlas sive Cosmographicae Meditationes (Duisburg, 1595), left unfinished at his death and published by his son Rumold",
+        "url": "https://www.loc.gov/item/map55000728/",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Online Etymology Dictionary, 'atlas'",
+        "url": "https://www.etymonline.com/word/Atlas",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "secondary",
+        "ref": "Crouch Rare Books, 'The first edition of the first atlas to be so named' (quotes Mercator naming it for Atlas, King of Mauritania)",
+        "url": "https://crouchrarebooks.com/browse/the-first-edition-of-the-first-atlas-to-be-so-named/?print=pdf",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "reference",
+        "ref": "Encyclopaedia Britannica, 'atlas (maps)'",
+        "url": "https://www.britannica.com/topic/atlas-maps",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "reference",
+        "ref": "Encyclopaedia Britannica, 'Gerardus Mercator' (died 2 December 1594, Duisburg)",
+        "url": "https://www.britannica.com/biography/Gerardus-Mercator",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "reference",
+        "ref": "Library of Congress, Atlas sive Cosmographicae Meditationes (1595): 'edited and published by his son, Rumold Mercator, in 1595' (loc.gov/item/map55000728)",
+        "url": "https://www.loc.gov/item/map55000728/",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 09598726 Atlas",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "(Greek mythology) a Titan who was forced by Zeus to bear the sky on his shoulders"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 06438756 atlas",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "a collection of maps in book form"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Webster's Revised Unabridged Dictionary (1913), Project Gutenberg text (npm websters-english-dictionary 2.0.0, dictionary.json), atlas",
+        "url": "https://registry.npmjs.org/websters-english-dictionary/-/websters-english-dictionary-2.0.0.tgz",
+        "opened": true,
+        "quote": "A collection of maps in a volume"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 11195233 Mercator",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "Flemish geographer who lived in Germany; he invented the Mercator projection of maps of the globe (1512-1594)"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Webster's Revised Unabridged Dictionary (1913), Project Gutenberg text (npm websters-english-dictionary 2.0.0, dictionary.json), atlas",
+        "url": "https://registry.npmjs.org/websters-english-dictionary/-/websters-english-dictionary-2.0.0.tgz",
+        "opened": true,
+        "quote": "A collection of maps in a volume; -- Note: supposed to be so called from a picture of Atlas supporting the world, prefixed to some collections. This name is said to have been first used by Mercator, the celebrated geographer, in the 16th century."
+      }
+    ],
+    "review": {
+      "file": "circuit/review/c4-accuracy-opened.md",
+      "rows": [
+        "G01a",
+        "G01c",
+        "D01",
+        "D02",
+        "D03",
+        "D04"
+      ],
+      "pass": 3,
+      "fix": 0,
+      "unverifiable": 3
+    }
+  },
+  {
+    "figure": "Hermes",
+    "word": "hermetic",
+    "act": "storm",
+    "kind": "classical-myth",
+    "card": "To the ancient Greeks, Hermes was the messenger of the gods. Much later, books of alchemy were credited to a legendary 'Thrice-Great Hermes', said to have made a seal that let no air through. Hermetic came to mean sealed tight.",
+    "sources": [
+      {
+        "type": "dictionary",
+        "ref": "Merriam-Webster, 'hermetic'",
+        "url": "https://www.merriam-webster.com/dictionary/hermetic",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Online Etymology Dictionary, 'hermetic'",
+        "url": "https://www.etymonline.com/word/hermetic",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 09585448 Hermes",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "(Greek mythology) messenger and herald of the gods"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Webster's Revised Unabridged Dictionary (1913), Project Gutenberg text (npm websters-english-dictionary 2.0.0, dictionary.json), hermetic",
+        "url": "https://registry.npmjs.org/websters-english-dictionary/-/websters-english-dictionary-2.0.0.tgz",
+        "opened": true,
+        "quote": "Of, pertaining to, or taught by, Hermes Trismegistus … The alchemists … considered themselves followers of Hermes, and often called themselves Hermetic philosophers."
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), adj 01401776 hermetic",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "completely sealed; completely airtight"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Webster's Revised Unabridged Dictionary (1913), Project Gutenberg text (npm websters-english-dictionary 2.0.0, dictionary.json), hermetic",
+        "url": "https://registry.npmjs.org/websters-english-dictionary/-/websters-english-dictionary-2.0.0.tgz",
+        "opened": true,
+        "quote": "3. Made perfectly close or air-tight by fusion, so that no gas or spirit can enter or escape; as, an hermetic seal."
+      }
+    ],
+    "review": {
+      "file": "circuit/review/c4-accuracy-opened.md",
+      "rows": [
+        "G02a",
+        "G02b",
+        "G02c"
+      ],
+      "pass": 2,
+      "fix": 0,
+      "unverifiable": 1
+    }
+  },
+  {
+    "figure": "Iris",
+    "word": "iridescent",
+    "act": "storm",
+    "kind": "classical-myth",
+    "card": "To the ancient Greeks, Iris was the goddess of the rainbow and a messenger of the gods. Her name is the Greek word for rainbow. Iridescent means shimmering with rainbow colours, like a soap bubble.",
+    "sources": [
+      {
+        "type": "primary",
+        "ref": "Hesiod, Theogony (Iris)",
+        "url": "https://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:1999.01.0130:card%3D767",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Online Etymology Dictionary, 'iridescent'",
+        "url": "https://www.etymonline.com/word/iridescent",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Webster's Revised Unabridged Dictionary (1913), Project Gutenberg text (npm websters-english-dictionary 2.0.0, dictionary.json), iris",
+        "url": "https://registry.npmjs.org/websters-english-dictionary/-/websters-english-dictionary-2.0.0.tgz",
+        "opened": true,
+        "quote": "1. (Class. Myth.) The goddess of the rainbow, and swift-footed messenger of the gods."
+      },
+      {
+        "type": "dictionary",
+        "ref": "Webster's Revised Unabridged Dictionary (1913), Project Gutenberg text (npm websters-english-dictionary 2.0.0, dictionary.json), iris",
+        "url": "https://registry.npmjs.org/websters-english-dictionary/-/websters-english-dictionary-2.0.0.tgz",
+        "opened": true,
+        "quote": "2. The rainbow."
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), adj 00282886 iridescent",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "having a play of lustrous rainbow colors"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Webster's Revised Unabridged Dictionary (1913), Project Gutenberg text (npm websters-english-dictionary 2.0.0, dictionary.json), iridescent",
+        "url": "https://registry.npmjs.org/websters-english-dictionary/-/websters-english-dictionary-2.0.0.tgz",
+        "opened": true,
+        "quote": "Having colors like the rainbow; exhibiting a play of changeable colors"
+      }
+    ],
+    "review": {
+      "file": "circuit/review/c4-accuracy-opened.md",
+      "rows": [
+        "G03a",
+        "G03b",
+        "G03c"
+      ],
+      "pass": 2,
+      "fix": 0,
+      "unverifiable": 1
+    }
+  },
+  {
+    "figure": "Echo",
+    "word": "echo",
+    "act": "storm",
+    "kind": "classical-myth",
+    "card": "To the ancient Greeks, Echo was a mountain nymph. In the Roman poet Ovid's telling, she could only repeat the last words she heard. Her name is the Greek word for a sound that comes back, and English kept it: echo.",
+    "sources": [
+      {
+        "type": "primary",
+        "ref": "Ovid, Metamorphoses, Book 3 (Echo)",
+        "url": "https://www.theoi.com/Text/OvidMetamorphoses3.html",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Online Etymology Dictionary, 'echo'",
+        "url": "https://www.etymonline.com/word/echo",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "reference",
+        "ref": "Encyclopaedia Britannica, 'Echo' (Ovid, Metamorphoses III; Longus' account differs)",
+        "url": "https://www.britannica.com/topic/Echo-Greek-mythology",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Webster's Revised Unabridged Dictionary (1913), Project Gutenberg text (npm websters-english-dictionary 2.0.0, dictionary.json), echo",
+        "url": "https://registry.npmjs.org/websters-english-dictionary/-/websters-english-dictionary-2.0.0.tgz",
+        "opened": true,
+        "quote": "3. (a) (Myth. & Poetic) A wood or mountain nymph, regarded as repeating, and causing the reverberation of them."
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 09572176 Echo",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "(Greek mythology) a nymph who was spurned by Narcissus and pined away until only her voice remained"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Wiktionary etymologies (2013 snapshot) as de Melo's Etymological Wordnet, bundled in PyPI ety 1.4.0 (ety/data/etymologies.json), echo",
+        "url": "https://files.pythonhosted.org/packages/4a/b4/975db4c0ff58aa9127d1507fc6557c149086764b3a9017503a6b50a43285/ety-1.4.0-py2.py3-none-any.whl",
+        "opened": true,
+        "quote": "echo <- echo [Latin]"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 05017985 echo",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "the repetition of a sound resulting from reflection of the sound waves"
+      }
+    ],
+    "review": {
+      "file": "circuit/review/c4-accuracy-opened.md",
+      "rows": [
+        "G04a",
+        "G04b",
+        "G04c"
+      ],
+      "pass": 1,
+      "fix": 1,
+      "unverifiable": 1
+    }
+  },
+  {
+    "figure": "Pan",
+    "word": "panic",
+    "act": "storm",
+    "kind": "classical-myth",
+    "card": "To the ancient Greeks, Pan was the god of shepherds and wild places, with a goat's legs and horns. Sudden, causeless fear in lonely places was blamed on him. The Greek word panikos, 'of Pan', reached English as panic.",
+    "sources": [
+      {
+        "type": "dictionary",
+        "ref": "Online Etymology Dictionary, 'panic'",
+        "url": "https://www.etymonline.com/word/panic",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Merriam-Webster, 'panic'",
+        "url": "https://www.merriam-webster.com/dictionary/panic",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 09591370 Pan",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "(Greek mythology) god of fields and woods and shepherds and flocks; represented as a man with goat's legs and horns and ears"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Webster's Revised Unabridged Dictionary (1913), Project Gutenberg text (npm websters-english-dictionary 2.0.0, dictionary.json), panic",
+        "url": "https://registry.npmjs.org/websters-english-dictionary/-/websters-english-dictionary-2.0.0.tgz",
+        "opened": true,
+        "quote": "A sudden, overpowering fright; esp., a sudden and groundless fright"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Wiktionary etymologies (2013 snapshot) as de Melo's Etymological Wordnet, bundled in PyPI ety 1.4.0 (ety/data/etymologies.json), panic",
+        "url": "https://files.pythonhosted.org/packages/4a/b4/975db4c0ff58aa9127d1507fc6557c149086764b3a9017503a6b50a43285/ety-1.4.0-py2.py3-none-any.whl",
+        "opened": true,
+        "quote": "panic <- panique [Middle French]"
+      }
+    ],
+    "review": {
+      "file": "circuit/review/c4-accuracy-opened.md",
+      "rows": [
+        "G05a",
+        "G05b",
+        "G05c"
+      ],
+      "pass": 1,
+      "fix": 0,
+      "unverifiable": 2
+    }
+  },
+  {
+    "figure": "Tantalus",
+    "word": "tantalize",
+    "act": "storm",
+    "kind": "classical-myth",
+    "card": "To the ancient Greeks, Tantalus was a king punished in the underworld: the water around him drained away when he bent to drink, and the fruit above him rose out of reach. To tantalize is to keep what someone wants just out of reach.",
+    "sources": [
+      {
+        "type": "primary",
+        "ref": "Homer, Odyssey, Book 11 (Tantalus)",
+        "url": "https://www.theoi.com/Text/HomerOdyssey11.html",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Online Etymology Dictionary, 'tantalize'",
+        "url": "https://www.etymonline.com/word/tantalize",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 09616825 Tantalus",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "(Greek mythology) a wicked king and son of Zeus; condemned in Hades to stand in water that receded when he tried to drink and beneath fruit that receded when he reached for it"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Webster's Revised Unabridged Dictionary (1913), Project Gutenberg text (npm websters-english-dictionary 2.0.0, dictionary.json), tantalize",
+        "url": "https://registry.npmjs.org/websters-english-dictionary/-/websters-english-dictionary-2.0.0.tgz",
+        "opened": true,
+        "quote": "To tease or torment by presenting some good to the view and exciting desire, but continually frustrating the expectations by keeping that good out of reach"
+      }
+    ],
+    "review": {
+      "file": "circuit/review/c4-accuracy-opened.md",
+      "rows": [
+        "G06a",
+        "G06b"
+      ],
+      "pass": 2,
+      "fix": 0,
+      "unverifiable": 0
+    }
+  },
+  {
+    "figure": "Hypnos",
+    "word": "hypnosis",
+    "act": "storm",
+    "kind": "classical-myth",
+    "card": "To the ancient Greeks, Hypnos was the god of sleep. In the 1840s the Scottish surgeon James Braid made the word hypnotism popular, from hypnos, the Greek word for sleep, believing it was a kind of sleep. It isn't, but the name stuck, and hypnosis followed.",
+    "sources": [
+      {
+        "type": "primary",
+        "ref": "James Braid, Neurypnology (1843)",
+        "url": "https://www.britannica.com/biography/James-Braid-British-surgeon",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Online Etymology Dictionary, 'hypnotism'",
+        "url": "https://www.etymonline.com/word/hypnotism",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "reference",
+        "ref": "Encyclopaedia Britannica, 'hypnosis' and 'James Braid'",
+        "url": "https://www.britannica.com/science/hypnosis",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 09519804 Hypnos",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "(Greek mythology) the Greek god of sleep; the son of Nyx"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Wiktionary etymologies (2013 snapshot) as de Melo's Etymological Wordnet, bundled in PyPI ety 1.4.0 (ety/data/etymologies.json), hypnotism",
+        "url": "https://files.pythonhosted.org/packages/4a/b4/975db4c0ff58aa9127d1507fc6557c149086764b3a9017503a6b50a43285/ety-1.4.0-py2.py3-none-any.whl",
+        "opened": true,
+        "quote": "hypnotism <- hypnotise + -ism [English]"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 14050074 hypnosis",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "a state that resembles sleep but that is induced by suggestion"
+      }
+    ],
+    "review": {
+      "file": "circuit/review/c4-accuracy-opened.md",
+      "rows": [
+        "G07a",
+        "G07b",
+        "G07c"
+      ],
+      "pass": 2,
+      "fix": 0,
+      "unverifiable": 1
+    }
+  },
+  {
+    "figure": "Psyche",
+    "word": "psychology",
+    "act": "storm",
+    "kind": "classical-myth",
+    "card": "In a story told by the Roman writer Apuleius, Psyche was a mortal princess who won the love of Cupid and was made immortal. Her name is the Greek word for the soul or mind. Psychology, the study of the mind, is built on it.",
+    "sources": [
+      {
+        "type": "primary",
+        "ref": "Apuleius, Metamorphoses (The Golden Ass), Books 4–6",
+        "url": "https://en.wikipedia.org/wiki/The_Golden_Ass",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Online Etymology Dictionary, 'psychology'",
+        "url": "https://www.etymonline.com/word/psychology",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 09600779 Psyche",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "(Greek mythology) a beautiful princess loved by Cupid …; became the personification of the soul"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Webster's Revised Unabridged Dictionary (1913), Project Gutenberg text (npm websters-english-dictionary 2.0.0, dictionary.json), psyche",
+        "url": "https://registry.npmjs.org/websters-english-dictionary/-/websters-english-dictionary-2.0.0.tgz",
+        "opened": true,
+        "quote": "1. (Class Myth.) A lovely maiden, daughter of a king and mistress of Eros, or Cupid."
+      },
+      {
+        "type": "dictionary",
+        "ref": "Webster's Revised Unabridged Dictionary (1913), Project Gutenberg text (npm websters-english-dictionary 2.0.0, dictionary.json), psyche",
+        "url": "https://registry.npmjs.org/websters-english-dictionary/-/websters-english-dictionary-2.0.0.tgz",
+        "opened": true,
+        "quote": "2. The soul; the vital principle; the mind."
+      },
+      {
+        "type": "dictionary",
+        "ref": "Wiktionary etymologies (2013 snapshot) as de Melo's Etymological Wordnet, bundled in PyPI ety 1.4.0 (ety/data/etymologies.json), psychology",
+        "url": "https://files.pythonhosted.org/packages/4a/b4/975db4c0ff58aa9127d1507fc6557c149086764b3a9017503a6b50a43285/ety-1.4.0-py2.py3-none-any.whl",
+        "opened": true,
+        "quote": "psychology <- psychologie [French]"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 06145709 psychology",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "the science of mental life"
+      }
+    ],
+    "review": {
+      "file": "circuit/review/c4-accuracy-opened.md",
+      "rows": [
+        "G08a1",
+        "G08a2",
+        "G08b",
+        "G08c"
+      ],
+      "pass": 2,
+      "fix": 0,
+      "unverifiable": 2
+    }
+  },
+  {
+    "figure": "the Titans",
+    "word": "titanic",
+    "act": "storm",
+    "kind": "classical-myth",
+    "card": "To the ancient Greeks, the Titans were the giant elder gods who ruled before Zeus and the Olympians. Titanic means as huge and powerful as a Titan.",
+    "sources": [
+      {
+        "type": "primary",
+        "ref": "Hesiod, Theogony (the Titans)",
+        "url": "https://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:1999.01.0130:card%3D767",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Online Etymology Dictionary, 'titanic'",
+        "url": "https://www.etymonline.com/word/titanic",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 09595603 Titan",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "(Greek mythology) any of the primordial giant gods who ruled the Earth until overthrown by Zeus"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Webster's Revised Unabridged Dictionary (1913), Project Gutenberg text (npm websters-english-dictionary 2.0.0, dictionary.json), titanic",
+        "url": "https://registry.npmjs.org/websters-english-dictionary/-/websters-english-dictionary-2.0.0.tgz",
+        "opened": true,
+        "quote": "Of or relating to Titans, or fabled giants of ancient mythology; hence, enormous in size or strength"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), adj 01393617 titanic",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "of great force or power"
+      }
+    ],
+    "review": {
+      "file": "circuit/review/c4-accuracy-opened.md",
+      "rows": [
+        "G09a",
+        "G09b"
+      ],
+      "pass": 2,
+      "fix": 0,
+      "unverifiable": 0
+    }
+  },
+  {
+    "figure": "Janus",
+    "word": "January",
+    "act": "forum",
+    "kind": "classical-myth",
+    "card": "To the ancient Romans, Janus was the god of doorways and beginnings, shown with two faces, one looking back and one looking ahead. The Romans named a month for him, Ianuarius, and English made it January, the doorway of our year.",
+    "sources": [
+      {
+        "type": "primary",
+        "ref": "Ovid, Fasti, Book 1 (Janus)",
+        "url": "https://www.poetryintranslation.com/PITBR/Latin/OvidFastiBkOne.php",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Online Etymology Dictionary, 'January'",
+        "url": "https://www.etymonline.com/word/January",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 09586748 Janus",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "(Roman mythology) the Roman god of doorways and passages; is depicted with two faces on opposite sides of his head"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Webster's Revised Unabridged Dictionary (1913), Project Gutenberg text (npm websters-english-dictionary 2.0.0, dictionary.json), janus",
+        "url": "https://registry.npmjs.org/websters-english-dictionary/-/websters-english-dictionary-2.0.0.tgz",
+        "opened": true,
+        "quote": "A Latin deity represented with two faces looking in opposite directions."
+      },
+      {
+        "type": "dictionary",
+        "ref": "Wiktionary etymologies (2013 snapshot) as de Melo's Etymological Wordnet, bundled in PyPI ety 1.4.0 (ety/data/etymologies.json), January",
+        "url": "https://files.pythonhosted.org/packages/4a/b4/975db4c0ff58aa9127d1507fc6557c149086764b3a9017503a6b50a43285/ety-1.4.0-py2.py3-none-any.whl",
+        "opened": true,
+        "quote": "January <- Ieneuer [Middle English]"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 15234841 January",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "the first month of the year"
+      }
+    ],
+    "review": {
+      "file": "circuit/review/c4-accuracy-opened.md",
+      "rows": [
+        "G10a1",
+        "G10a2",
+        "G10b"
+      ],
+      "pass": 1,
+      "fix": 0,
+      "unverifiable": 2
+    }
+  },
+  {
+    "figure": "Mars",
+    "word": "martial",
+    "act": "forum",
+    "kind": "classical-myth",
+    "card": "To the ancient Romans, Mars was the god of war, and the month of March was his. Martial, meaning to do with fighting, as in martial arts, comes from his name.",
+    "sources": [
+      {
+        "type": "dictionary",
+        "ref": "Online Etymology Dictionary, 'martial'",
+        "url": "https://www.etymonline.com/word/martial",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Merriam-Webster, 'martial'",
+        "url": "https://www.merriam-webster.com/dictionary/martial",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 09578914 Mars",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "(Roman mythology) Roman god of war and agriculture"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), adj 01522943 martial",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "suggesting war or military life"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Wiktionary etymologies (2013 snapshot) as de Melo's Etymological Wordnet, bundled in PyPI ety 1.4.0 (ety/data/etymologies.json), martial",
+        "url": "https://files.pythonhosted.org/packages/4a/b4/975db4c0ff58aa9127d1507fc6557c149086764b3a9017503a6b50a43285/ety-1.4.0-py2.py3-none-any.whl",
+        "opened": true,
+        "quote": "martial <- martialis [Latin]"
+      }
+    ],
+    "review": {
+      "file": "circuit/review/c4-accuracy-opened.md",
+      "rows": [
+        "G11a",
+        "G11b",
+        "G11c1",
+        "G11c2"
+      ],
+      "pass": 2,
+      "fix": 0,
+      "unverifiable": 2
+    }
+  },
+  {
+    "figure": "Juno",
+    "word": "June",
+    "act": "forum",
+    "kind": "classical-myth",
+    "card": "To the ancient Romans, Juno was queen of the gods and protector of women and marriage. June may be named after her, but even the Romans weren't sure: in his poem about the calendar, Ovid lets three goddesses argue over the month and never gives a verdict.",
+    "sources": [
+      {
+        "type": "primary",
+        "ref": "Ovid, Fasti, Book 6 (Juno, Juventas and Concordia each claim June)",
+        "url": "https://www.poetryintranslation.com/PITBR/Latin/OvidFastiBkSix.php",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Online Etymology Dictionary, 'June'",
+        "url": "https://www.etymonline.com/word/June",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 09586934 Juno",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "(Roman mythology) queen of the Olympian gods who protected marriage"
+      }
+    ],
+    "review": {
+      "file": "circuit/review/c4-accuracy-opened.md",
+      "rows": [
+        "G12a1",
+        "G12a2",
+        "G12b"
+      ],
+      "pass": 1,
+      "fix": 0,
+      "unverifiable": 2
+    }
+  },
+  {
+    "figure": "Vulcan",
+    "word": "volcano",
+    "act": "forum",
+    "kind": "classical-myth",
+    "card": "To the ancient Romans, Vulcan was the god of fire and the forge. His Latin name, Vulcanus, became the word for a burning mountain in Italian and Spanish, and English borrowed it: volcano.",
+    "sources": [
+      {
+        "type": "dictionary",
+        "ref": "Online Etymology Dictionary, 'volcano'",
+        "url": "https://www.etymonline.com/word/volcano",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Merriam-Webster, 'volcano'",
+        "url": "https://www.merriam-webster.com/dictionary/volcano",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 09585295 Vulcan",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "(Roman mythology) god of fire and metal working"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Wiktionary etymologies (2013 snapshot) as de Melo's Etymological Wordnet, bundled in PyPI ety 1.4.0 (ety/data/etymologies.json), volcano",
+        "url": "https://files.pythonhosted.org/packages/4a/b4/975db4c0ff58aa9127d1507fc6557c149086764b3a9017503a6b50a43285/ety-1.4.0-py2.py3-none-any.whl",
+        "opened": true,
+        "quote": "volcano <- vulcano [Italian]"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Webster's Revised Unabridged Dictionary (1913), Project Gutenberg text (npm websters-english-dictionary 2.0.0, dictionary.json), volcano",
+        "url": "https://registry.npmjs.org/websters-english-dictionary/-/websters-english-dictionary-2.0.0.tgz",
+        "opened": true,
+        "quote": "-- often popularly called a burning mountain"
+      }
+    ],
+    "review": {
+      "file": "circuit/review/c4-accuracy-opened.md",
+      "rows": [
+        "G13a",
+        "G13b"
+      ],
+      "pass": 1,
+      "fix": 0,
+      "unverifiable": 1
+    }
+  },
+  {
+    "figure": "Ceres",
+    "word": "cereal",
+    "act": "forum",
+    "kind": "classical-myth",
+    "card": "To the ancient Romans, Ceres was the goddess of grain and the harvest. The Latin cerealis meant 'of Ceres', and English took it for grain crops, and for the grains in a breakfast bowl: cereal.",
+    "sources": [
+      {
+        "type": "dictionary",
+        "ref": "Online Etymology Dictionary, 'cereal'",
+        "url": "https://www.etymonline.com/word/cereal",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Merriam-Webster, 'cereal'",
+        "url": "https://www.merriam-webster.com/dictionary/cereal",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 09581885 Ceres",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "(Roman mythology) goddess of agriculture; counterpart of Greek Demeter"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 12162012 cereal",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "grass whose starchy grains are used as food"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 07718541 cereal",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "a breakfast food prepared from grain"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Wiktionary etymologies (2013 snapshot) as de Melo's Etymological Wordnet, bundled in PyPI ety 1.4.0 (ety/data/etymologies.json), cereal",
+        "url": "https://files.pythonhosted.org/packages/4a/b4/975db4c0ff58aa9127d1507fc6557c149086764b3a9017503a6b50a43285/ety-1.4.0-py2.py3-none-any.whl",
+        "opened": true,
+        "quote": "cereal <- céréale [French]"
+      }
+    ],
+    "review": {
+      "file": "circuit/review/c4-accuracy-opened.md",
+      "rows": [
+        "G14a",
+        "G14b1",
+        "G14b2"
+      ],
+      "pass": 2,
+      "fix": 0,
+      "unverifiable": 1
+    }
+  },
+  {
+    "figure": "Fortuna",
+    "word": "fortune",
+    "act": "forum",
+    "kind": "classical-myth",
+    "card": "To the ancient Romans, Fortuna was the goddess of luck, good and bad. Her name is the Latin word fortuna, chance, and it reached English as fortune.",
+    "sources": [
+      {
+        "type": "dictionary",
+        "ref": "Online Etymology Dictionary, 'fortune'",
+        "url": "https://www.etymonline.com/word/fortune",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Merriam-Webster, 'fortune'",
+        "url": "https://www.merriam-webster.com/dictionary/fortune",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 09596583 Fortuna",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "(Roman mythology) the goddess of fortune and good luck"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 11438252 luck, fortune, chance, hazard",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "an unknown and unpredictable phenomenon that causes an event to result one way rather than another"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Wiktionary etymologies (2013 snapshot) as de Melo's Etymological Wordnet, bundled in PyPI ety 1.4.0 (ety/data/etymologies.json), fortune",
+        "url": "https://files.pythonhosted.org/packages/4a/b4/975db4c0ff58aa9127d1507fc6557c149086764b3a9017503a6b50a43285/ety-1.4.0-py2.py3-none-any.whl",
+        "opened": true,
+        "quote": "fortune <- fortuna [Latin]"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 11438252",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "luck, fortune, chance, hazard (one synset)"
+      }
+    ],
+    "review": {
+      "file": "circuit/review/c4-accuracy-opened.md",
+      "rows": [
+        "G15a",
+        "G15b"
+      ],
+      "pass": 2,
+      "fix": 0,
+      "unverifiable": 0
+    }
+  },
+  {
+    "figure": "Mercury",
+    "word": "mercurial",
+    "act": "forum",
+    "kind": "classical-myth",
+    "card": "To the ancient Romans, Mercury was the quick-footed messenger of the gods. A planet and a quick, shining liquid metal took his name, and mercurial came to mean quick and changeable.",
+    "sources": [
+      {
+        "type": "dictionary",
+        "ref": "Online Etymology Dictionary, 'mercurial'",
+        "url": "https://www.etymonline.com/word/mercurial",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Merriam-Webster, 'mercurial'",
+        "url": "https://www.merriam-webster.com/dictionary/mercurial",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 09585833 Mercury",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "(Roman mythology) messenger of Jupiter and god of commerce"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), adj 02877730 Mercurial",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "characteristics (eloquence, shrewdness, swiftness, thievishness) attributed to the god Mercury"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Webster's Revised Unabridged Dictionary (1913), Project Gutenberg text (npm websters-english-dictionary 2.0.0, dictionary.json), mercurial",
+        "url": "https://registry.npmjs.org/websters-english-dictionary/-/websters-english-dictionary-2.0.0.tgz",
+        "opened": true,
+        "quote": "Having the qualities fabled to belong to the god Mercury; swift; active; sprightly; fickle; volatile; changeable"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), adj 00346106 mercurial",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "liable to sudden unpredictable change"
+      }
+    ],
+    "review": {
+      "file": "circuit/review/c4-accuracy-opened.md",
+      "rows": [
+        "G16a",
+        "G16b",
+        "G16c"
+      ],
+      "pass": 2,
+      "fix": 0,
+      "unverifiable": 1
+    }
+  },
+  {
+    "figure": "Tiw (Týr)",
+    "word": "Tuesday",
+    "act": "roots",
+    "kind": "norse-myth",
+    "card": "To the Anglo-Saxons he was Tiw, and to the Norse Týr: a god of war. When Germanic peoples took over the Roman week, the day of Mars, the Roman war god, became Tiw's day: Tuesday.",
+    "sources": [
+      {
+        "type": "dictionary",
+        "ref": "Online Etymology Dictionary, 'Tuesday'",
+        "url": "https://www.etymonline.com/word/Tuesday",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Merriam-Webster, 'Tuesday'",
+        "url": "https://www.merriam-webster.com/dictionary/Tuesday",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 09606898 Tyr",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "(Norse mythology) god of war and strife and son of Odin; identified with Anglo-Saxon Tiu"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 09609406 Tiu",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "god of war and sky; counterpart of Norse Tyr"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Wiktionary etymologies (2013 snapshot) as de Melo's Etymological Wordnet, bundled in PyPI ety 1.4.0 (ety/data/etymologies.json), Tuesday",
+        "url": "https://files.pythonhosted.org/packages/4a/b4/975db4c0ff58aa9127d1507fc6557c149086764b3a9017503a6b50a43285/ety-1.4.0-py2.py3-none-any.whl",
+        "opened": true,
+        "quote": "Tuesday <- Tewesday [Middle English]"
+      }
+    ],
+    "review": {
+      "file": "circuit/review/c4-accuracy-opened.md",
+      "rows": [
+        "G17a",
+        "G17b"
+      ],
+      "pass": 1,
+      "fix": 0,
+      "unverifiable": 1
+    }
+  },
+  {
+    "figure": "Woden (Odin)",
+    "word": "Wednesday",
+    "act": "roots",
+    "kind": "norse-myth",
+    "card": "To the Anglo-Saxons he was Woden, and to the Norse Odin: chief of the gods and a seeker of wisdom. The Roman day of Mercury became Woden's day: Wednesday, with a d you never hear.",
+    "sources": [
+      {
+        "type": "dictionary",
+        "ref": "Online Etymology Dictionary, 'Wednesday'",
+        "url": "https://www.etymonline.com/word/Wednesday",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Merriam-Webster, 'Wednesday'",
+        "url": "https://www.merriam-webster.com/dictionary/Wednesday",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 09609501 Woden",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "chief god; counterpart of Norse Odin and Teutonic Wotan"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 09606124 Odin",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "ruler of the Aesir; supreme god of war and poetry and knowledge and wisdom (for which he gave an eye)"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Wiktionary etymologies (2013 snapshot) as de Melo's Etymological Wordnet, bundled in PyPI ety 1.4.0 (ety/data/etymologies.json), Wednesday",
+        "url": "https://files.pythonhosted.org/packages/4a/b4/975db4c0ff58aa9127d1507fc6557c149086764b3a9017503a6b50a43285/ety-1.4.0-py2.py3-none-any.whl",
+        "opened": true,
+        "quote": "Wednesday <- Wednesdai [Middle English]"
+      }
+    ],
+    "review": {
+      "file": "circuit/review/c4-accuracy-opened.md",
+      "rows": [
+        "G18a",
+        "G18b",
+        "G18c"
+      ],
+      "pass": 1,
+      "fix": 0,
+      "unverifiable": 2
+    }
+  },
+  {
+    "figure": "Thor",
+    "word": "Thursday",
+    "act": "roots",
+    "kind": "norse-myth",
+    "card": "To the Norse, Thor was the god of thunder, who carried a hammer. The Anglo-Saxons called him Thunor, which is also their word for thunder. The Roman day of Jupiter became Thor's day: Thursday.",
+    "sources": [
+      {
+        "type": "dictionary",
+        "ref": "Online Etymology Dictionary, 'Thursday'",
+        "url": "https://www.etymonline.com/word/Thursday",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Merriam-Webster, 'Thursday'",
+        "url": "https://www.merriam-webster.com/dictionary/Thursday",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 09606681 Thor",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "(Norse mythology) god of thunder and rain and farming; pictured as wielding a hammer emblematic of the thunderbolt"
+      }
+    ],
+    "review": {
+      "file": "circuit/review/c4-accuracy-opened.md",
+      "rows": [
+        "G19a",
+        "G19b",
+        "G19c"
+      ],
+      "pass": 1,
+      "fix": 0,
+      "unverifiable": 2
+    }
+  },
+  {
+    "figure": "Frigg",
+    "word": "Friday",
+    "act": "roots",
+    "kind": "norse-myth",
+    "card": "To the Norse, Frigg was queen of the gods and wife of Odin; the Anglo-Saxons called her Frige. The Roman day of Venus became her day: Friday. Freyja, a goddess of love, matches Venus more closely, and scholars still debate whether the two were once one goddess.",
+    "sources": [
+      {
+        "type": "dictionary",
+        "ref": "Online Etymology Dictionary, 'Friday' and 'Frigg'",
+        "url": "https://www.etymonline.com/word/Friday",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Merriam-Webster, 'Friday'",
+        "url": "https://www.merriam-webster.com/dictionary/Friday",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "reference",
+        "ref": "Encyclopaedia Britannica, 'Frigg'",
+        "url": "https://www.britannica.com/topic/Frigg-Norse-mythology",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 09603695 Frigg",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "(Norse mythology) goddess of the heavens and married love; wife of Odin"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Wiktionary etymologies (2013 snapshot) as de Melo's Etymological Wordnet, bundled in PyPI ety 1.4.0 (ety/data/etymologies.json), Friday",
+        "url": "https://files.pythonhosted.org/packages/4a/b4/975db4c0ff58aa9127d1507fc6557c149086764b3a9017503a6b50a43285/ety-1.4.0-py2.py3-none-any.whl",
+        "opened": true,
+        "quote": "Friday <- frigedæg [Old English]"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 09603528 Freya, Freyja",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "(Norse mythology) goddess of love and fecundity"
+      }
+    ],
+    "review": {
+      "file": "circuit/review/c4-accuracy-opened.md",
+      "rows": [
+        "G20a1",
+        "G20a2",
+        "G20b",
+        "G20c",
+        "G20d"
+      ],
+      "pass": 1,
+      "fix": 0,
+      "unverifiable": 4
+    }
+  },
+  {
+    "figure": "John Montagu, 4th Earl of Sandwich",
+    "word": "sandwich",
+    "act": "junkyard",
+    "kind": "person",
+    "card": "John Montagu, 4th Earl of Sandwich (1718–1792), an English politician. By 1762 people were eating 'a sandwich', named after him. The story goes that he wanted a meal he could eat without leaving the table, but historians say nobody can prove it.",
+    "sources": [
+      {
+        "type": "primary",
+        "ref": "Edward Gibbon, journal entry, November 1762 ('a bit of cold meat, or a Sandwich'); dated 24 Nov in the Oxford Companion to Food, 14 Nov in the OED citation",
+        "url": "https://wordhistories.net/2017/03/23/sandwich/",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "primary",
+        "ref": "Pierre-Jean Grosley, Londres (1770), recounting a 1765 visit",
+        "url": "https://en.wikipedia.org/wiki/John_Montagu,_4th_Earl_of_Sandwich",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "secondary",
+        "ref": "N. A. M. Rodger, The Insatiable Earl (1993)",
+        "url": "https://kirkusreviews.com/book-reviews/nam-rodger/the-insatiable-earl",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      }
+    ],
+    "review": {
+      "file": "circuit/review/c4-accuracy-opened.md",
+      "rows": [
+        "G21a",
+        "G21b",
+        "G21c"
+      ],
+      "pass": 0,
+      "fix": 0,
+      "unverifiable": 3
+    }
+  },
+  {
+    "figure": "Adolphe Sax",
+    "word": "saxophone",
+    "act": "junkyard",
+    "kind": "person",
+    "card": "Adolphe Sax (1814–1894), a Belgian instrument maker. In 1846 he patented a new instrument: a metal body, played with a reed. It took his name and the Greek word phone, voice or sound: the saxophone.",
+    "sources": [
+      {
+        "type": "reference",
+        "ref": "Encyclopaedia Britannica, 'Adolphe Sax'",
+        "url": "https://www.britannica.com/biography/Antoine-Joseph-Sax",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Online Etymology Dictionary, 'saxophone'",
+        "url": "https://www.etymonline.com/word/saxophone",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 11303148 Sax, Adolphe_Sax",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "a Belgian maker of musical instruments who invented the saxophone (1814-1894)"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Webster's Revised Unabridged Dictionary (1913), Project Gutenberg text (npm websters-english-dictionary 2.0.0, dictionary.json), saxophone",
+        "url": "https://registry.npmjs.org/websters-english-dictionary/-/websters-english-dictionary-2.0.0.tgz",
+        "opened": true,
+        "quote": "A wind instrument of brass, containing a reed"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 04148141 sax, saxophone",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "a single-reed woodwind with a conical bore"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Wiktionary etymologies (2013 snapshot) as de Melo's Etymological Wordnet, bundled in PyPI ety 1.4.0 (ety/data/etymologies.json), saxophone",
+        "url": "https://files.pythonhosted.org/packages/4a/b4/975db4c0ff58aa9127d1507fc6557c149086764b3a9017503a6b50a43285/ety-1.4.0-py2.py3-none-any.whl",
+        "opened": true,
+        "quote": "saxophone <- saxophone [French]"
+      }
+    ],
+    "review": {
+      "file": "circuit/review/c4-accuracy-opened.md",
+      "rows": [
+        "G22a",
+        "G22b",
+        "G22c",
+        "G22d"
+      ],
+      "pass": 2,
+      "fix": 0,
+      "unverifiable": 2
+    }
+  },
+  {
+    "figure": "James Brudenell, 7th Earl of Cardigan",
+    "word": "cardigan",
+    "act": "junkyard",
+    "kind": "person",
+    "card": "James Brudenell, 7th Earl of Cardigan (1797–1868), a British army officer. By the 1860s a knitted wool jacket that buttons down the front carried his name. He didn't invent it, and why it took his name is not certain.",
+    "sources": [
+      {
+        "type": "dictionary",
+        "ref": "Online Etymology Dictionary, 'cardigan'",
+        "url": "https://www.etymonline.com/word/cardigan",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "secondary",
+        "ref": "Michael Quinion, World Wide Words, 'Cardigan'",
+        "url": "https://www.worldwidewords.org/qa/qa-car5.htm",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 02966595 cardigan",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "knitted jacket that is fastened up the front with buttons or a zipper"
+      }
+    ],
+    "review": {
+      "file": "circuit/review/c4-accuracy-opened.md",
+      "rows": [
+        "G23a",
+        "G23b1",
+        "G23b2",
+        "G23c"
+      ],
+      "pass": 1,
+      "fix": 0,
+      "unverifiable": 3
+    }
+  },
+  {
+    "figure": "Rudolf Diesel",
+    "word": "diesel",
+    "act": "junkyard",
+    "kind": "person",
+    "card": "Rudolf Diesel (1858–1913), a German engineer. In the 1890s he designed an engine that squeezes air until it is hot enough to light the fuel without a spark. The engine, and the fuel it burns, carry his name: diesel.",
+    "sources": [
+      {
+        "type": "reference",
+        "ref": "Encyclopaedia Britannica, 'Rudolf Diesel'",
+        "url": "https://www.britannica.com/biography/Rudolf-Diesel",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Merriam-Webster, 'diesel'",
+        "url": "https://www.merriam-webster.com/dictionary/diesel",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 10954879 Diesel, Rudolf_Diesel",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "German engineer (born in France) who invented the diesel engine (1858-1913)"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 14710042 diesel_oil, diesel_fuel",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "a heavy mineral oil used as fuel in diesel engines"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 10954879 Diesel",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "invented the diesel engine"
+      }
+    ],
+    "review": {
+      "file": "circuit/review/c4-accuracy-opened.md",
+      "rows": [
+        "G24a",
+        "G24b",
+        "G24c"
+      ],
+      "pass": 2,
+      "fix": 0,
+      "unverifiable": 1
+    }
+  },
+  {
+    "figure": "Isaac Newton",
+    "word": "newton",
+    "act": "junkyard",
+    "kind": "person",
+    "card": "Isaac Newton (1643–1727), an English mathematician and scientist who set out the laws of motion and of gravity. In 1948 an international conference on measurement named the unit of force after him: the newton.",
+    "sources": [
+      {
+        "type": "institution",
+        "ref": "BIPM, 9th CGPM (1948), Resolution 7 (the name 'newton')",
+        "url": "https://www.bipm.org/en/committees/cg/cgpm/9-1948/resolution-7",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "reference",
+        "ref": "Encyclopaedia Britannica, 'Isaac Newton'",
+        "url": "https://www.britannica.com/biography/Isaac-Newton",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 11225365 Newton",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "English mathematician and physicist; remembered for developing the calculus and for his law of gravitation and his three laws of motion (1642-1727)"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 11225365 Newton",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "(1642-1727)"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 13669285 newton, N",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "a unit of force equal to the force that imparts an acceleration of 1 m/sec/sec to a mass of 1 kilogram"
+      }
+    ],
+    "review": {
+      "file": "circuit/review/c4-accuracy-opened.md",
+      "rows": [
+        "G25a1",
+        "G25a2",
+        "G25b"
+      ],
+      "pass": 1,
+      "fix": 0,
+      "unverifiable": 2
+    }
+  },
+  {
+    "figure": "Marie and Pierre Curie",
+    "word": "curie",
+    "act": "junkyard",
+    "kind": "person",
+    "card": "Marie Curie (1867–1934) and Pierre Curie (1859–1906), scientists in Paris who studied radioactivity. In 1910, at a congress in Brussels, scientists named a unit of radioactivity the curie, in honour of Pierre, and many took it to honour Marie too.",
+    "sources": [
+      {
+        "type": "reference",
+        "ref": "Encyclopaedia Britannica, 'curie (unit)'",
+        "url": "https://www.britannica.com/science/curie",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "institution",
+        "ref": "NIST, history of the curie (International Congress of Radiology and Electricity, Brussels, 1910)",
+        "url": "https://www.nist.gov/pml/marie-curie-and-nbs-radium-standards/1913-us-curie-standard",
+        "opened": false,
+        "quote": null,
+        "access": "refused by the egress policy, 15 Oct 2026; search-level only"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 10937455 Curie, Marie_Curie",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "French chemist (born in Poland) who won two Nobel prizes; one (with her husband and Henri Becquerel) for research on radioactivity … (1867-1934)"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 10937751 Curie, Pierre_Curie",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "French physicist; husband of Marie Curie (1859-1906)"
+      },
+      {
+        "type": "dictionary",
+        "ref": "Princeton WordNet 3.1 (npm wordnet-db 3.1.14, dict/data.*), noun 13667078 curie, Ci",
+        "url": "https://registry.npmjs.org/wordnet-db/-/wordnet-db-3.1.14.tgz",
+        "opened": true,
+        "quote": "a unit of radioactivity"
+      }
+    ],
+    "review": {
+      "file": "circuit/review/c4-accuracy-opened.md",
+      "rows": [
+        "G26a1",
+        "G26a2",
+        "G26b"
+      ],
+      "pass": 1,
+      "fix": 0,
+      "unverifiable": 2
+    }
+  }
+]
