@@ -32,7 +32,9 @@
        carries Circuit mail). The first version of this check could NOT fail: the context's seeding script also ran on
        the probe page and wrote over the household before it was read; it skips storage-probe.html now.
      The screen's height is measured below a STICKY top bar too (it was read as 776px before; 672px is the truth).
-   Run: NODE_PATH=/opt/node22/lib/node_modules node tests/circuit-post.cjs                                       */
+   Run: NODE_PATH=/opt/node22/lib/node_modules node tests/circuit-post.cjs                                          Proved by breaking (15 Oct 2026, integration): app3's render no longer closing the moment off the board → "leaving the
+   board closes the moment card" fails.
+*/
 'use strict';
 const { chromium } = require('playwright');
 const fs = require('fs'), path = require('path');
@@ -181,11 +183,18 @@ const AUDIT = (sel) => { const root = document.querySelector(sel); if (!root) re
     ok(env && env.w >= 44 && env.h >= 44 && env.label && !env.emoji, 'the board\'s envelope shows while mail waits: a drawn 44px+ button with a name, no count badge');
     await pg.tap('#t-board .hp-env'); await until(pg, () => state.nav === 'collection' && !!document.querySelector('.hp-post'), null, 10000);
     ok(await pg.evaluate(() => state.nav === 'collection' && state.collTab === 'post'), 'a tap on the envelope opens the Hive Post');
-    await pg.evaluate(() => { SB_CIRCUIT.onLevelUp(7); SB_CIRCUIT.showMoment(); }); await settle(pg);
+    /* a moment is a card over the REGION BOARD (§3.1): the screen says it is on the board while the card is up */
+    await pg.evaluate(() => { state.screen = 'app'; state.nav = 'trail'; state.trailView = 'act'; state.trailAct = 'meadow'; SB_CIRCUIT.onLevelUp(7); SB_CIRCUIT.showMoment(); }); await settle(pg);
     const m = await pg.evaluate(AUDIT, '.hp-moment');
     ok(m && !m.small.length && !m.emoji.length && !m.inputs, 'the moment card: controls ≥ 44px, no emoji, no text input' + some(m ? m.small : ['no card']));
     await pg.tap('.hp-moment [data-hp="close"]'); await settle(pg);
     ok(await pg.evaluate(() => !document.querySelector('.hp-moment')), 'its Close button closes it');
+    /* and it never outlives the board (P3/Circuit full run 16: a moment drawn over the board stayed up over Home after the
+       child left — the app moves its address with the history API, which fires no hashchange — and took every tap) */
+    await pg.evaluate(() => { state.nav = 'trail'; state.trailView = 'act'; SB_CIRCUIT.onLevelUp(8); SB_CIRCUIT.showMoment(); });
+    await until(pg, () => !!document.querySelector('.hp-moment'), null, 5000);
+    await pg.evaluate(() => app.setNav('home')); await settle(pg);
+    ok(await pg.evaluate(() => !document.querySelector('.hp-moment') && state.nav === 'home'), 'leaving the board closes the moment card — it never stands over another screen');
     await ctx.close();
   }
 

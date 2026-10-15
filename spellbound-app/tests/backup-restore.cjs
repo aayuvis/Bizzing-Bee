@@ -23,8 +23,16 @@ const URL = 'file://' + path.resolve(__dirname, '..') + '/index.html';
   const b = await chromium.launch({ executablePath: process.env.SB_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
   /* a PERSISTENT profile (13 Oct 2026): erase and restore each reload the page and read the household back. An off-the-record
      context can start a reloaded page on EMPTY storage under load (pin-mandatory measured it: off-the-record 3 of 48 reloads empty, on-disk 0 of 72) */
-  const dir = fs.mkdtempSync(path.join(require('os').tmpdir(), 'sb-backup-profile-'));
-  const ctx = await chromium.launchPersistentContext(dir, { viewport: { width: 1000, height: 900 }, acceptDownloads: true,
+  /* A FRESH PROFILE WHOSE STORAGE LINK HOLDS (15 Oct 2026; the Circuit's full run 16 read the erase as undone, {"kids":2}):
+     about one boot in eight of a fresh profile breaks the page's storage link — every write the app makes stays in its
+     renderer, the erase's removals and its reload seal included, so no reload can see them. That is the browser (CLAUDE.md,
+     "the broken storage link"), not the erase. The walk checks the link right after the first boot (wait.cjs storageLinked)
+     and starts again in a fresh profile when it is broken — three attempts at most, said in the output; the checks always
+     judge the attempt that runs. */
+  let dir, ctx, pg, errs;
+  for (let attempt = 1; ; attempt++) {
+  dir = fs.mkdtempSync(path.join(require('os').tmpdir(), 'sb-backup-profile-'));
+  ctx = await chromium.launchPersistentContext(dir, { viewport: { width: 1000, height: 900 }, acceptDownloads: true,
     executablePath: process.env.SB_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
   /* the seed marker deliberately does NOT start with sb_ — erase removes every sb_ key */
   await ctx.addInitScript(() => { try { if (localStorage.getItem('bkt_seeded')) return; localStorage.setItem('bkt_seeded', '1');
@@ -41,8 +49,13 @@ const URL = 'file://' + path.resolve(__dirname, '..') + '/index.html';
       { a: 'bee', d: '2026-10-01', t: 600, m: 12, who: 'Ahana' }, { a: 'maths', d: '2026-10-01', t: 700, m: 30, who: 'Ahana' } ] }));
     localStorage.setItem('bizzing.wallet', JSON.stringify({ v: 1, kids: { ahana: { coins: 25, ledger: [{ a: 'maths', t: 1, n: 25, why: 'stop' }] }, zed: { coins: 4, ledger: [] } } }));
   } catch (e) {} });
-  const pg = ctx.pages()[0] || await ctx.newPage(); const errs = []; pg.on('pageerror', e => { errs.push(e.message); if (process.env.DBG) console.log('PAGEERR', e.stack); });
+  pg = ctx.pages()[0] || await ctx.newPage(); errs = []; pg.on('pageerror', e => { errs.push(e.message); if (process.env.DBG) console.log('PAGEERR', e.stack); });
   await pg.goto(URL); await booted(pg);
+  if (await require('./lib/wait.cjs').storageLinked(pg)) break;
+  if (attempt >= 3) { console.log('  note the storage link broke at boot in three fresh profiles — judging this one anyway'); break; }
+  console.log(`  note attempt ${attempt}: the storage link broke at boot (a second page never saw the page's write) — a fresh profile`);
+  await ctx.close(); try { fs.rmSync(dir, { recursive: true, force: true }); } catch (e) {}
+  }
   const typePin = async () => { for (const k of '1234') await pg.evaluate(k => app.pinKey(k), k); };
 
   /* ---- the household as the app holds it, after boot ---- */
