@@ -21,8 +21,9 @@ const path = require('path');
 const { booted } = require('./lib/wait.cjs');
 let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
-const RIVALS = ['pixel', 'koi', 'beaker', 'panda', 'comet', 'astro', 'scopey', 'melody', 'samurai', 'goldlegend'];
-const OTHERS = ['bizzy', 'neko', 'ninja', 'crystal', 'queenhive'];
+/* Suki wears Snowfox since 14 Oct 2026 (Bee Circuit owner question "mockbee-faces"); a child in the panda now meets no rival in it */
+const RIVALS = ['pixel', 'koi', 'beaker', 'snowfox', 'comet', 'astro', 'scopey', 'melody', 'samurai', 'goldlegend'];
+const OTHERS = ['bizzy', 'panda', 'neko', 'ninja', 'crystal', 'queenhive'];
 
 (async () => {
   const b = await chromium.launch({ executablePath: process.env.SB_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });

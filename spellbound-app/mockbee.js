@@ -46,6 +46,9 @@
   const PLATE = 'app-art/sgw-stage.webp';  /* the painted stage the arcade already ships: curtains, lamps, empty seats */
 
   /* ---------------- the field ---------------- */
+  /* Suki wears Snowfox (alt Wisp) since 14 Oct 2026 (Bee Circuit owner question "mockbee-faces"): her Panda Sensei and
+     Lucky Neko were both Dojo-pack props on the one East Asian name, beside her all season. Kwame's Samurai stays (lower
+     priority in the review). */
   /* `alt` is a rival's stand-in face. A rival must never wear the child's own avatar — "Suki" in
      the panda the child picked read as the child spelling against themselves — so when the two
      collide the rival wears `alt` (faceOf). Each alt is a live avatar no rival and no other alt
@@ -60,7 +63,7 @@
     { id: 'beaker', alt: 'atom', lvl: .32, name: 'Rafi', age: 10, skill: .63, nerve: .58, voc: 0.74, vtell: 'takes the Latin root apart, so the meaning falls out of it', spec: /latin/i, pace: 1300,
       note: 'Takes every Latin root apart before he writes it.', vary: .10,
       tell: 'traces the letters on his palm' },
-    { id: 'panda', alt: 'neko', lvl: .38, name: 'Suki', age: 11, skill: .66, nerve: .93, voc: 0.62, vtell: 'steady here too', spec: null, pace: 1400,
+    { id: 'snowfox', alt: 'wisp', lvl: .38, name: 'Suki', age: 11, skill: .66, nerve: .93, voc: 0.62, vtell: 'steady here too', spec: null, pace: 1400,
       note: 'Unshakeable. The lights do nothing to her.', vary: .07,
       tell: 'breathes out, then spells' },
     { id: 'comet', alt: 'rocket', lvl: .42, name: 'Dax', age: 11, skill: .71, nerve: .34, voc: 0.50, vtell: 'can spell words he could not tell you the meaning of', spec: null, pace: 700,
@@ -94,9 +97,9 @@
      `win` is the write-along window on a rival's word: shorter for older spellers, who
      type faster, so the field and the clock come out about the same length. */
   const BANDS = {
-    '6-7':   { label: '6–7',   rivals: 4, rounds: 3, win: 12000, ids: ['pixel', 'koi', 'beaker', 'panda'] },
-    '8-10':  { label: '8–10',  rivals: 6, rounds: 4, win: 10000, ids: ['pixel', 'koi', 'beaker', 'panda', 'comet', 'astro'] },
-    '11-15': { label: '11–15', rivals: 8, rounds: 5, win: 7000, ids: ['beaker', 'panda', 'comet', 'astro', 'scopey', 'melody', 'samurai', 'goldlegend'] },
+    '6-7':   { label: '6–7',   rivals: 4, rounds: 3, win: 12000, ids: ['pixel', 'koi', 'beaker', 'snowfox'] },
+    '8-10':  { label: '8–10',  rivals: 6, rounds: 4, win: 10000, ids: ['pixel', 'koi', 'beaker', 'snowfox', 'comet', 'astro'] },
+    '11-15': { label: '11–15', rivals: 8, rounds: 5, win: 7000, ids: ['beaker', 'snowfox', 'comet', 'astro', 'scopey', 'melody', 'samurai', 'goldlegend'] },
   };
   /* Family Bee night: each player picks one. Grown-ups get grown-up words — but never the
      Finals words, which belong to Champ alone. */

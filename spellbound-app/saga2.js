@@ -2302,11 +2302,11 @@
      dice roll); their pace is their place on the grid (GP_GRID order, the engine's spread). */
   const GP_CAST={
     pixel:{name:'Pip',alt:'germy',pw:0.60,kart:'kart-rocket',col:'#E5484D'},  koi:{name:'Nova',alt:'luna',pw:0.75,kart:'kart',col:'#3B93D6'},
-    beaker:{name:'Rafi',alt:'atom',pw:0.75,kart:'kart-buggy',col:'#2FB98A'},   panda:{name:'Suki',alt:'neko',pw:0.83,kart:'kart-cruiser',col:'#8B63D6'},
+    beaker:{name:'Rafi',alt:'atom',pw:0.75,kart:'kart-buggy',col:'#2FB98A'},   snowfox:{name:'Suki',alt:'wisp',pw:0.83,kart:'kart-cruiser',col:'#8B63D6'},
     comet:{name:'Dax',alt:'rocket',pw:0.68,kart:'kart-red',col:'#F0803C'},       astro:{name:'Mira',alt:'saturn',pw:0.90,kart:'kart-rocket',col:'#EC6BB0'},
     scopey:{name:'Theo',alt:'robo',pw:0.95,kart:'kart',col:'#5A6B8C'},        melody:{name:'Ines',alt:'fae',pw:0.90,kart:'kart-cruiser',col:'#C9A227'},
     samurai:{name:'Kwame',alt:'ninja',pw:0.90,kart:'kart-red',col:'#2E86D1'},    goldlegend:{name:'Vesper',alt:'crystal',pw:0.95,kart:'kart-buggy',col:'#B8860B'} };
-  const GP_GRID={easy:['pixel','koi','beaker'], medium:['comet','astro','panda','scopey'], hard:['samurai','melody','astro','comet'], champ:['goldlegend','samurai','melody','astro']};
+  const GP_GRID={easy:['pixel','koi','beaker'], medium:['comet','astro','snowfox','scopey'], hard:['samurai','melody','astro','comet'], champ:['goldlegend','samurai','melody','astro']};
   /* THE CUP: four races in one sitting, each track's box words from one origin family (they are
      the families Word Forge builds on). The fourth track is ONE entry here — the owner chose the
      Bazaar (4 Oct). */
