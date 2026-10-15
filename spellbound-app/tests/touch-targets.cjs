@@ -11,7 +11,8 @@
    being skipped. Nineteen screens (the brief asks for twelve): the eleven of audit v4, and the games
    P3.10 named — a Spelling Gym round (Spot the Error's tokens), the Word Lore hub (its level chips) and a
    Lore round (its Back), Daily Buzz (its keys), the Analogy Atlas, an analogy round, the Mock Analogy Bee
-   and the Mock Spelling Bee.
+   and the Mock Spelling Bee — and since 15 Oct 2026 a Mock Bee TURN with its letter keys, and My Homework and
+   the Teacher's Corner.
 
    EXEMPT, each for a stated reason that is still true (and listed when the test runs):
      · the ⬡ Hive button and the search row of the family top bar — pinned by the family's shell-check
@@ -27,12 +28,14 @@
    Proved by breaking (13 Oct 2026, the fault put back in a scratch copy and the test watched to fail):
      · the ☰'s hit area taken out (a11y.css): "openDrawer Menu 37×37" fails on all nineteen screens;
      · Spot the Error's tokens back to min-height 34px (gym.js): the gym round fails on its word tokens (37px);
-     · the level chip's hit area taken out (a11y.css §6): the Play tab fails on every card's chip (59×25).
+     · the level chip's hit area taken out (a11y.css §6): the Play tab fails on every card's chip (59×25);
+     · (15 Oct 2026) the Mock Bee's keys without the gutter (index.html `.sb-stage.mb-stage .mb-keys` rule taken
+       out): the turn fails on its letter keys (43×48).
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/touch-targets.cjs                       */
 const { chromium } = require('playwright');
 const path = require('path');
 const W = require('./lib/wait.cjs');
-const URL = 'file://' + path.resolve(__dirname, '..') + '/index.html';
+const URL = 'file://' + (process.env.SB_ROOT || path.resolve(__dirname, '..')) + '/index.html';   /* SB_ROOT: a scratch root, to prove a check by breaking */
 let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
 const KID = { name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 'spellbound', coins: 400, lists: { journey: { xp: 30 } }, activeList: 'journey',
@@ -58,6 +61,11 @@ const SCREENS = [
   ['an analogy round', () => app.anl('practice'), () => !!document.querySelector('.sb-stage .anl-opt')],
   ['the mock analogy bee', () => { app.anl('leave'); app.openAnlBee(); }, () => !!document.querySelector('.sb-stage .anl-field .anl-rival')],
   ['the mock spelling bee', () => app.mbOpen(), () => !!document.querySelector('.sb-stage.mb-stage')],
+  /* a Mock Bee TURN, with the kit's letter keys (batch 3, 15 Oct 2026: the lobby above was all this test saw of the bee, and
+     its keys were 42.7px wide at 390 — tests/team-night-walk.cjs found them; the halls and Team Night use the same keys) */
+  ['a mock spelling bee turn (its letter keys)', () => { SB_LAZY.need(['mockbee', 'arcade', 'words1'], () => { state.screen = 'app'; app.mbOpen('bee'); app.mbStart(); state.mb.speed = 8;
+      const t = setInterval(() => { const g = state.mb; if (!g || state.nav !== 'mockbee') { clearInterval(t); return; } if (g.phase === 'practice') app.mbPracSkip(); }, 200); }); },
+    () => !!(state.mb && state.mb.phase === 'me' && document.querySelector('.sb-stage .sg-keys .sg-key'))],
   /* My Homework and the Teacher's Corner (TEACHER-HOMEWORK.md): homework set as the Corner sets it, so every screen from here
      on also measures the top bar's homework button */
   ['my homework', () => { SB_LAZY.need(['scrHw', 'words1'], () => { const c = active();
