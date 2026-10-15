@@ -9,7 +9,9 @@
    the rules) and moved on the way a child would (Continue after a miss, Finish now when out). The ORACLE is the bee's own
    word for the child's turn (state.mb.word), never the screen. The hall's seed is FIXED per hall (a hall opened without
    one seeds itself from the time — a different bee every run), and the page's generator is restarted in the same step as
-   Start, so a hall is the same hall on every run (games-bots.mjs, "THE PAGE IS RESEEDED").                         */
+   Start, so a hall is the same hall on every run (games-bots.mjs, "THE PAGE IS RESEEDED"); two runs gave the same lines.
+   Proved by breaking (15 Oct 2026, a scratch root with mockbee.js replaced, SB_ROOT): a hall paying the contest event for
+   finishing (`if (podium || g.mode === 'venue')`) → T1 hall/meadow fails ("the random bot earns 10: contest").      */
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { until } = require('../lib/wait.cjs');
