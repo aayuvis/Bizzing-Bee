@@ -55,7 +55,10 @@ const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fai
     o.famSum = R.mastery.families.reduce((t, f) => t + f.n, 0);
     o.trapWordsMastered = R.mastery.traps.some(t => t.words.some(w => M[w] && M[w].b >= 2));
     /* the Parent Zone card, behind the PIN */
-    app.setNav('parent'); for (const k of '1234') app.pinKey(k); await W(300);
+    app.setNav('parent'); for (const k of '1234') app.pinKey(k);
+    /* the report card is a lazy screen (scrGrown) and waits on the word tier: wait for the card itself, never a fixed
+       300 ms (a loaded machine read an empty Parent Zone — flagged 15 Oct 2026) */
+    for (const t0 = Date.now(); Date.now() - t0 < 20000 && !document.querySelector('.sb-report-card');) await W(50);
     const card = document.querySelector('.sb-report-card'); o.card = card ? card.innerText : '';
     o.cardOrder = card ? [...card.querySelectorAll('.sb-rc-box')].map(x => x.innerText.split('\n')[0].trim().toUpperCase()) : [];
     o.bands = [...document.querySelectorAll('.sb-pz-band')].map(x => x.innerText.replace(/\s+/g, ' ').trim());
