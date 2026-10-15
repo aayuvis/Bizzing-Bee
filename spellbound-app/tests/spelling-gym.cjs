@@ -73,9 +73,14 @@ function helpers() {
     /* the clinic's patients are the child's own misses: each doctor round starts from the same five */
     if (mode === 'doctor') __fresh();
     app.openGym(mode); await U(() => P().mode === mode && /^(ready|answer|tap|board|ward)$/.test(P().phase), 60000);
-    const e0 = earnedSoFar(); let guard = 0, cells = 0;
+    const e0 = earnedSoFar(); let guard = 0, cells = 0; const t0 = Date.now();
     while (P().phase !== 'done' && guard++ < 400) {
       const p = P();
+      /* a round is seconds of play: one past 90 s is stuck, and says where (full run 21 timed out somewhere in T13 with
+         nothing printed — a hang, not a failure). The round throws here, naming what the screen was. */
+      if (Date.now() - t0 > 90000) { const inp = document.querySelector('.gym-in');
+        throw new Error('a ' + mode + ' round stuck past 90 s: ' + JSON.stringify({ phase: p.phase, asked: p.asked, nav: state.nav, screen: state.screen, input: !!inp, host: !!document.querySelector('#gym-host'),
+          miss: document.querySelectorAll('.sg-miss, .sb-miss').length, held: !!(window.SGUI && SGUI.held), guard, gymMode: state.gymMode })); }
       if (o.maxAsked != null && p.asked >= o.maxAsked && /^(answer|tap|board)$/.test(p.phase)) {
         if (mode === 'squares') { document.querySelector('[data-g="endboard"]').click(); }
         else SB_GYM._clock(0.05);
