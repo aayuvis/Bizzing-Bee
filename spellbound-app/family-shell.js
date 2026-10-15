@@ -194,6 +194,7 @@
     if (n === 'gym') return 'gym' + (S.gymMode ? '/' + S.gymMode : '');   // the Spelling Gym hub, and each of its modes
     if (n === 'analogy') return (window.SB_ANL && SB_ANL.route) ? SB_ANL.route() : 'analogies';   // the Analogies tab (9 Oct 2026)
     if (n === 'anltool') return (window.SB_ANL && SB_ANL.toolRoute) ? SB_ANL.toolRoute() : 'links';   // the Library's Link Finder (10 Oct 2026)
+    if (n === 'anlbee' && S.anlBee && S.anlBee.hall) return 'analogies/' + S.anlBee.hall + '/hall';   // a Reasoning Rounds hall (Bee Circuit §11)
     return NAV_ROUTE[n] || n;
   }
   function routeOf() { var o = overlayRoute(); if (o) return o; return state.settingsOpen && state.screen === 'app' ? 'settings' : baseRoute(); }

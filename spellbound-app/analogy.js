@@ -71,10 +71,14 @@
   function s3(v) { v = String(v || ''); if (/(s|sh|ch|x|z|o)$/.test(v)) return v + 'es'; if (/[^aeiou]y$/.test(v)) return v.slice(0, -1) + 'ies'; return v + 's'; }
   const an = (w) => (/[^s]s$/i.test(w) ? '' : /^[aeiou]/i.test(w) ? 'an ' : 'a ') + w;   // "scissors", not "a scissors"
   /* a lesson's bridge sentence, filled: "{A} is a kind of {B}." → "A robin is a kind of bird." */
+  /* put(s, ph, w, art): fill a placeholder, with "a/an" when `art` — unless the template already has an article right before
+     it ("The {A} is part of the {B}", "We use the {A} to {B}"): those read "the a blade … the a knife" in 41 live items
+     until 15 Oct 2026. */
+  const put = (s, ph, w, art) => s.replace(new RegExp('(\\b(?:the|a|an)\\s+)?' + ph.replace(/[{}]/g, '\\$&'), 'i'), (m, pre) => pre ? pre + w : (art ? an(w) : w));
   function bridge(tpl, a, b, rel) {
     let s = String(tpl || '');
-    if (rel === 'kind' || rel === 'part' || rel === 'material' || rel === 'function') s = s.replace('{A}', an(a)).replace('{B}', rel === 'part' ? an(b) : b);
-    if (rel === 'agent') s = s.replace('{B}', an(b)).replace('{As}', s3(a));
+    if (rel === 'kind' || rel === 'part' || rel === 'material' || rel === 'function') s = put(put(s, '{A}', a, true), '{B}', b, rel === 'part');
+    if (rel === 'agent') s = put(s, '{B}', b, true).replace('{As}', s3(a));
     s = s.replace('{A}', a).replace('{B}', b).replace('{As}', s3(a));
     return cap(s); }
   const FAMILY_SAYS = { action: '{B} is what you call it when you {A}.', quality: '{B} is what you have when you are {A}.',

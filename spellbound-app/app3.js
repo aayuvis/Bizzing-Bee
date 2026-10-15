@@ -802,7 +802,10 @@ function ensureCoachWords(key){ if(state.sessionListKey!==key || !(state.session
   return state.sessionWords; }
 function newCoachBatch(){ const key=state.sessionListKey||activeListKey(); state.sessionWords=workingSet(key); state.sessionListKey=key; state.reviseIdx=0; state.gi=0; try{ if(key&&key[0]!=='_') getList(active(),key).gi=0; }catch(e){} resetSessionScore(); }
 function gainXp(){ const c=active(); const key=activeListKey(); const lp=getList(c,key); const before=listLevel(c,key);
+  let lv0=0; try{ lv0=oneLevel(c).level|0; }catch(e){}
   lp.xp=(lp.xp||0)+1; const rawAfter=listLevelRaw(c,key); const after=Math.min(rawAfter, levelCap());
+  /* the ONE level moved: the Bee Circuit's Hive Post writes its diary line (circuit.js onLevelUp — a line, never a coin) */
+  try{ const lv1=oneLevel(c).level|0; if(lv1>lv0&&lv0>0&&!window.SB_DEMO) lazyNeed('circuit', ()=>{ try{ if(window.SB_CIRCUIT&&SB_CIRCUIT.onLevelUp) SB_CIRCUIT.onLevelUp(lv1); }catch(e){} }); }catch(e){}
   if(after>before){ const form=formIdx(after); const art=grantStageArt();
     /* NO COINS HERE (FIX-BEE v2): a stage-up is XP — right answers counted — and the standard's
        mastery coin fires only on mastery EVIDENCE. It moved to listMasteryPay(), which pays when
@@ -5088,6 +5091,8 @@ function NAV_TABS(phone){ const t=[['home','Home','home'],['trail',phone?'Atlas'
 /* the Word Gym's screens: they belong to the Word Atlas tab now (a drill from an Atlas stop always did) */
 function gymNav(S){ S=S||state; return S.nav==='coach'||S.nav==='quest'||S.nav==='levelup'||(S.nav==='train'&&!atlasDrill()); }
 function atlasTabOn(S){ S=S||state; return S.nav==='trail'||atlasDrill()||gymNav(S); }
+/* a Reasoning Rounds hall (Bee Circuit §11) runs as the Mock Analogy Bee with `hall` set — it belongs to the Analogies tab, not Play */
+function anlHallOn(S){ S=S||state; return S.nav==='anlbee'&&!!(S.anlBee&&S.anlBee.hall); }
 /* THE WORD ATLAS's SUB-NAV — Atlas | Gym (owner, 10 Oct 2026), the family's sub-page head: two chips at the top of
    the Atlas map and of the Word Gym, the one you are on marked (aria-current), each a real button (Tab + Enter, or
    a tap). `on` is 'atlas' or 'gym'. */
@@ -5216,7 +5221,7 @@ function viewApp(){
     const on=key==='explore'?!!EXPLORE_NAVS[S.nav]
       :key==='trail'?atlasTabOn(S)   /* the Atlas and its Word Gym (owner, 10 Oct 2026) */
       :key==='games'?(S.nav==='daily'||S.nav==='dailybuzz'||S.nav==='forge'||S.nav==='gym'||S.nav==='lore'||S.nav==='hive')
-      :(S.nav===key||(key==='home'&&S.nav==='today'));   /* Today's ten is Home's (P1.16) */
+      :(S.nav===key||(key==='home'&&S.nav==='today')||(key==='analogy'&&anlHallOn(S)));   /* Today's ten is Home's (P1.16); a hall is the Analogies' */
     // one icon dialect in BOTH states — the illustrated icon never swaps when a tab activates
     const glyph=`<span style="display:inline-flex;line-height:0">${navIcon(ic,21,on)}</span>`;
     return `<button data-act="setNav" data-arg="${key}" aria-current="${on?'page':'false'}" style="flex:1 1 0;min-width:0;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;padding:10px 12px;border-radius:var(--r-pill,999px);font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:.01em;${on?'background:var(--action,var(--accent));color:var(--action-ink,#fff)':'background:transparent;color:var(--muted)'}">${glyph} ${label}</button>`;
@@ -5393,7 +5398,7 @@ function viewApp(){
     ${viewDrawer()}
     <div class="sb-content" style="max-width:1080px;margin:0 auto;width:100%;padding:18px clamp(14px,3.5vw,32px) 60px">${content}</div>
     <nav class="sb-tabbar" aria-label="Primary">
-      ${NAV_TABS(true).map(([k,l,ic])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(k==='trail')?atlasTabOn(S):(S.nav===k||(k==='home'&&S.nav==='today')||(k==='games'&&(S.nav==='daily'||S.nav==='dailybuzz'||S.nav==='forge'||S.nav==='gym'||S.nav==='lore'||S.nav==='hive')));
+      ${NAV_TABS(true).map(([k,l,ic])=>{ const on=(k==='explore')?!!EXPLORE_NAVS[S.nav]:(k==='trail')?atlasTabOn(S):(S.nav===k||(k==='home'&&S.nav==='today')||(k==='analogy'&&anlHallOn(S))||(k==='games'&&(S.nav==='daily'||S.nav==='dailybuzz'||S.nav==='forge'||S.nav==='gym'||S.nav==='lore'||S.nav==='hive')));
         const gl=`<span style="display:inline-flex;line-height:0">${navIcon(ic,23)}</span>`;
         return `<button data-act="setNav" data-arg="${k}" aria-current="${on?'page':'false'}" style="${on?'color:var(--accent)':'color:var(--muted)'}">${gl}<span>${l}</span></button>`; }).join('')}
     </nav>
@@ -8249,7 +8254,8 @@ function callAct(act, arg, ev){ const fn=app[act]; if(typeof fn==='function') fn
    the tier itself before it ends setup on the first word. */
 const WORDLESS=new Set(['noop','openDrawer','closeDrawer','muteAll','openWallet','closeWallet','cycleMode','pinKey','pinCancel',
   'openSettings','closeSettings','setGrownOpen','setSwitchChild','setOpenCollection','pinSetup','devTap','devBannerHide','goHome','celebrateClose',
-  'famMenu','famMenuClose','famSwitch','famSettings','famMine','famAdd','hqClear','nextTip','openAvDeck']);
+  'famMenu','famMenuClose','famSwitch','famSettings','famMine','famAdd','hqClear','nextTip','openAvDeck',
+  'hivePost']);   /* the Hive Post reads no word record: a tap there never waits on the word tier (Bee Circuit core) */
 let _wordsHeld=null;
 function wordsHold(fn){ if(wordsIn()){ fn(); return true; }
   if(_wordsHeld) return false;
