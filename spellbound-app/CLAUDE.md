@@ -89,6 +89,48 @@ Brief: `Bizzing_Schedule/docs/family/FIX-BEE.md`. Guards: `tests/trust-v2.cjs`, 
 - UI icons are the `iconSVG` set; `tests/trust-v2` and the emoji scan hold buttons, tabs and
   headings free of emoji.
 
+## The Bee Circuit, Season 1 (built 14–15 Oct 2026) — READ FIRST; it overrides the sections below
+The season in `circuit/BEE-CIRCUIT.md`, under `circuit/AMENDMENTS.md` (V. is Vale, 16; no new voice clips) and the owner's
+decisions in `circuit/review/REPORT.md` ("COMPLETE ALL open", 14 Oct). Built in parallel parts; each part's full notes —
+what, the API as implemented, every test and every break — are `circuit/BUILD-core.md`, `BUILD-halls.md`, `BUILD-cases.md`,
+`BUILD-reasoning.md`. The rules a later session keeps:
+- **THE SCRIPT IS THE ONLY SOURCE OF STORY TEXT.** `circuit/script.json` (three review lenses + cycle 4's accuracy pass,
+  `review/c4-accuracy-opened.md`) → `node tools/circuit/build-data.cjs` writes `circuit-data.js` (`SB_CIRCUIT_DATA`) and
+  `node tools/circuit/build-cases.cjs` writes `circuit-cases-data.js`; never hand-edit either. Change a line in the script →
+  `node tools/circuit/validate.cjs` (FAIL 0) → both generators → `tests/circuit-data.cjs` / `circuit-cases-data.cjs`. The
+  sourced visitor table is `circuit/eponyms.json` (60 facts still search-only: the reference hosts are refused by this
+  environment's network policy — re-open them when they are allowed, rows marked UNVERIFIABLE).
+- **OVERLAY ONLY, NOTHING GATES** (L1/L2): the Atlas's stops, order, counts, unlocks, Continue and Home are unchanged by any
+  hall, case, letter or Team Night (circuit-halls-board's OVERLAY section). Mail never expires.
+- **WHERE IT LIVES**: `circuit.js` (lazy group `circuit` = circuit-data.js + circuit.js) owns `window.SB_CIRCUIT` — the
+  per-child record `c.circuit` (store step **v11→v12**), the mail engine, the Hive Post (the Collection's fourth tab,
+  app3-me.js `hivePost`), the moment card, the Suspect Board, the accusation. `circuit-cases.js` (group `circuitCases`, DEPS
+  `circuit`) is the five Surprise Stops (`SB_CIRCUIT_CASES`, `#/case/<id>`). `mockbee.js` has two more doors into the same
+  bee — a VENUE (`app.mbOpen({venue, family, seed, replay})`, the nine Bee Halls) and TEAM NIGHT (`app.mbOpen({team:true,
+  seed, replay})`) — and `trail.js` draws the pins (a hall per Honey region in its last leg, Team Night on the Big Stage),
+  the Atlas chip, the stop card's visitor line and `SB_CIRCUIT.boardExtras(act)` (envelope + case pins). `analogy.js` holds
+  the Reasoning Rounds (four analogy halls, Theo's notebook — verbatim lesson text, `c.anl.halls`).
+- **THE CONTRACT** (`window.SB_CIRCUIT`, always guarded, always after `lazyNeed('circuit')`): `state(c)`, `onHallOpen(act)`,
+  `onHall(act, report)`, `onTeamNight(report)`, `onRegionDone(act)`, `onLevelUp(level)` (app3 `gainXp` calls it when the
+  ONE level moves — a diary line, never a coin), `hallUnlocked(act, c)` (story order), `teamOpen(c)`, `boardExtras(act)`,
+  `visitorFor(unitId)`, `openVisitor`, `open(tab)`, `caseState` / `caseUpdate` / `caseLate`, `line(path)`, `chip(c)`. The
+  report shapes are in BUILD-core.md / BUILD-halls.md — match them exactly.
+- **PAY IS UNCHANGED** (L11): halls and Team Night pay as Mock Bee pays (contest on merit only; Team Night's contest only on
+  the child's own spelled words and correct calls); cases pay one `answer` coin per FIRST-TRY right answer; mail, visitors,
+  stamps, team photos and finishing pay nothing. No `Math.random` in any outcome (seeded per child and act). The Circuit
+  always wins Team Night narrowly; the child's play changes the margin, the lines and the stamp, never the outcome.
+- **No new mp3s**: every line is read by the device voice on a tap. No generated art: pins, stamps, the envelope and team
+  photos are drawn in code; Ravenmere wears archived avatars.
+- **Tests** (all proved by breaking — the breaks are in each header): node `circuit-data`, `circuit-store`, `circuit-mail`,
+  `circuit-halls`, `circuit-team`, `circuit-cases-data`, `analogy-bridge`; browser `circuit-post`, `circuit-halls-board`,
+  `circuit-cases`, `analogy-halls`, `analogy-halls-stage`.
+- **Known, open**: atlas-layout §8's zoomed stop card is sensitive to an EXTRA board redraw when the circuit file lands
+  (trail.js must not redraw on that landing itself — boot-lazy's softRender already does); circuit-post waits a fixed 120 ms
+  in one place; in the Mock Analogy Bee (and so its halls) a random tapper reaches the podium ~2.4% of bees (a tie rule) — a
+  merit floor of 3 right after the warm-up cuts it to 0.6%, an owner call because it changes the plain bee's pay; not yet
+  done: a browser walk of Team Night against the real core, and a games-bots driver for the halls.
+- **Suki wears Snowfox** (alt Wisp) everywhere since 14 Oct (mockbee.js BOTS, the Grand Prix cast, the script's cast key).
+
 ## The Teacher's Corner and My Homework (15 Oct 2026) — READ FIRST; it overrides the sections below
 Owner: "build the teacher's corner too … ensure this is for a teacher to guide the students … generate mock word lists and
 assign to the student … assign tasks to complete based on where they are … also assign concepts to complete … this then goes
