@@ -143,6 +143,14 @@ what, the API as implemented, every test and every break — are `circuit/BUILD-
   question, so it was intermittent). lore.js's phone rule sets answers tighter (min-height 44px, padding 5px 10px,
   line-height 1.22); `tests/quiz-opts-fit.cjs` (seeded page, 240 questions of Meanings, Idioms and Roots) holds every answer
   whole and no list above its row — the old rule fails it 5 ways. touch-targets now names what a missed point lands on.
+  **And full run 21 found a real FREEZE**: spelling-gym timed out in T13; with a page watchdog it was the page itself not
+  answering for minutes, every time in Champ Dictation (1 run in 5 beside three busy loops). Dictation needs the whole
+  library, and `SB_LIB.all` asks boot-lazy for all 86 `wf:` chunks at once — light files, so 80 ~1 MB scripts streamed
+  together: the script-streaming starvation the P1.13 section describes, for good. **boot-lazy now streams library chunks
+  in their own lane, `WF_MAX` = 1 at a time** (a lookup's one chunk still never waits behind the word shards; at most two
+  big parses ever run together). `tests/dictionary.cjs` §4 counts the chunk scripts in flight while the whole library
+  loads (the old loader: 80 at once → fails); the whole library still loads in ~8 s. spelling-gym T13 reports the page's
+  state every 30 s while a mode runs long, and a round stuck past 90 s throws with what the screen was.
 - **Suki wears Snowfox** (alt Wisp) everywhere since 14 Oct (mockbee.js BOTS, the Grand Prix cast, the script's cast key).
 
 ## The Teacher's Corner and My Homework (15 Oct 2026) — READ FIRST; it overrides the sections below
@@ -743,6 +751,9 @@ split `app3.js` by screen; step 3 took the Word Atlas off the first screens.
   (its code, no word tier): it draws at once and the words arrive while it is open. daily-bee's reload block runs in a
   persistent profile (P0.18's cure). Guard: screens-lazy §3 (a dozen-file door streams its big data one at a time, and
   the Word Gym's code lands before the second word shard).
+- **Never ask boot-lazy for many big files at once outside HEAVY or the chunk lane.** Three or more megabyte scripts
+  streaming together can freeze the page for good on a four-core machine (seen twice: the drill's door, 10 Oct; the whole
+  library, 15 Oct — `WF_MAX`). A new family of big files gets HEAVY or a capped lane of its own, never MAX_INFLIGHT.
 - **Rules a later session keeps:**
   - Everything stays a deferred/injected CLASSIC script: no modules, no bundler, `"use strict"` first in every lazy file,
     and `app` stays app3.js's top-level const (lazy files `Object.assign(app, …)`). The source stays readable — deploy
