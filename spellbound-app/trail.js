@@ -1727,7 +1727,7 @@
       ${typeof atlasSubNav === 'function' ? atlasSubNav('atlas') : ''}
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
         <span style="font-family:var(--display);font-weight:800;font-size:22px">${esc(T().names.honey)}</span>
-        ${atlasPills(c)}</div>
+        ${circChip(c)}${atlasPills(c)}</div>
       ${tierBar(h.lap, h.done, h.total)}
       ${board}
       <p style="font-size:12.5px;color:var(--muted);font-weight:600;margin:10px 2px 22px">Tap a region to walk it. ${h.lap === 1 ? 'Tier 1 keeps every word at your level — the same continent returns tougher at Tier 2.' : 'Tier ' + h.lap + ' of 3 — the same continent, harder words.'}</p>
@@ -2939,6 +2939,180 @@
       </svg>
       ${caches}${marks}</div></div>`;
   }
+  /* ================= THE BEE CIRCUIT ON THE BOARDS (circuit/BEE-CIRCUIT.md §3.1) =================
+     An OVERLAY (L1, L2): one Bee Hall pin on each Honey region's board, in its last leg, near the venue the painter put
+     at the road's end; a Team Night pin beside the Grand Marquee's hall; whatever the Circuit's own board layer holds
+     (SB_CIRCUIT.boardExtras: the envelope, the case pins); a quiet "Visitor" line on an ordinary stop's card; and the
+     Atlas header's "The Bee Circuit · Season 1" chip. None of them is a stop: no pin is an .atlas-stop, none is counted
+     in "n of N stops", none opens or locks anything — the route, the stops, their order, their unlocks and Continue are
+     exactly as they were, with or without the Circuit (tests/circuit-halls-board.cjs).
+     The Circuit (circuit.js, window.SB_CIRCUIT) is another file's and lazy: a board asks for it once, and until it
+     has landed shows nothing extra rather than guess. A hall pin stands when the child has reached the region's
+     fourth leg (the reach, so a placed child's region behind them counts as reached; any later lap counts) AND
+     SB_CIRCUIT.hallUnlocked(act, c) says the story has come that far (the halls open in story order). It is never
+     locked once shown: a hall is replayable. Team Night stands once Round IX is done, at any placing.
+     Every pin is a drawn medallion (a lectern and its bell; two lecterns for Team Night), never an emoji, at least
+     44 px to a finger, and sits where the reveal law already lets the camera go. */
+  const CIRC_ACTS = ['meadow', 'library', 'forum', 'storm', 'roots', 'strait', 'junkyard', 'sprints', 'stage'];
+  let _circKick = 0;
+  /* the board asks for the Circuit once; when it lands, boot-lazy's own soft redraw (every landing has one) draws the board
+     with whatever the Circuit has to show — no second redraw of our own */
+  function circKick() {
+    if (window.SB_CIRCUIT || _circKick) return; _circKick = 1;
+    setTimeout(() => { try { lazyNeed('circuit', () => {}); } catch (e) {} }, 0);
+  }
+  const circCall = (fn, ...a) => { try { const C = window.SB_CIRCUIT; return C && typeof C[fn] === 'function' ? C[fn](...a) : undefined; } catch (e) { return undefined; } };
+  /* the halls' records, through the contract (state(c).halls[act] = {done, best, last}; .team for Team Night) */
+  function circHalls(c) {
+    const s = circCall('state', c);
+    return (s && (s.halls || (s.circuit && s.circuit.halls))) || (c && c.circuit && c.circuit.halls) || {};
+  }
+  /* has the child reached this region's fourth leg? — by the REACH (the furthest open stop), so walking the stops a
+     placement skipped never takes a hall away; a later lap has walked every region already */
+  function hallReached(c, nodes, pts, rc) {
+    if (devOn() || lapOf(c) > 1) return true;
+    if (!nodes.length) return false;
+    if (rc > nodes[nodes.length - 1].i) return true;
+    const k = nodes.findIndex(x => x.i === rc); if (k < 0) return false;
+    return mwLegOfX((pts[k] || { x: 0 }).x) >= 3;
+  }
+  /* WHERE THE PINS STAND: in the last leg, at x ≤ 81.5% — on reaching the leg the camera's edge is at least 82.5%
+     (the reach's stop + 7), so a hall the child has reached is always on the canvas — and as far from the road, the
+     stops, the landmark, the hero, the pokes and the caches as the leg allows (distances in board heights: 1% of the
+     panorama's width is 6.8% of its height). Computed once per region from the region's own road. */
+  const _circSpot = Object.create(null);
+  function circSpots(actId, LV) {
+    if (_circSpot[actId]) return _circSpot[actId];
+    const road = mapPoints(LV.d, 220);
+    if (!road.length || road[0].f == null) return null;
+    const feats = road.map(p => ({ x: p.x, y: p.y, w: 1 }))
+      .concat((LV.pokes || []).map(q => ({ x: q[0], y: q[1], w: .8 })), (LV.lms || []).map(l => ({ x: l.x, y: l.y, w: 1.2 })),
+        (LV.heroes || []).map(h => ({ x: h.x, y: h.y - 8, w: 1.2 })), (LV.t || []).map(t => ({ x: t[0], y: t[1], w: 1 })));
+    const best = (avoid) => { let top = null;
+      for (let x = 77; x <= 81.5; x += .5) for (let y = 22; y <= 76; y += 2) {
+        let d = Infinity; for (const f of feats.concat(avoid || [])) { const v = Math.hypot((f.x - x) * 6.8, f.y - y) / (f.w || 1); if (v < d) d = v; }
+        if (!top || d > top.d + 1e-9) top = { x, y, d }; }
+      return top; };
+    const hall = best();
+    const team = actId === 'stage' ? best([{ x: hall.x, y: hall.y, w: 1.6 }]) : null;
+    return (_circSpot[actId] = { hall, team });
+  }
+  /* a lectern with the bell on it, on a gold-rimmed medallion; Team Night: two lecterns, on Ravenmere's navy and silver */
+  const CIRC_CHECK = '<svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:-1px;margin-left:4px"><path d="M2 6.4 4.8 9 10 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const LECT = (dx) => `<g transform="translate(${dx} 0)"><path d="M13.5 23 L27.5 19.8 L28.4 23.6 L14.4 26.8 Z" fill="#D4943F" stroke="#5A3410" stroke-width="1" stroke-linejoin="round"/>
+      <rect x="19.4" y="25.6" width="3.4" height="10.6" rx=".8" fill="#A86C2A" stroke="#5A3410" stroke-width="1"/>
+      <path d="M15.2 38 h11.8 l-1.5 -2.2 h-8.8 z" fill="#D4943F" stroke="#5A3410" stroke-width="1" stroke-linejoin="round"/></g>`;
+  const HALL_MED = s => svgM(`<circle cx="24" cy="24" r="22" fill="#2A1A4A" stroke="#E8B73A" stroke-width="2.6"/>
+      <circle cx="24" cy="24" r="18.6" fill="none" stroke="#F6D77A" stroke-width=".9" opacity=".75"/>${LECT(0)}
+      <path d="M31.2 17.6c0-3.1 1.7-5 3.9-5s3.9 1.9 3.9 5v3.6l1.7 2.3H29.5l1.7-2.3z" fill="#F4C84A" stroke="#7A4E00" stroke-width="1" stroke-linejoin="round"/>
+      <circle cx="35.1" cy="25" r="1.5" fill="#7A4E00"/><path d="M35.1 10.6v2" stroke="#7A4E00" stroke-width="1.4" stroke-linecap="round"/>`, s, '0 0 48 48');
+  const TEAM_MED = s => svgM(`<circle cx="24" cy="24" r="22" fill="#1E2A4A" stroke="#C9D3E3" stroke-width="2.6"/>
+      <circle cx="24" cy="24" r="18.6" fill="none" stroke="#E8B73A" stroke-width=".9" opacity=".8"/>
+      <g transform="translate(-4.6 1) scale(.82)">${LECT(0)}</g><g transform="translate(52.6 1) scale(-.82 .82)">${LECT(0)}</g>
+      <path d="M24 9.6l1.5 3 3.3.5-2.4 2.3.6 3.3-3-1.6-3 1.6.6-3.3-2.4-2.3 3.3-.5z" fill="#F4C84A" stroke="#7A4E00" stroke-width=".8" stroke-linejoin="round"/>`, s, '0 0 48 48');
+  function circPin(kind, act, p, rec) {
+    const done = !!(rec && rec.done);
+    const venue = (LIV[act] && LIV[act].legName && LIV[act].legName[3]) || '';
+    const label = kind === 'team' ? 'Team Night' : 'Bee Hall';
+    const aria = kind === 'team' ? 'Team Night at ' + venue + (done ? ' — played; play the second team' : '') : 'Bee Hall at ' + venue + (done ? ' — played; play it again' : '');
+    return `<button class="circ-pin circ-${kind}${done ? ' done' : ''}" data-act="${kind === 'team' ? 'teamOpen' : 'hallOpen'}" data-arg="${escA(act)}"
+      style="left:${p.x.toFixed(2)}%;top:${p.y.toFixed(2)}%" aria-label="${escA(aria)}" title="${escA(aria)}">
+      <span class="circ-med" aria-hidden="true">${kind === 'team' ? TEAM_MED(50) : HALL_MED(50)}</span><span class="circ-n">${label}${done ? CIRC_CHECK : ''}</span></button>`;
+  }
+  /* the Circuit's layer on one board: its own extras, then the hall pin and (the Big Stage) the Team Night pin */
+  function circLayer(c, actId, LV, nodes, pts, rc, edge) {
+    if (CIRC_ACTS.indexOf(actId) < 0) return '';
+    if (!window.SB_CIRCUIT) { circKick(); return ''; }
+    circCss();
+    let H = '';
+    circRegions(c);
+    const ex = circCall('boardExtras', actId); if (typeof ex === 'string') H += ex;
+    if (!hallReached(c, nodes, pts, rc) || !circCall('hallUnlocked', actId, c)) return H;
+    const sp = circSpots(actId, LV); if (!sp) return H;
+    const halls = circHalls(c);
+    if (sp.hall.x <= edge) { H += circPin('hall', actId, sp.hall, halls[actId]); circHook('onHallOpen', actId, actId); }
+    /* Team Night opens when the Circuit says so (teamOpen: Round IX's mail is in); a Circuit without it, once Round IX is played */
+    const teamOk = typeof window.SB_CIRCUIT.teamOpen === 'function' ? !!circCall('teamOpen', c) : !!(halls.stage && halls.stage.done);
+    if (actId === 'stage' && sp.team && sp.team.x <= edge && teamOk) H += circPin('team', actId, sp.team, halls.team);
+    return H;
+  }
+  /* THE HOOKS THE CIRCUIT'S MAIL HANGS ON (CORE's): onHallOpen(act) when a hall's pin first shows — its invitation and
+     programme — and onRegionDone(act) when a region has been walked end to end — the guide's postcard. Each is told once
+     a page per child, off the render (the Circuit saves), and is idempotent on its side; mail that arrives redraws the
+     board so its envelope shows. */
+  const _circTold = Object.create(null);
+  function circHook(fn, key, ...a) {
+    const k = fn + '|' + key + '|' + ((state && state.activeIdx) || 0);
+    if (_circTold[k]) return; _circTold[k] = 1;
+    setTimeout(() => { const got = circCall(fn, ...a); if (got === true) circRedraw(); }, 0);
+  }
+  /* mail arrived: one soft redraw on the next frame (a background redraw — it keeps the keyboard focus, app3), so the
+     envelope shows; coalesced, and only while a board is up */
+  let _circRaf = 0;
+  function circRedraw() {
+    if (_circRaf) return;
+    _circRaf = requestAnimationFrame(() => { _circRaf = 0; if (state.nav !== 'trail') return;
+      window.SB_RENDER_SOFT = 1; try { render(); } catch (e) {} window.SB_RENDER_SOFT = 0; });
+  }
+  /* a region walked end to end: every stop and checkpoint of it on this lap's road walked (a later lap has walked them all) */
+  function circRegions(c) {
+    if (course() !== 'honey') return;
+    const later = lapOf(c) > 1, s = later ? [] : seq(c);
+    CIRC_ACTS.forEach(a => { const ns = s.filter(n => n.act === a);
+      if (later || (ns.length && ns.every(n => passedNode(c, n)))) circHook('onRegionDone', a, a); });
+  }
+  /* "Visitor: <figure>" — one quiet line on an ordinary stop's card, when the Circuit has a visitor for that stop */
+  function circVisitor(u) {
+    if (!u || !window.SB_CIRCUIT) return '';
+    const v = circCall('visitorFor', u.id); if (!v) return '';
+    const nm = typeof v === 'string' ? v : (v.figure || v.name || v.who || '');
+    return nm ? `<button class="circ-vis" data-act="visitorOpen" data-arg="${escA(u.id)}">Visitor: <b>${esc(nm)}</b></button>` : '';
+  }
+  /* the Atlas header's chip: what the Circuit calls its season, else Season 1 */
+  function circChip(c) {
+    if (!window.SB_CIRCUIT) { circKick(); return ''; }
+    circCss(); circRegions(c);
+    const t = circCall('chip', c);
+    return `<button class="circ-chip" data-act="circuitOpen">${esc(typeof t === 'string' && t ? t : 'The Bee Circuit · Season 1')}</button>`;
+  }
+  function circCss() { try {
+    if (document.getElementById('circ-pin-css')) return;
+    const st = document.createElement('style'); st.id = 'circ-pin-css'; st.textContent = `
+  .circ-pin{position:absolute;z-index:6;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:2px;
+    min-width:56px;min-height:56px;padding:0;margin:0;border:0;background:none;cursor:pointer;color:#fff}
+  .circ-pin .circ-med{display:block;width:50px;height:50px;line-height:0;filter:drop-shadow(0 4px 10px rgba(10,6,26,.55));transition:transform .15s}
+  .circ-pin:hover .circ-med{transform:scale(1.08)}
+  .circ-pin .circ-n{display:block;font-family:var(--display);font-size:11.5px;font-weight:800;line-height:1.2;white-space:nowrap;color:#FFF;
+    background:rgba(26,14,46,.86);border-radius:99px;padding:3px 9px;box-shadow:0 0 0 1px rgba(240,183,58,.6)}
+  .circ-pin.circ-team .circ-n{background:rgba(22,32,60,.88);box-shadow:0 0 0 1px rgba(201,211,227,.7)}
+  .circ-pin.done .circ-n{background:rgba(32,84,46,.9)}
+  .circ-pin:focus-visible{outline:3px solid #F0B429;outline-offset:3px;border-radius:14px}
+  @media (prefers-reduced-motion:reduce){.circ-pin .circ-med{transition:none}}
+  .circ-chip{display:inline-flex;align-items:center;min-height:44px;padding:6px 14px;border-radius:999px;cursor:pointer;white-space:nowrap;
+    font-family:var(--display);font-weight:800;font-size:12.5px;color:#4A2E00;background:color-mix(in srgb,#F0B429 22%,var(--bg2));
+    border:1px solid color-mix(in srgb,#C8791B 55%,var(--line))}
+  :root[data-mode="dusk"] .circ-chip{color:#FFE3A3;background:rgba(240,180,41,.14);border-color:rgba(240,180,41,.45)}
+  .circ-vis{display:flex;align-items:center;min-height:44px;margin-top:4px;padding:0;border:0;background:none;cursor:pointer;
+    font-size:12.5px;font-weight:600;color:var(--muted);text-align:left}
+  .circ-vis b{font-weight:800;color:var(--text);margin-left:4px}`;
+    document.head.appendChild(st);
+  } catch (e) {} }
+  /* the region's own words for its hall: the stops already walked, their whole lists and their teaching words */
+  function circFamily(c, actId) {
+    const out = new Set();
+    try { seq(c).forEach(n => { if (n.act !== actId || n.kind !== 'unit' || !passedNode(c, n)) return;
+      poolOf(n.u).forEach(k => out.add(k));
+      try { ((chOf(n.u) || {}).words || []).forEach(x => { if (x && x.w) out.add(nkey(x.w)); }); } catch (e) {} }); } catch (e) {}
+    return Array.from(out);
+  }
+  app2.hallOpen = act => { if (CIRC_ACTS.indexOf(act) < 0) return; const c = active();
+    needMap(() => { const rec = circHalls(c)[act];
+      app2.mbOpen({ venue: act, family: circFamily(c, act), replay: !!(rec && rec.done) }); }); };
+  app2.teamOpen = () => { const rec = circHalls(active()).team; app2.mbOpen({ team: true, replay: !!(rec && rec.done) }); };
+  app2.circuitOpen = () => { try { lazyNeed('circuit', () => circCall('open')); } catch (e) {} };
+  app2.visitorOpen = id => { try { lazyNeed('circuit', () => { const C = window.SB_CIRCUIT; if (!C) return;
+    if (typeof C.openVisitor === 'function') C.openVisitor(id); else circCall('open', 'visitors', id); }); } catch (e) {} };
+
   function viewAct() {
     const c = active();
     const crs = state.trailActCrs === 'exp' ? 'exp' : 'honey';
@@ -3015,6 +3189,8 @@
     let mwHTML = '', mwExtra = '';
     if (isMW) { const _L = livLayer(c, LV, edge, rv); mwHTML = _L.html; mwExtra = _L.extra; mwUnroll(c, rv); }
     else _mwMax = Infinity;
+    /* the Bee Circuit's overlay: its hall (and Team Night) pins and its own board layer — never a stop */
+    const circHTML = isMW && crs === 'honey' ? circLayer(c, act.id, LV, nodes, pts, rc, edge) : '';
     /* HIDDEN TREASURES: the three caches are strung along the WHOLE journey,
        so one waits in each country rather than three crowding one screen. A
        cache beyond the earned camera edge is simply not rendered — the same
@@ -3066,6 +3242,7 @@
             <div style="font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap">Stop ${sel + 1} of ${n}${node.kind === 'chk' ? ' · checkpoint' + (score ? ' · ' + score + '%' : '') : ''}${uStars ? ' ' + starHTML(uStars.n, 12) : ''}</div>
             <div style="font-family:var(--display);font-weight:800;font-size:19px;line-height:1.15;margin-top:3px">${esc(title)}</div>
             ${sub ? `<div style="font-size:13px;color:var(--muted);line-height:1.45;margin-top:4px">${esc(sub)}</div>` : ''}
+            ${crs === 'honey' ? circVisitor(u) : ''}
             ${uNext ? `<div style="font-size:12.5px;font-weight:700;line-height:1.45;margin-top:6px;color:var(--text)"><span style="display:inline-block;vertical-align:-3px">${iconSVG('arrow', 14)}</span> ${esc(uNext.txt)}</div>`
               : (uStars && uStars.n >= 5) ? `<div style="font-size:12.5px;font-weight:800;margin-top:6px;color:var(--good)">Completely yours — five stars.</div>` : ''}
           </div>
@@ -3106,7 +3283,7 @@
             the road and left a wide empty stripe beside two small buttons. It goes in with
             `marks` so it lives inside the board and pans with the pins, anchored off the
             selected pin's own percentage coordinates. */''}
-      ${actBoard('map-' + act.id, m, pts, walked, FL.fog + marks + mwHTML + FL.cells + FL.marks + stopPop, caches, crs === 'exp',
+      ${actBoard('map-' + act.id, m, pts, walked, FL.fog + marks + mwHTML + circHTML + FL.cells + FL.marks + stopPop, caches, crs === 'exp',
         isMW ? { pano: { img: LV.img, extra: mwExtra } } : null)}
       ${villainCard(c)}${treGiftCard()}${uQuestCard()}
     </div>`;

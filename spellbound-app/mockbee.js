@@ -116,6 +116,62 @@
   }
   const MODES = ['bee', 'champ', 'family'];
 
+  /* ---------------- THE BEE CIRCUIT's halls (circuit/BEE-CIRCUIT.md §3.5; circuit/script.json) ----------------
+     One Bee Hall per Atlas region, in the Atlas order. `n` is the round; `head` the headliners, always seated;
+     `also` the others the round seats (alsoSeated); `letter` whose letter the child is placed against (Round I's
+     letters are Nova's, not Pip's: build[no-placing]); `seats` the chairs an invitation names; `beside` the rival
+     the child sits next to. HALL_FIELDS is build[hall-fields].fields, per mockbee band and round: who sits in the
+     hall (Vesper's chair is empty until Round IX in every band). IDs and names only — every line of the story is
+     the Circuit's own (circuit-data.js); tests/circuit-halls.cjs holds these tables to script.json. */
+  const CIRC = {
+    meadow:   { n: 1, venue: 'the Hive Gates',       head: ['pixel', 'koi'], letter: 'koi', seats: { pixel: 2, koi: 3 } },
+    library:  { n: 2, venue: 'the Grand Archive',    head: ['scopey'], letter: 'scopey' },
+    forum:    { n: 3, venue: 'the Colosseum',        head: ['beaker'], letter: 'beaker', seats: { beaker: 4 } },
+    storm:    { n: 4, venue: 'the Eye of the Storm', head: ['astro'], letter: 'astro', seats: { astro: 1 } },
+    roots:    { n: 5, venue: 'the Root Throne',      head: ['samurai'], letter: 'samurai', seats: { samurai: 1 }, beside: 'samurai' },
+    strait:   { n: 6, venue: 'the Far Shore',        head: ['melody'], also: ['samurai'], letter: 'melody' },
+    junkyard: { n: 7, venue: 'the Trickster’s Gate', head: ['snowfox'], letter: 'snowfox' },
+    sprints:  { n: 8, venue: 'the Finish Arch',      head: ['comet'], letter: 'comet' },
+    stage:    { n: 9, venue: 'the Grand Marquee',    head: ['goldlegend'], also: ['comet'], letter: 'goldlegend', seats: { goldlegend: 1 } },
+  };
+  const CIRC_ACTS = Object.keys(CIRC);
+  const HF_BASE = { '6-7': ['pixel', 'koi', 'beaker', 'snowfox'], '8-10': ['pixel', 'koi', 'beaker', 'snowfox', 'comet', 'astro'],
+    '11-15': ['beaker', 'snowfox', 'comet', 'astro', 'scopey', 'melody', 'samurai'] };
+  const HF_ADD = {   /* per band: who the round adds to the band's field (script.json build[hall-fields].fields) */
+    '6-7':   { 2: ['scopey'], 4: ['astro'], 5: ['samurai'], 6: ['melody', 'samurai'], 8: ['comet'], 9: ['comet', 'goldlegend'] },
+    '8-10':  { 2: ['scopey'], 5: ['samurai'], 6: ['melody', 'samurai'], 9: ['goldlegend'] },
+    '11-15': { 1: ['pixel', 'koi'], 9: ['goldlegend'] } };
+  const HALL_FIELDS = {};
+  Object.keys(HF_BASE).forEach(b => { HALL_FIELDS[b] = {}; for (let n = 1; n <= 9; n++)
+    HALL_FIELDS[b][n] = HF_BASE[b].concat(((HF_ADD[b] || {})[n] || []).filter(id => HF_BASE[b].indexOf(id) < 0)); });
+  /* TEAM NIGHT (§8.2, script.json teamNight). The child plus four teammates at the band's lectern (the 6–7 band plays
+     the younger lectern), Dax captaining from the bench; Ravenmere's five. A call is graded on the FIRST language the
+     Pronouncer names; each call sends the word to its seat, and 'you' is the child. */
+  const LECTERN = { '8-10': ['koi', 'beaker', 'astro', 'snowfox'], '11-15': ['melody', 'samurai', 'scopey', 'goldlegend'] };
+  const CALLS = [
+    { call: 'Greek', '8-10': 'astro', '11-15': 'samurai' },
+    { call: 'Latin', '8-10': 'beaker', '11-15': 'samurai' },
+    { call: 'French', '8-10': 'you', '11-15': 'melody' },
+    { call: 'Old English', '8-10': 'koi', '11-15': 'you' },
+    { call: "Nobody's heard it", '8-10': 'snowfox', '11-15': 'goldlegend' },
+    { call: 'Needs questions', '8-10': null, '11-15': 'scopey' },
+    { call: 'Steady beat', '8-10': 'you', '11-15': 'you' },
+  ];
+  /* Ravenmere wear EXISTING avatar art from the retired origami and wildhearts sets (avatars.js ARCH: still drawn by
+     SB_AVATARS.byId) — never a sacred figure, never a face a Circuit rival or a stand-in wears. A school that folds
+     everything precisely: the captain a swan, the twins two cranes, Arjun the paper plane that has been everywhere,
+     Mei a paper butterfly writing in the air. `alt` is worn when the face is the child's own (as faceOf). */
+  const RAVEN = [
+    { id: 'sloane', name: 'Sloane', age: 14, face: 'swan', alt: 'fanfold', skill: .92, tell: 'never smiles, never asks a question twice' },
+    { id: 'ash', name: 'Ash Lindqvist', age: 12, face: 'cranefold', alt: 'boatfold', skill: .86, tell: 'spell as a pair, one letter each' },
+    { id: 'aria', name: 'Aria Lindqvist', age: 12, face: 'goldencrane', alt: 'hopfold', skill: .86, tell: 'spell as a pair, one letter each' },
+    { id: 'arjun', name: 'Arjun', age: 13, face: 'paperplane', alt: 'breeze', skill: .88, tell: 'names the origin before the pronouncer finishes' },
+    { id: 'mei', name: 'Mei', age: 10, face: 'flutterfold', alt: 'wish', skill: .82, tell: 'writes every word in the air first' },
+  ];
+  const RAV_TURNS = [['sloane'], ['ash', 'aria'], ['arjun'], ['mei']];
+  const ravById = id => RAVEN.find(r => r.id === id);
+  const ravFace = r => r.face === myFace() ? r.alt : r.face;
+
   /* ---------------- the level (§1.7, SB_LEVEL) ----------------
      The child chooses it on the chip; SB_LEVEL.after() re-checks it at the end of every Bee.
      Until that contract is in the build, a tiny local fallback keeps the old chip's choice. */
@@ -318,8 +374,9 @@
     try { if (typeof window.nextWords === 'function') return window.nextWords(active(), n, o) || []; } catch (e) {}
     try { return (typeof gameWordsD === 'function' ? gameWordsD() : []).filter(w => !o.filter || o.filter(w)); } catch (e) { return []; }
   }
-  /* n words for this round and this speller, never one already given in this bee */
-  function drawWords(n, R, who) {
+  /* n words for this round and this speller, never one already given in this bee (a hall's: drawVenue) */
+  function drawWords(n, R, who) { return hallN(mb()) ? drawVenue(n, R) : drawPlain(n, R, who); }
+  function drawPlain(n, R, who, extra) {
     const g = mb(); const out = [];
     const used = g.used || (g.used = new Set());
     const champ = g.mode === 'champ';
@@ -327,6 +384,7 @@
       for (const w of arr || []) {
         if (out.length >= n) break;
         if (!w || !w.w || !w.d || !/^[a-z][a-z-]{2,}$/i.test(w.w)) continue;
+        if (extra && !extra(w)) continue;
         const k = nkey(w.w); if ((used.has(k) && !loose) || out.some(x => nkey(x.w) === k)) continue;
         used.add(k); out.push(w);
       }
@@ -561,7 +619,7 @@
     const c2 = g.c2, s = c2.rival;
     g.word = c2.words[c2.step];
     if (!g.word || !g.word.w) { g.c2 = null; return finish(); }
-    g.typed = ''; g.asked = {}; g.atMic = s; g.lastPractice = null; g.turnAsks = [];
+    g.typed = ''; g.asked = {}; g.atMic = s; g.lastPractice = null; g.turnAsks = []; g.botAsk = null; g.botAskFor = null;
     announce(fill(pick(c2.step === 0 ? SAY.c2First : SAY.c2Champ, g.seed + c2.step * 3), { name: nameOf(s) }));
     if (isHuman(s)) return humanTurn(s, true);
     g.phase = 'bot'; g.botOut = '';
@@ -596,9 +654,12 @@
 
   app2.mbOpen = (mode) => {
     aqStop(); dropMiss(state.mb);
-    const m = MODES.indexOf(mode) >= 0 ? mode : ((state.mb && state.mb.mode) || 'bee');
+    const circOpen = mode && typeof mode === 'object';     /* the Bee Circuit's doors: {venue, family, seed, replay} · {team:true, …} */
+    const m = MODES.indexOf(mode) >= 0 ? mode : (!circOpen && state.mb && MODES.indexOf(state.mb.mode) >= 0 ? state.mb.mode : 'bee');
     state.nav = 'mockbee'; state.screen = 'app';
-    state.mb = { view: m === 'family' ? 'family' : 'lobby', mode: m, field: null, round: 0 };
+    if (circOpen && mode.team) teamOpen(mode);
+    else if (circOpen && (CIRC[mode.venue] || CIRC[mode.act])) venueOpen(mode);
+    else state.mb = { view: m === 'family' ? 'family' : 'lobby', mode: m, field: null, round: 0 };
     /* what the Chair reads: sentences, alternate pronunciations, the Coach's rulebook — and
        the arcade kit, which carries the shared stage */
     try { if (window.SB_LAZY) {
@@ -623,6 +684,8 @@
     aqStop(); dropMiss(state.mb);
     const c = active();
     const prev = mb();
+    if (prev && prev.mode === 'venue' && prev.circ) return venueStart(prev);
+    if (prev && prev.mode === 'team' && prev.circ) return teamStart(prev);
     const mode = (prev && MODES.indexOf(prev.mode) >= 0) ? prev.mode : 'bee';
     const band = bandKey(c);
     const t0 = Date.now();
@@ -667,6 +730,7 @@
     g.turn = 0; g.roundMissed = 0; g.roundTook = 0; g.roundOut = [];
     g.kind = R.kind;
     g.roster = live.slice();
+    circRound(g);
     if (R.kind === 'lightning') {
       if (live.length <= 2) { g.round++; return beginRound(); }   /* the last two are decided on words */
       g.words = drawWords(40, R);
@@ -714,9 +778,10 @@
     /* THE CAP, strictly: a turn that could not finish inside eight minutes is not started */
     if (live.length > 1 && !g.c2 && elapsed(g) + (isHuman(s) ? turnMs() + 6000 : 9000) / speedOf(g) > CAP_MS) return timeCalled();
     const R = roundAt(g.round);
-    g.atMic = s; g.typed = ''; g.asked = {}; g.lastPractice = null; g.turnAsks = [];
+    g.atMic = s; g.typed = ''; g.asked = {}; g.lastPractice = null; g.turnAsks = []; g.botAsk = null; g.botAskFor = null;
     if (R.kind === 'vocab') return vocTurn(s, R);
     g.word = (g.words && g.words.length) ? g.words[g.turn % g.words.length] : null;
+    if (hallN(g) && !isHuman(s)) { const sw = circTurnWord(g, s); if (sw) g.word = sw; }
     if (!g.word || !g.word.w) return finish();
     try { if (isProfile(s)) logGameWord(nkey(g.word.w)); } catch (e) {}
     if (isHuman(s)) return humanTurn(s);
@@ -727,8 +792,13 @@
       after(500, () => botTurn(s));
       return;
     }
-    announce(fill(pick(SAY.callBot, g.seed + g.turn * 3 + g.round), { name: s.bot.name, age: s.bot.age + ' years old', tell: s.bot.tell, n: s.n }),
+    /* a hall's script: once Vesper has asked, her tell ("does not ask for anything") is never read again; and Pip,
+       in Round I, starts before the word is finished — no write-along, he is already spelling */
+    const tpl = hallN(g) === 9 && g.cs.vesperAsked && isBot(s, 'goldlegend') ? SAY.callBot[1] : pick(SAY.callBot, g.seed + g.turn * 3 + g.round);
+    if (hallN(g) === 9 && isBot(s, 'goldlegend')) hlog(g, 'vesperCalled', { tell: tpl.indexOf('{tell}') >= 0, asked: !!g.cs.vesperAsked });
+    announce(fill(tpl, { name: s.bot.name, age: s.bot.age + ' years old', tell: s.bot.tell, n: s.n }),
       s.bot.name + ', number ' + s.n + '.');
+    if (hallN(g) === 1 && isBot(s, 'pixel') && g.round === 0 && !g.cs.blurt) { aqWord(g.word.w); after(350, () => botTurn(s)); return; }
     speakName(s.bot.name, () => callBotToMic(s, clamp(s.bot.pace * .3, 300, 700)));
   }
 
@@ -737,12 +807,14 @@
     const R = roundAt(g.round);
     /* real bee rule: if every speller in a round missed, nobody goes out and it runs again */
     if (!R.safe && g.roundMissed && g.roundTook && g.roundMissed >= g.roundTook && (g.redo = (g.redo || 0) + 1) <= 2) {
-      (g.roundOut || []).forEach(s => { s.in = true; if (isProfile(s)) { g.outAsk = false; g.speed = 1; g.watch = false; } });
+      /* a hall's scripted exit (Kwame's walk-out, Pip's sit-down) is for good: the all-miss rule does not bring it back */
+      (g.roundOut || []).forEach(s => { if (s.gone) return; s.in = true; if (isProfile(s)) { g.outAsk = false; g.speed = 1; g.watch = false; } });
       g.outSeq = (g.outSeq || []).filter(s => s.in === false);
       g.roundOut = [];
       announce(pick(SAY.allMiss, g.seed + g.round));
       after(900, beginRound); return;
     }
+    circStanding(g);
     if (live.length <= 1) return finish();
     if (live.length <= 5) {
       const li = live.length === 5 ? 0 : live.length === 4 ? 1 : live.length === 3 ? 2 : 3;
@@ -831,6 +903,7 @@
   }
   const chairKeys = w => CHAIR.map(c => c[0]).filter(k => !!chairAnswer(w, k));
   app2.mbAsk = (k) => {
+    const g0 = mb(); if (g0 && g0.mode === 'team') return app2.tnAsk(k);   /* Team Night's Chair has no clock */
     const g = mb(); if (!g || g.phase !== 'me' || !g.clock || !CHAIR_NAME[k]) return;
     const w = g.word || {};
     if (!chairAnswer(w, k)) return;
@@ -888,6 +961,7 @@
   app2.mbType = v => { const g = mb(); if (g) g.typed = String(v || ''); };
   app2.mbSpell = () => {
     const g = mb(); if (!g || g.phase !== 'me') return;
+    if (g.mode === 'team') return teamSpell();
     const s = g.atMic && isHuman(g.atMic) ? g.atMic : alive().find(isProfile);
     if (!s || !g.word) return;
     const ok = sameSpelling(g.typed || '', g.word.w);
@@ -914,6 +988,7 @@
     else { try { mastEvidence(w.w, false); } catch (e) {} }
   }
   function humanVerdict(g, s, ok) {
+    if (g.c9) return c9Human(g, s, ok);
     if (g.c2) {
       try { if (ok) { sfx('correct'); burstConfetti(24); } } catch (e) {}
       announce(fill(pick(ok ? SAY.meRight : SAY.meWrong, g.seed + g.round), { n: s.n, word: g.word.w }));
@@ -934,6 +1009,7 @@
     s.hist.push(ok);
     g.turn++;
     g.phase = 'call';
+    circStanding(g);
     /* out, with rivals still standing: the child chooses how the rest goes */
     if (out && isProfile(s) && g.mode !== 'family' && alive().length > 1) { g.outAsk = true; g.phase = 'outChoice'; render(); return; }
     after(900, nextTurn);
@@ -964,7 +1040,7 @@
            round counter already stands on the next round */
         if (g.roster && g.roster.length) {
           if (!R.safe && g.roundMissed && g.roundTook && g.roundMissed >= g.roundTook && (g.redo = (g.redo || 0) + 1) <= 2) {
-            (g.roundOut || []).forEach(s => { s.in = true; });
+            (g.roundOut || []).forEach(s => { if (!s.gone) s.in = true; });
             g.outSeq = (g.outSeq || []).filter(s => s.in === false);
             if (profileIn()) {
               g.speed = 1; g.watch = false; g.roster = [];
@@ -975,6 +1051,7 @@
         }
         g.roster = alive().slice(); g.turn = 0; g.roundMissed = 0; g.roundTook = 0; g.roundOut = [];
         g.mid = .5;
+        circRound(g);
         const RL = roundAt(g.round);
         if (RL.kind === 'lightning' && g.roster.length > 2) {
           const board = g.roster.filter(s => !isHuman(s)).map(s => ({ s, score: botBolt(s.bot, RL) })).sort((a, b) => a.score - b.score);
@@ -986,17 +1063,24 @@
       const s = g.roster[g.turn];
       if (!s.in || isHuman(s)) { g.turn++; continue; }
       const synth = { _h: clamp(.5 + R.press * .2, 0, 1), o: '' };
-      const ok = R.kind === 'vocab' ? botKnows(s.bot, synth, R) : botSpells(s.bot, synth, R);
+      /* a hall's rival, resolved at once, still makes the requests the script gives that turn (they are in its log) */
+      let asked = [];
+      if (hallN(g) && R.kind !== 'vocab') { const w0 = g.word; g.word = synth; asked = circAsks(g, s).map(a => a.k); g.word = w0; }
+      const ok = R.kind === 'vocab' ? botKnows(s.bot, synth, R) : spells(s, synth, R);
+      if (hallN(g)) hlog(g, 'turn', { who: s.bot.id, asks: asked, dark: !!g.dark, ok, sim: 1 });
       g.roundTook++;
       s.hist.push(ok);
       if (!ok) {
         const out = sitDown(s); g.roundMissed++;
-        if (out && alive().length === 1 && !R.sudden) {
+        if (out && alive().length === 1 && !R.sudden && !s.gone) {
           const rival = alive()[0];
-          const two = isHuman(rival) ? false : (botSpells(rival.bot, synth, R) && botSpells(rival.bot, synth, R));
+          if (!isHuman(rival)) { g.c2 = { rival, misser: s, words: [], step: 0 }; }   /* so a hall's script knows whose title it is */
+          const two = isHuman(rival) ? false : (spells(rival, synth, R) && spells(rival, synth, R));
+          g.c2 = null;
           if (!two) { s.in = true; g.outSeq = g.outSeq.filter(x => x !== s); g.round++; g.roster = null; continue; }
         }
       }
+      circStanding(g);
       g.turn++;
     }
     if (alive().length > 1) {        /* the guard: the steadiest hand takes it */
@@ -1050,8 +1134,15 @@
     const g = mb(); if (!g || g.view !== 'stage') return;
     if (!g.word || !g.word.w) return finish();
     const R = roundAt(g.round);
-    const ok = botSpells(s.bot, g.word, R);
-    const shown = ok ? g.word.w : misspell(g.word.w);
+    /* a hall's rival may ask the Chair first: the requests and the Pronouncer's answers stand on the card a moment */
+    if (hallN(g) && g.botAskFor !== s) {
+      g.botAskFor = s;
+      const asks = circAsks(g, s);
+      if (asks.length) { g.botAsk = asks; render(); after(500 + 420 * asks.length, () => { if (mb() === g && g.atMic === s) botTurn(s); }); return; }
+    }
+    const ok = spells(s, g.word, R);
+    const shown = ok ? g.word.w : (circSlip(g, s) || misspell(g.word.w));
+    if (hallN(g)) hlog(g, 'turn', { who: s.bot.id, asks: g.botAskFor === s && g.botAsk ? g.botAsk.map(a => a.k) : [], dark: !!g.dark, ok, w: g.word.w, said: shown });
     g.botOut = ''; g.botOk = ok; g.phase = 'botSpell';
     g.botLen = shown.length; g.botStep = 0;
     /* letters one at a time, PATCHED IN PLACE — a render per letter made the podium jitter */
@@ -1072,6 +1163,8 @@
 
   function verdict(s, ok) {
     const g = mb(); if (!g) return;
+    if (g.capRun === s) return circCapAfter(s);
+    if (g.c9) return c9Bot(g, s, ok);
     if (g.c2) {
       try { sfx(ok ? 'correct' : 'wrong'); } catch (e) {}
       announce(ok ? fill(pick(SAY.botRight, g.seed + g.round * 5), { name: s.bot.name })
@@ -1092,10 +1185,12 @@
         : fill(pick(SAY.botSafe, g.seed + g.turn * 5), { name: s.bot.name, word: g.word.w }),
         isVoc ? (out ? 'No.' : 'No — but this round forgives.')
         : out ? 'No. ' + g.word.w + '.' : 'No — but round one forgives.');
-      if (out && alive().length === 1 && champTry(s, g.word)) { s.hist.push(ok); g.phase = 'call'; return; }
+      if (out && alive().length === 1 && circFinalMiss(g, s)) { s.hist.push(ok); g.phase = 'call'; return; }
+      if (out && alive().length === 1 && !s.gone && champTry(s, g.word)) { s.hist.push(ok); g.phase = 'call'; return; }
     }
     s.hist.push(ok);
     g.turn++; g.phase = 'call';
+    circStanding(g);
     after(700, nextTurn);
   }
 
@@ -1320,6 +1415,7 @@
   /* ---------------- the finish ---------------- */
   function timeCalled() {
     const g = mb();
+    if (hallN(g) && circCap(g)) return;              /* a hall's cap: no shared title with the headliner; Round IX's word */
     g.coChamps = alive().slice();
     announce('Time is called. Everyone still standing shares the title.', 'Time.');
     after(1200, () => finish(true));
@@ -1351,6 +1447,7 @@
     g.pay = (g.bonus || 0) + contest;
     /* the level rule (§1.7): one Bee is one round; words right ÷ words given */
     g.lvlNote = '';
+    const hall = hallN(g);
     if (g.mode === 'bee' && given) {
       try {
         if (window.SB_LEVEL && typeof SB_LEVEL.after === 'function') {
@@ -1363,7 +1460,7 @@
         }
       } catch (e) {}
     }
-    if (g.mode !== 'family') {
+    if (g.mode !== 'family' && !hall) {             /* a hall's result is the Circuit's, never the Mock Bee's record */
       const p = prog();
       p.played = (p.played || 0) + 1;
       p.best = p.best ? Math.min(p.best, place) : place;
@@ -1371,18 +1468,22 @@
       saveProg(p);
     }
     try { save(); } catch (e) {}
-    if (meIn) { try { burstConfetti(120); sfx('win'); } catch (e) {}
+    /* Round VIII cuts straight from the last word to the result card: no recap flourish */
+    if (hall === 8) { hlog(g, 'cut'); try { sfx(meIn ? 'correct' : 'wrong'); } catch (e) {} }
+    else if (meIn) { try { burstConfetti(120); sfx('win'); } catch (e) {}
       announce(g.co ? 'Time is called — and you are one of the champions.' : pick(SAY.winMe, g.seed));
     } else {
       try { sfx('lose'); } catch (e) {}
       announce(g.co ? 'Time is called. ' + g.co.map(nameOf).join(', ') + ' share the title.'
         : fill(pick(SAY.winBot, g.seed), { name: champ ? nameOf(champ) : 'Nobody' }));
     }
+    if (hall) { hlog(g, 'result', { place, of: size, champion: meIn ? 'me' : (champ && champ.bot ? champ.bot.id : null), co: !!g.co }); circReport(g); }
     render();
   }
   const ordinal = n => n + (n % 10 === 1 && n % 100 !== 11 ? 'st' : n % 10 === 2 && n % 100 !== 12 ? 'nd' : n % 10 === 3 && n % 100 !== 13 ? 'rd' : 'th');
 
-  app2.mbQuit = () => { aqStop(); dropMiss(state.mb); if (_kb) { try { _kb.destroy(); } catch (e) {} _kb = null; } state.mb = null; state.nav = 'games'; render(); };
+  app2.mbQuit = () => { if (circ(state.mb)) return circQuit(state.mb);
+    aqStop(); dropMiss(state.mb); if (_kb) { try { _kb.destroy(); } catch (e) {} _kb = null; } state.mb = null; state.nav = 'games'; render(); };
   app2.mbAgain = () => { app2.mbStart(); };
   app2.mbLobby = () => { const g = mb(); app2.mbOpen(g && g.mode); };
   /* the old chip, kept only for a build without SB_LEVEL */
@@ -1396,8 +1497,729 @@
     g.mine.filter(m => !m.ok).forEach(m => { const k = nkey(m.w); if (seen.has(k)) return; seen.add(k); try { addMiss(m.rec || { w: m.w }, 'mark'); } catch (e) {} });
     g.addedMissed = seen.size || -1;
     try { save(); } catch (e) {}
+    /* a hall's bee file reads "On your revision pile" once the recap has filed them (build[bee-file-button]) */
+    if (circ(g)) { const act = g.circ.act; circTell(() => window.SB_CIRCUIT && typeof SB_CIRCUIT.hallFiled === 'function' && SB_CIRCUIT.hallFiled(act)); }
     render();
   };
+
+  /* ================= THE BEE CIRCUIT: A REGIONAL ROUND IN ITS VENUE (circuit/BEE-CIRCUIT.md §3.5) =================
+     The Atlas (trail.js) opens a hall with app.mbOpen({venue, family, seed, replay}); the Circuit itself (circuit.js,
+     window.SB_CIRCUIT — another file's: the mail, the story, the state) is reached ONLY through lazyNeed('circuit'),
+     always guarded, so a build without it plays every hall the same and simply reports to nobody.
+     · THE FIELD is the band's field for the round plus its headliners (HALL_FIELDS); a chair an invitation names is
+       kept, and in Round V the child sits beside Kwame. A headliner from outside the band spells at the band's top
+       skill ("the headliner's skill follows the band's curve"); names, ages, tells and specialities never change.
+     · THE WORDS: 60% the region's own words (`family`: the stops already passed, as the Atlas hands them over), 25%
+       the revision pile, 15% one band up — every one through nextWords (tests/word-door.cjs).
+     · THE SCRIPT (build[scripted-outcomes]): what the round's lines say happened, happens, on every seed and in every
+       band — circForce decides those turns, circAsks shows the requests a rival makes, and each is written to
+       g.hallLog, which is what the lines are checked against (tests/circuit-halls.cjs).
+     · NO SHARED TITLE with the letter-writer in Rounds I–VIII: at the cap the headliner takes one more word and
+       misses it; Round IX settles the cap with the championship word (build[no-placing]).
+     · PAY is Mock Bee's, to the coin: an answer coin a word right, the contest event on the podium at the 70% mark,
+       nothing for finishing (L11). A hall moves neither the Mock Bee level nor the Bee's own record. */
+  const circ = g => (g && (g.mode === 'venue' || g.mode === 'team') && g.circ) ? g.circ : null;
+  const hallN = g => { const c = circ(g); return c && g.mode === 'venue' ? (CIRC[c.act] || {}).n || 0 : 0; };
+  const isBot = (s, id) => !!s && s.kind === 'bot' && s.bot && s.bot.id === id;
+  function hlog(g, k, o) { (g.hallLog = g.hallLog || []).push(Object.assign({ k, round: g.round }, o || {})); }
+  const hlHas = (g, k) => (g.hallLog || []).some(e => e.k === k);
+  const botsIn = () => alive().filter(s => s.kind === 'bot');
+  /* "halfway through": the round the Grand Marquee's lights go out */
+  const darkRound = g => Math.max(1, Math.floor(roundsFor(g) / 2));
+  /* Dax fades in a later round (never round one): the band's own late round, or as soon as the field is down to the
+     last two with him in it */
+  const fadeRound = g => Math.max(1, roundsFor(g) - 2);
+  /* a word the script names, from the one door: tried at every level, so the band window cannot hide it */
+  function circWord(key) {
+    for (const level of ['champ', 'hard', 'medium', 'auto', 'easy']) {
+      const r = nw(2, { purpose: 'contest', key: 'mockbee', level, needDef: true, filter: w => nkey(w.w) === key });
+      if (r && r[0] && nkey(r[0].w) === key) return r[0];
+    }
+    return null;
+  }
+  /* the first language an origin names: "French, from Latin" is French (script.json build[team-night]) */
+  function firstLang(o) { const t = txt(o); if (!t) return ''; return t.split(/\s*(?:[\/,;(]|\bfrom\b|\bvia\b|\band\b)\s*/i)[0].trim(); }
+  const GREEKY = /ph|ch|rh|ps|th|y|x|z|k/;
+  function circGreek(g) {
+    const fin = w => !isFinals(w) && firstLang(w.o).toLowerCase() === 'greek' && GREEKY.test(w.w) && !(g.circ.reserved || []).includes(nkey(w.w));
+    for (const level of [g.lvl, 'auto', 'hard', 'champ', 'easy']) { const r = nw(4, { purpose: 'contest', key: 'mockbee', level, needDef: true, filter: fin }); if (r && r[0]) return r[0]; }
+    return null;
+  }
+
+  function venueOpen(o) {
+    const act = CIRC[o.venue] ? o.venue : CIRC[o.act] ? o.act : null;
+    if (!act) return app2.mbOpen('bee');
+    state.nav = 'mockbee'; state.screen = 'app';
+    const fam = Array.isArray(o.family) ? o.family.map(x => nkey(x && x.w ? x.w : x)).filter(Boolean) : [];
+    state.mb = { view: 'lobby', mode: 'venue', field: null, round: 0,
+      circ: { act, n: CIRC[act].n, family: fam, famSet: new Set(fam), seed: o.seed == null ? null : (o.seed >>> 0), replay: !!o.replay, runs: 0 } };
+  }
+  function venueStart(prev) {
+    const c = active(); const C = prev.circ; const H = CIRC[C.act];
+    const band = bandKey(c); const t0 = Date.now();
+    C.runs = (C.runs || 0) + 1;
+    const seed = C.seed != null ? ((C.seed + C.runs - 1) >>> 0) : ((((t0 / 1000) | 0) ^ (t0 % 1000) * 2654435761) >>> 0);
+    const g = {
+      view: 'stage', mode: 'venue', circ: C, band, lvl: lvlGet(), seed, rnd: mkRng(seed), t0, speed: 1,
+      field: null, round: 0, turn: 0, phase: 'roundIn', word: null, typed: '', asked: {},
+      announce: '', place: 0, bonus: 0, mine: [], log: [], hallLog: [], cs: { seen: {} },
+      avatar: (c && c.avatar) || 'bizzy', name: (c && c.name) || 'You',
+    };
+    state.mb = g;
+    /* the field: the band's for this round, plus the headliners; an outside headliner at the band's top skill */
+    const ids = (HALL_FIELDS[band] || HALL_FIELDS['8-10'])[H.n] || [];
+    const own = (BANDS[band] || BANDS['8-10']).ids;
+    const top = Math.max.apply(null, own.map(id => botById(id).skill));
+    const bots = ids.map(id => { const b = botById(id); return { kind: 'bot', bot: own.indexOf(id) >= 0 ? b : Object.assign({}, b, { skill: Math.min(b.skill, top) }) }; });
+    const me = { kind: 'me' }; const N = bots.length + 1; const seats = new Array(N).fill(null);
+    bots.forEach(s => { const at = (H.seats || {})[s.bot.id]; if (at && at <= N && !seats[at - 1]) seats[at - 1] = s; });
+    if (H.beside) { const k = seats.findIndex(s => isBot(s, H.beside)); const j = k >= 0 && k + 1 < N && !seats[k + 1] ? k + 1 : k > 0 && !seats[k - 1] ? k - 1 : -1; if (j >= 0) seats[j] = me; }
+    const rest = shuffle(bots.filter(s => seats.indexOf(s) < 0).concat(seats.indexOf(me) < 0 ? [me] : []), g.rnd);
+    for (let i = 0; i < N; i++) if (!seats[i]) seats[i] = rest.shift();
+    seats.forEach((s, i) => { s.n = i + 1; s.in = true; s.hist = []; });
+    g.field = seats; g.myN = me.n;
+    /* the words the script names are drawn once, and never dealt to anyone else */
+    C.reserved = [];
+    const W = {};
+    if (H.n === 5) { W.crack = circWord('reconnaissance'); if (W.crack) C.reserved.push('reconnaissance'); }
+    if (H.n === 7) { W.unheard = circWord('triskaidekaphobia'); if (W.unheard) C.reserved.push('triskaidekaphobia'); }
+    if (H.n === 4) { W.greek = circGreek(g); if (W.greek) C.reserved.push(nkey(W.greek.w)); }
+    g.cs.words = W;
+    ['crack', 'unheard', 'greek'].forEach(k => { if (k in W && !W[k]) hlog(g, 'noWord', { which: k }); });
+    announce(pick(SAY.open, 1));
+    after(1400, () => { announce(fill(pick(SAY.draw, g.seed + 1), { n: g.myN })); beginRound(); });
+    render();
+  }
+
+  /* THE HALL'S WORDS: 60 / 25 / 15, through the door. The region's own words come at the bee's level (the window
+     widens to Auto, then Hard, if the passed stops hold too few there); the revision pile is the child's own; one band
+     up is the next tier. Whatever falls short is the bee's ordinary draw. Never a word the script keeps back. */
+  function drawVenue(n, R) {
+    const g = mb(); const C = g.circ; const out = [];
+    const used = g.used || (g.used = new Set());
+    const res = new Set(C.reserved || []);
+    const fit = w => !!w && !!w.w && !!w.d && /^[a-z][a-z-]{2,}$/i.test(w.w) && !res.has(nkey(w.w)) && !isFinals(w);
+    const take = (arr, k) => { let t = 0; for (const w of arr || []) { if (t >= k || out.length >= n) break; if (!fit(w)) continue;
+      const key = nkey(w.w); if (used.has(key) || out.some(x => nkey(x.w) === key)) continue; used.add(key); out.push(w); t++; } return t; };
+    const tier = R.sdN >= 0 ? 1 : (R.tier || 0);
+    const nF = Math.round(n * .6), nR = Math.round(n * .25), nU = n - nF - nR;
+    let got = 0;
+    if (C.famSet && C.famSet.size) for (const level of [g.lvl, 'auto', 'hard']) {
+      if (got >= nF) break;
+      got += take(nw(nF + 6, { purpose: 'contest', key: 'mockbee', level, tier, needDef: true, filter: w => C.famSet.has(nkey(w.w)) && fit(w) }), nF - got);
+    }
+    take(nw(nR + 4, { purpose: 'review', needDef: true, filter: fit }), nR);
+    take(nw(nU + 4, { purpose: 'contest', key: 'mockbee', level: g.lvl, tier: Math.min(1, tier + 1), needDef: true, filter: fit }), nU);
+    /* the shortfall: the bee's own draw, which has already marked its words as used for this bee */
+    if (out.length < n) for (const w of drawPlain(n - out.length, R, null, fit)) { if (out.length >= n) break; if (!out.some(x => nkey(x.w) === nkey(w.w))) out.push(w); }
+    return shuffle(out, g.rnd);
+  }
+
+  /* the word a scripted turn is given */
+  function circTurnWord(g, s) {
+    const n = hallN(g), W = (g.cs && g.cs.words) || {}, seen = g.cs.seen[s.bot.id] || 0;
+    if (n === 5 && isBot(s, 'samurai') && g.round >= 1 && !g.cs.crack && W.crack) return W.crack;
+    if (n === 7 && isBot(s, 'snowfox') && !seen && W.unheard) return W.unheard;
+    if (n === 4 && isBot(s, 'astro') && !seen && W.greek) return W.greek;
+    /* the word Vesper asks the language of origin of has one to give */
+    if (n === 9 && g.dark && isBot(s, 'goldlegend') && !g.cs.vesperAsked && !(g.word && txt(g.word.o)))
+      for (let i = 0; i < 4; i++) { const w = drawWords(1, roundAt(g.round))[0]; if (w && txt(w.o)) return w; }
+    return null;
+  }
+  /* THE REQUESTS A RIVAL MAKES ON THE CHAIR (Mock Bee's rivals never ask; a hall's script has them ask). Each is shown
+     with the Pronouncer's answer, masked like the child's (chairAnswer), before the rival spells. */
+  function circAsks(g, s) {
+    const n = hallN(g), w = g.word || {}, id = s.bot.id, seen = g.cs.seen[id] || 0;
+    const have = chairKeys(w);
+    let ks = [];
+    if (n === 2 && id === 'scopey') ks = !seen ? have.slice() : ['def', 'ps'];
+    else if (n === 4 && id === 'astro') ks = ['org'];
+    else if (n === 7 && id === 'snowfox' && g.cs.words && g.word === g.cs.words.unheard) ks = ['def', 'sent', 'ps', 'org', 'alt'];
+    else if (n === 9 && g.dark) {
+      if (id === 'comet' && !g.cs.daxDef) ks = ['def'];
+      else if (id === 'goldlegend') ks = ['org'];
+      else if (id === 'scopey') ks = have.slice();
+      else if (id === 'astro') ks = ['org'];
+      else ks = [have.indexOf('sent') >= 0 && (seen % 2) ? 'sent' : 'def'];
+    }
+    /* a request is made whatever is on file (Mira asks the origin of every word; the Pronouncer says when there is
+       none); Theo's "every request" is every one the Chair holds for that word */
+    ks = ks.filter((k, i, a) => a.indexOf(k) === i);
+    if (!ks.length && n === 9 && g.dark) ks = ['say'];
+    if (!ks.length) return [];
+    /* bookkeeping the log reads: what was asked, by whom, on which word */
+    if (n === 2 && id === 'scopey') { if (!seen) hlog(g, 'theoAll', { asks: ks.slice(), of: have.length, w: w.w }); else hlog(g, 'theoPs', { asks: ks.slice(), w: w.w }); }
+    if (n === 4 && id === 'astro') { hlog(g, 'miraOrigin', { w: w.w, origin: firstLang(w.o) });
+      if (g.cs.words && g.word === g.cs.words.greek) { hlog(g, 'thunder', { who: id, w: w.w }); thunder(g); } }
+    if (n === 7 && id === 'snowfox' && ks.length === 5) hlog(g, 'sukiAsks', { asks: ks.slice(), origin: chairAnswer(w, 'org'), w: w.w });
+    if (n === 9 && g.dark) { hlog(g, 'darkAsk', { who: id, asks: ks.slice() });
+      if (id === 'comet' && !g.cs.daxDef) { g.cs.daxDef = 1; hlog(g, 'daxDef'); }
+      if (id === 'goldlegend' && !g.cs.vesperAsked) { g.cs.vesperAsked = 1; hlog(g, 'vesperAsks', { asks: ks.slice() }); } }
+    return ks.map(k => ({ k, label: CHAIR_NAME[k], answer: k === 'say' ? 'said again' : (chairAnswer(w, k) || 'none on file') }));
+  }
+  /* WHO MUST GET IT RIGHT, OR WRONG, ON THIS TURN — true, false, or undefined (Mock Bee as it plays today). Called
+     exactly once per rival attempt, on the stage (botTurn) and when the rest is resolved at once (resolveRest). */
+  function circForce(g, s, R) {
+    const n = hallN(g); if (!n) return undefined;
+    const id = s.bot.id, cs = g.cs; const first = !cs.seen[id];
+    cs.seen[id] = (cs.seen[id] || 0) + 1;
+    if (g.capRun === s) return false;
+    const others = botsIn().filter(x => x !== s).length;
+    switch (n) {
+      case 1:
+        if (id === 'pixel' && g.round === 0 && !cs.blurt) { cs.blurt = 1; hlog(g, 'blurt', { who: id }); return false; }
+        if (id === 'pixel' && g.round >= 1 && !cs.pipOut) { cs.pipOut = 1; s.gone = 1; hlog(g, 'pipOut', { who: id }); return false; }
+        break;
+      case 2: if (id === 'scopey' && first) { hlog(g, 'theoRight', { w: g.word && g.word.w }); return true; } break;
+      case 3: if (id === 'beaker' && botsIn().length > 3) return true; break;
+      case 4: if (id === 'astro' && first) { hlog(g, 'miraGreek', { w: g.word && g.word.w, origin: firstLang(g.word && g.word.o) }); return true; } break;
+      case 5: if (id === 'samurai' && g.round >= 1 && !cs.crack) { cs.crack = 1; s.gone = 1; hlog(g, 'kwameCrack', { w: g.word && g.word.w }); return false; } break;
+      case 6: if ((id === 'melody' || id === 'samurai') && botsIn().length > 3) return true; break;
+      case 7: if (id === 'snowfox' && first) { hlog(g, 'sukiRight', { w: g.word && g.word.w }); return true; } break;
+      case 8:
+        if (id === 'comet' && g.round === 0) { hlog(g, 'daxRoundOne', { ok: true }); return true; }
+        if (id === 'comet' && !cs.daxFaded && (g.round >= fadeRound(g) || alive().length <= 2)) { cs.daxFaded = 1; hlog(g, 'daxFade'); return false; }
+        break;
+      case 9:
+        if ((id === 'comet' || id === 'pixel') && g.round < darkRound(g)) return true;
+        if (id === 'goldlegend' && (others > 0 || (g.c2 && g.c2.rival === s) || g.c9)) return true;
+        break;
+    }
+    return undefined;
+  }
+  function spells(s, w, R) {
+    const g = mb(); const n = hallN(g); const f = n ? circForce(g, s, R) : undefined;
+    const ok = f === true || f === false ? f : botSpells(s.bot, w, R);
+    /* Dax's fade is any miss after round one: forced only if the round has not already brought it */
+    if (n === 8 && isBot(s, 'comet') && !ok && g.round >= 1 && !g.cs.daxFaded) { g.cs.daxFaded = 1; hlog(g, 'daxFade', { natural: 1 }); }
+    if (n && !ok && g.round >= 1) hlog(g, 'miss', { who: s.bot.id });
+    return ok;
+  }
+  /* the slip a scripted miss shows: Kwame's is one s short, as the round says */
+  function circSlip(g, s) { if (hallN(g) === 5 && isBot(s, 'samurai') && g.word && nkey(g.word.w) === 'reconnaissance') return g.word.w.replace('ss', 's'); return ''; }
+  /* each round of a hall: Round IX's lights go out halfway through; the scripted states are logged as they come true */
+  function circRound(g) {
+    const n = hallN(g); if (!n) return;
+    if (n === 9 && !g.dark && g.round >= darkRound(g)) { g.dark = 1;
+      hlog(g, 'blackout', { standing: alive().filter(s => s.kind === 'bot').map(s => s.bot.id) }); }
+    circStanding(g);
+  }
+  function circStanding(g) {
+    const n = hallN(g); const ids = botsIn().map(s => s.bot.id);
+    if (n === 3 && !hlHas(g, 'rafiLast3') && ids.length <= 3 && ids.indexOf('beaker') >= 0) hlog(g, 'rafiLast3', { standing: ids });
+    if (n === 6 && !hlHas(g, 'inesKwameLast3') && ids.length <= 3 && ids.indexOf('melody') >= 0 && ids.indexOf('samurai') >= 0) hlog(g, 'inesKwameLast3', { standing: ids });
+  }
+  /* THE CAP IN A HALL (build[no-placing]). Rounds I–VIII never end in a title shared with the letter's headliner: the
+     headliner takes one more word and misses it (Round VIII's Dax never stands at the cap, child or no child). Round
+     IX has no co-champions: the others sit, and the championship word goes to the child and decides it. */
+  function circCap(g) {
+    const n = hallN(g); if (!n || g.cs.capDone) return false;
+    const H = CIRC[g.circ.act];
+    if (n <= 8) {
+      const L = g.field.find(s => isBot(s, H.letter) && s.in);
+      if (!L || !(profileIn() || n === 8)) return false;
+      g.cs.capDone = 1; g.capRun = L;
+      g.word = drawWords(1, roundAt(g.round))[0] || g.word;
+      g.atMic = L; g.typed = ''; g.asked = {}; g.lastPractice = null; g.botAsk = null; g.botAskFor = L; g.phase = 'bot'; g.botOut = '';
+      announce(fill(SAY.callBot[1], { name: L.bot.name, n: L.n }), L.bot.name + '.');
+      aqWord(g.word.w);
+      after(900, () => botTurn(L));
+      return true;
+    }
+    g.cs.capDone = 1;
+    const V = g.field.find(s => isBot(s, 'goldlegend')), me = g.field.find(isProfile);
+    alive().filter(s => s !== V && s !== me).forEach(s => { s.in = false; s.hist.push(false); g.outSeq = (g.outSeq || []).concat([s]); });
+    if (V && V.in && me && me.in) {
+      hlog(g, 'capChampWord');
+      g.c9 = { mode: 'cap', word: drawWords(1, roundAt(g.round))[0] };
+      announce('Time is called. There are no co-champions in this hall: the championship word decides it.', 'Time.');
+      after(1400, c9Run); return true;
+    }
+    after(600, () => finish()); return true;
+  }
+  function circCapAfter(s) {
+    const g = mb(); g.capRun = null;
+    s.in = false; s.hist.push(false); g.outSeq = (g.outSeq || []).concat([s]);
+    hlog(g, 'capOut', { who: s.bot.id });
+    try { sfx('wrong'); } catch (e) {}
+    announce(fill(pick(SAY.botWrong, g.seed + g.round * 5), { name: s.bot.name, word: g.word.w }), 'No. ' + g.word.w + '.');
+    after(1000, timeCalled);
+  }
+  /* ROUND IX'S CHAMPIONSHIP WORD: Vesper missed with only the child standing ('vmiss' — the child finishes above either
+     way), or time was called with both standing ('cap' — the child's word decides it) */
+  function circFinalMiss(g, s) {
+    if (hallN(g) !== 9 || !isBot(s, 'goldlegend') || g.c2 || g.c9) return false;
+    const left = alive(); if (left.length !== 1 || !isProfile(left[0])) return false;
+    hlog(g, 'vesperMiss');
+    g.c9 = { mode: 'vmiss', word: drawWords(1, roundAt(g.round))[0] };
+    after(1100, c9Run); return true;
+  }
+  function c9Run() {
+    const g = mb(); if (!g || g.view !== 'stage' || !g.c9) return;
+    const me = g.field.find(isProfile);
+    g.word = g.c9.word; if (!g.word || !g.word.w) { g.c9 = null; return finish(); }
+    g.typed = ''; g.asked = {}; g.lastPractice = null; g.turnAsks = []; g.atMic = me;
+    hlog(g, 'champWordTo', { who: 'me', mode: g.c9.mode });
+    announce(fill(pick(SAY.c2Champ, g.seed + 7), { name: nameOf(me) }));
+    humanTurn(me, true);
+  }
+  function c9Human(g, s, ok) {
+    const c9 = g.c9; s.hist.push(ok);
+    try { if (ok) { sfx('correct'); burstConfetti(24); } } catch (e) {}
+    hlog(g, 'champWord', { who: 'me', ok, mode: c9.mode });
+    if (c9.mode === 'vmiss' || ok) {
+      const V = g.field.find(x => isBot(x, 'goldlegend'));
+      if (V && V.in) { V.in = false; V.hist.push(false); g.outSeq = (g.outSeq || []).concat([V]); }
+      g.c9 = null;
+      announce(ok ? fill(pick(SAY.meRight, g.seed), { n: s.n }) : fill(pick(SAY.meWrong, g.seed), { word: g.word.w }));
+      after(1100, () => finish()); return;
+    }
+    /* the cap, and the child missed it: Vesper spells it, and the title is hers */
+    s.in = false; g.outSeq = (g.outSeq || []).concat([s]);
+    const V = g.field.find(x => isBot(x, 'goldlegend'));
+    c9.mode = 'vesper';
+    announce(fill(pick(SAY.meWrong, g.seed), { word: g.word.w }));
+    after(1400, () => { const gg = mb(); if (gg !== g) return; g.atMic = V; g.phase = 'bot'; g.botOut = ''; g.botAsk = null; g.botAskFor = V; botTurn(V); });
+  }
+  function c9Bot(g, s, ok) {
+    s.hist.push(ok); g.c9 = null; hlog(g, 'champWord', { who: s.bot.id, ok });
+    try { sfx(ok ? 'correct' : 'wrong'); } catch (e) {}
+    announce(fill(pick(SAY.botRight, g.seed), { name: s.bot.name }), 'Correct.');
+    after(1000, () => finish());
+  }
+  /* A WIND ON THE PLATE AND THUNDER IN THE ROOF (Round IV): composed in code, at the one effects volume, never in Calm
+     mode or with sound off — the same rules as every effect (app2 sfx). A rumble of seeded noise; no recording. */
+  function thunder(g) {
+    g.flash = Date.now();
+    setTimeout(() => { const gg = mb(); if (gg === g && g.flash) { g.flash = 0; if (state.nav === 'mockbee') render(); } }, 1100);
+    try {
+      if (state.sound === false || state.calmMode) return;
+      const vol = window.SB_VOL && typeof SB_VOL.fx === 'function' ? SB_VOL.fx() : .5; if (!(vol > 0)) return;
+      const ac = typeof audioCtx === 'function' ? audioCtx() : null; if (!ac) return;
+      const len = Math.floor(2.4 * ac.sampleRate), buf = ac.createBuffer(1, len, ac.sampleRate), d = buf.getChannelData(0);
+      let x = 2463534242;
+      for (let i = 0; i < len; i++) { x ^= x << 13; x ^= x >>> 17; x ^= x << 5; const env = i < 900 ? i / 900 : Math.pow(1 - i / len, 2.4); d[i] = (((x >>> 0) / 4294967296) * 2 - 1) * env; }
+      const src = ac.createBufferSource(); src.buffer = buf;
+      const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 170;
+      const gn = ac.createGain(); gn.gain.value = 1.4 * vol;
+      src.connect(lp); lp.connect(gn); gn.connect(ac.destination);
+      try { if (window.SB_VOL) SB_VOL.duck(1400); } catch (e) {}
+      src.start();
+    } catch (e) {}
+  }
+  /* WHAT THE CIRCUIT IS TOLD AT THE FINISH (the contract: SB_CIRCUIT.onHall(act, r)). place / of / words / missed /
+     replay are the contract's; the rest is what the slots and the placing read (build[slots], build[no-placing]):
+     above (against the letter's headliner; headPlace is that headliner's place), asks (Pronouncer's Chair requests the
+     child made, "Say it again" included — build[slots] counts g.mine[].asks.length; each word carries its own count
+     too), spelled (the hardest word right), lastMissed, champion, log (the hall log). */
+  function circReport(g) {
+    const C = g.circ, H = CIRC[C.act]; if (!H) return;
+    const me = g.field.find(isProfile);
+    const placeOf = s => { const p = (g.places || []).find(x => x.s === s); return p ? p.place : g.field.length; };
+    const L = g.field.find(s => isBot(s, H.letter));
+    const above = !!me && (g.meWon || (L ? placeOf(me) < placeOf(L) : true));
+    const words = g.mine.map(m => ({ w: m.w, ok: m.ok, asks: (m.asks || []).length }));
+    const missed = []; g.mine.filter(m => !m.ok).forEach(m => { if (missed.indexOf(m.w) < 0) missed.push(m.w); });
+    let spelled = '';
+    try { const right = g.mine.filter(m => m.ok).map(m => m.rec || { w: m.w });
+      spelled = right.length ? right.slice().sort((a, b) => (window.SB_TRICK ? SB_TRICK.diff(b) - SB_TRICK.diff(a) : b.w.length - a.w.length))[0].w : ''; } catch (e) {}
+    const r = { place: g.place, of: g.field.length, words, missed, replay: !!C.replay, act: C.act, round: H.n, above,
+      letter: H.letter, letterPlace: L ? placeOf(L) : null, headPlace: L ? placeOf(L) : null,
+      champion: g.meWon ? 'me' : (g.champ && g.champ.bot ? g.champ.bot.id : null), co: !!g.co,
+      asks: g.mine.reduce((t, m) => t + (m.asks || []).length, 0),
+      asked: g.mine.map(m => ({ w: m.w, ok: m.ok, asks: (m.asks || []).slice() })),
+      spelled, lastMissed: missed.length ? missed[missed.length - 1] : '', band: g.band, seed: g.seed,
+      log: (g.hallLog || []).map(e => Object.assign({}, e)) };
+    g.report = r;
+    circTell(() => window.SB_CIRCUIT && typeof SB_CIRCUIT.onHall === 'function' && SB_CIRCUIT.onHall(C.act, r));
+  }
+  /* the Circuit is lazy and another file's: ask for it, then call it — and never let it break the bee */
+  function circTell(fn) {
+    const run = () => { try { fn(); } catch (e) {} };
+    try { if (typeof lazyNeed === 'function') { lazyNeed('circuit', run); return; } } catch (e) {}
+    run();
+  }
+  /* ================= TEAM NIGHT (circuit/BEE-CIRCUIT.md §8.2; script.json teamNight, build[team-night]) =================
+     The Circuit — the child and four teammates at the band's lectern, Dax captaining from the bench — against
+     Ravenmere's five. The words alternate, Ravenmere first, a team point a word:
+     · the child plays the CAPTAIN'S CALLER. The word is said; the Pronouncer answers anything asked (definition,
+       origin, sentence, part of speech, the word again); the child calls where it goes — a language of origin,
+       "Nobody's heard it", "Needs questions" (the older lectern only) or "Steady beat". A call may be changed until
+       the speller says a letter: picking only marks it, "Send it" (or Enter) sends it. A call is graded on the FIRST
+       language the Pronouncer names ("French, from Latin" is French). The right call sends the word to that seat's
+       specialist, who spells at their skill; a wrong call sends it to the wrong seat, whose chance falls — every
+       draw from the night's seed, never Math.random;
+     · every third Circuit word is the child's own (the steady beat), and so is the word before the tiebreaker —
+       one the child's record shows mastered. Missed, it takes the night's one second try (teammates' misses never
+       spend it), with the help of the teammates at this lectern one at a time, then the answer: it always ends
+       right, so the score is always level;
+     · THE OUTCOME IS THE STORY'S (L6): Ravenmere lead all night by one or two, their misses drawn so the Circuit's
+       last words decide it; the tiebreaker comes down to Sloane and the Circuit, and Dax calls it to Vesper. The
+       child's play moves the score and the lines, never the result;
+     · PAY (L11): an answer coin for each of the child's own words right first time; the contest event once, when the
+       child's own words and calls are 70% right — a random tapper cannot spell, so earns nothing;
+     · REPLAY: against Ravenmere's second team, who never lead after their own word, for a better margin; no story.
+     At the end: SB_CIRCUIT.onTeamNight({place, of, words, calls:{right, of}, replay, score, margin, …}). */
+  const TN_REG = 8;
+  const lectOf = band => band === '11-15' ? '11-15' : '8-10';
+  const callsAt = lect => CALLS.filter(x => x[lect]);
+  const CALL_LANG = { greek: 'Greek', latin: 'Latin', french: 'French', 'old english': 'Old English' };
+  function classify(w, lect) {
+    if (lect === '11-15' && isHom(w)) return 'Needs questions';
+    const f = firstLang(w && w.o).toLowerCase();
+    if (!f) return "Nobody's heard it";
+    return CALL_LANG[f] || 'Steady beat';
+  }
+  /* a served word wears its class plainly (the library's origin field is noisy; "asleep" is not Greek) */
+  const CALL_SIG = { Greek: w => GREEKY.test(w.w), 'Old English': w => String(w.w).length <= 9 };
+  /* the script's Team Night beats are recaps (they say how each word ends), so they reach the child as the Circuit's mail
+     after the night (circuit.js deliverTeam) and are never announced on the stage before it happens */
+  function teamOpen(o) {
+    state.mb = { view: 'lobby', mode: 'team', field: [], round: 0,
+      circ: { act: 'stage', team: true, seed: o.seed == null ? null : (o.seed >>> 0), replay: !!o.replay, runs: 0 } };
+  }
+  function teamWord(g, cls, o) {
+    o = o || {};
+    const fit = w => !!w && !!w.w && !!w.d && /^[a-z]{3,}$/i.test(w.w) && !g.used.has(nkey(w.w)) && !isFinals(w)
+      && (!cls || (classify(w, g.lect) === cls && (!CALL_SIG[cls] || CALL_SIG[cls](w)))) && (!o.filter || o.filter(w));
+    for (const level of o.levels || [g.lvl, 'auto', 'hard', 'medium', 'champ', 'easy']) {
+      const r = nw(4, { purpose: 'contest', key: 'mockbee', level, needDef: true, filter: fit });
+      const w = (r || []).find(fit); if (w) { g.used.add(nkey(w.w)); return w; }
+    }
+    return null;
+  }
+  /* the child's mastered words (box 2+ on evidence; legacy marks are not evidence) */
+  function masteredKeys() {
+    const out = new Set(); try { const M = (active() || {}).mast || {};
+      for (const k in M) if (Object.prototype.hasOwnProperty.call(M, k) && M[k] && !M[k].leg && (typeof mastIsMastered === 'function' ? mastIsMastered(M[k]) : M[k].b >= 2)) out.add(k); } catch (e) {}
+    return out;
+  }
+  function teamStart(prev) {
+    const c = active(); const C = prev.circ; C.runs = (C.runs || 0) + 1;
+    const band = bandKey(c), lect = lectOf(band), t0 = Date.now();
+    const seed = C.seed != null ? ((C.seed + C.runs - 1) >>> 0) : ((((t0 / 1000) | 0) ^ (t0 % 1000) * 2654435761) >>> 0);
+    const replay = !!C.replay || C.runs > 1;
+    const g = { view: 'stage', mode: 'team', circ: C, band, lect, lvl: lvlGet(), seed, rnd: mkRng(seed), t0, speed: 1, replay,
+      field: [], round: 0, phase: 'tIn', word: null, typed: '', asked: {}, announce: '', bonus: 0, mine: [], calls: [],
+      used: new Set(), score: { c: 0, r: 0 }, steps: [], i: -1, tlog: [], atMic: { kind: 'me', n: 0, in: true },
+      avatar: (c && c.avatar) || 'bizzy', name: (c && c.name) || 'You' };
+    state.mb = g;
+    /* the night, planned whole from its seed: Ravenmere's word, then the Circuit's, eight times; then the tiebreaker */
+    const offered = callsAt(lect).map(x => x.call);
+    const plan = shuffle(offered.slice(), g.rnd);
+    const steps = []; let pi = 0;
+    for (let k = 1; k <= TN_REG; k++) {
+      steps.push({ side: 'r', k, who: RAV_TURNS[(k - 1) % RAV_TURNS.length] });
+      steps.push({ side: 'c', k, kind: k === TN_REG ? 'level' : (!replay && k === TN_REG - 1) ? 'drama' : k % 3 === 0 ? 'own' : 'call' });
+    }
+    if (!replay) { steps.push({ side: 'r', k: TN_REG + 1, tb: 1, who: ['sloane'] }); steps.push({ side: 'c', k: TN_REG + 1, tb: 1, kind: 'vesper' }); }
+    const mk = masteredKeys();
+    for (const st of steps) {
+      if (st.side === 'r') st.w = teamWord(g, null, { levels: ['hard', 'champ', 'auto', 'medium'] });
+      else if (st.kind === 'call') {
+        for (let t = 0; t < offered.length && !st.w; t++) { const cls = plan[(pi + t) % plan.length]; st.w = teamWord(g, cls); }
+        pi++; if (st.w) st.cls = classify(st.w, lect);
+      } else if (st.kind === 'own') st.w = teamWord(g, null, { levels: [g.lvl, 'auto', 'medium'] });
+      else if (st.kind === 'drama') {
+        const want = lect === '11-15' ? 'French' : 'Greek';
+        st.w = teamWord(g, want, { filter: w => /latin/i.test(String(w.o || '')) }) || teamWord(g, want);
+        if (st.w) st.cls = classify(st.w, lect);
+      } else if (st.kind === 'level') {
+        st.w = mk.size ? teamWord(g, null, { filter: w => mk.has(nkey(w.w)), levels: ['auto', 'champ', 'hard', 'medium', 'easy'] }) : null;
+        st.mastered = !!st.w;
+        if (!st.w) st.w = teamWord(g, null, { levels: ['easy', 'auto'] });
+      } else st.w = teamWord(g, null, { levels: ['hard', 'champ', 'auto'] });
+    }
+    g.steps = steps.filter(st => st.w);
+    tlog(g, 'start', { lect, replay, steps: g.steps.length, mastered: !!(steps.find(s => s.kind === 'level') || {}).mastered });
+    announce(replay ? 'Team Night against Ravenmere’s second team. Ravenmere spell first.' : 'Team Night. Ravenmere spell first; then the Circuit.');
+    after(1600, teamNext);
+    render();
+  }
+  function tlog(g, k, o) { g.tlog.push(Object.assign({ k, i: g.i, c: g.score.c, r: g.score.r }, o || {})); }
+  function teamNext() {
+    const g = mb(); if (!g || g.mode !== 'team' || g.view !== 'stage') return;
+    g.i++; const st = g.steps[g.i];
+    if (!st) return teamFinish();
+    g.st = st; g.word = st.w; g.typed = ''; g.asked = {}; g.turnAsks = []; g.tc = null; g.botAsk = null; g.tSp = null; g.tOut = ''; g.tVerdict = null; g.tlev = null; g.tDrama = null;
+    if (st.side === 'r') return ravTurn(g, st);
+    if (st.kind === 'call') return callTurn(g, st);
+    if (st.kind === 'drama') return dramaTurn(g, st);
+    if (st.kind === 'vesper') return vesperTurn(g, st);
+    return ownTurn(g, st);
+  }
+  /* letters one at a time, patched in place (#tn-live), then the verdict */
+  function spellOut(g, shown, pace, done) {
+    let i = 0; const sp = speedOf(g);
+    const step = () => {
+      const gg = mb(); if (gg !== g || state.nav !== 'mockbee' || g.view !== 'stage') return;
+      g.tOut = shown.slice(0, ++i).toUpperCase().split('').join(' ');
+      let el = null; try { el = document.getElementById('tn-live'); } catch (e) {}
+      if (el) el.textContent = g.tOut; else render();
+      if (i < shown.length) setTimeout(step, clamp(pace / shown.length, 55, 150) / sp);
+      else setTimeout(() => { if (mb() === g) done(); }, 420 / sp);
+    };
+    after(500, step);
+  }
+  function ravTurn(g, st) {
+    const S = g.score; let ok;
+    if (st.tb) ok = false;                                           /* the tiebreaker: Sloane's first miss */
+    else if (g.replay) ok = S.r + 1 <= S.c && g.rnd() < .62;         /* the second team never leads after its own word */
+    else { const d = S.r - S.c; ok = d <= 0 ? true : d >= 2 ? false : st.k === TN_REG ? false : g.rnd() < .7; }
+    const who = st.who.map(ravById);
+    g.phase = 'tRav'; g.tSp = { rav: who, ok };
+    announce(who.map(r => r.name).join(' and ') + (who.length > 1 ? ', as a pair, for Ravenmere.' : ', for Ravenmere.'));
+    aqWord(st.w.w);
+    spellOut(g, ok ? st.w.w : misspell(st.w.w), 1100, () => {
+      if (ok) S.r++; g.tVerdict = ok; tlog(g, st.tb ? 'tbRav' : 'rav', { ok, who: st.who.join('+') });
+      try { sfx(ok ? 'correct' : 'wrong'); } catch (e) {}
+      announce(ok ? 'Correct. A point to Ravenmere.' : 'Not correct. No point to Ravenmere.'); render();
+      after(1300, teamNext);
+    });
+    render();
+  }
+  function callTurn(g, st) {
+    g.phase = 'tCall'; g.tc = { pick: null, cls: st.cls };
+    announce('Your call. Listen, ask the Pronouncer anything, then call who takes it.');
+    aqWord(st.w.w);
+    render();
+  }
+  /* pick a call (it is only marked); Send it sends it — until then it may change */
+  app2.tnPick = i => { const g = mb(); if (!g || g.phase !== 'tCall' || !g.tc) return; const o = callsAt(g.lect); i = +i;
+    if (!(i >= 0 && i < o.length)) return; g.tc.pick = i; render(); };
+  app2.tnSend = () => {
+    const g = mb(); if (!g || g.phase !== 'tCall' || !g.tc || g.tc.pick == null) return;
+    const st = g.st, o = callsAt(g.lect), call = o[g.tc.pick].call, right = call === st.cls;
+    g.calls.push({ w: st.w.w, cls: st.cls, call, right, asks: (g.turnAsks || []).slice() });
+    tlog(g, 'call', { w: st.w.w, cls: st.cls, call, right });
+    const seat = o[g.tc.pick][g.lect];
+    g.tc.sent = call;
+    if (seat === 'you') return ownTurn(g, st, call);
+    tmTurn(g, st, seat, right, call);
+  };
+  app2.tnAsk = k => {
+    const g = mb(); if (!g || !g.st || (g.phase !== 'tCall' && g.phase !== 'me') || !CHAIR_NAME[k]) return;
+    const w = g.st.w; if (!chairAnswer(w, k)) return;
+    if (!(g.turnAsks || []).includes(k) || k === 'say') (g.turnAsks = g.turnAsks || []).push(k);
+    g.asked = Object.assign({}, g.asked, { [k]: ((g.asked || {})[k] || 0) + 1 });
+    if (k === 'say') { aqStop(); aqWord(w.w); }
+    if (k === 'alt') { const a = altOf(w); aqStop(); aqPush({ kind: 'tts', text: (a && a.s) || w.w, rate: .88 }); }
+    render(); if (g.phase === 'me') keepCaret();
+  };
+  function tmTurn(g, st, id, right, call) {
+    const b = botById(id);
+    const base = clamp(.80 + (b.skill - .52) * .4 + (right ? .05 : 0), .05, .97);
+    const ok = g.rnd() < (right ? base : base * .55);
+    g.phase = 'tTeam'; g.tSp = { bot: b, ok, call };
+    announce(call + ' — ' + b.name + ' spells it for the Circuit.');
+    spellOut(g, ok ? st.w.w : misspell(st.w.w), b.pace, () => {
+      if (ok) g.score.c++; g.tVerdict = ok; tlog(g, 'team', { who: id, ok, right });
+      try { sfx(ok ? 'correct' : 'wrong'); } catch (e) {}
+      announce(ok ? 'Correct. A point to the Circuit.' : 'Not correct. The word was ' + st.w.w + '.'); render();
+      after(1400, teamNext);
+    });
+    render();
+  }
+  function ownTurn(g, st, call) {
+    g.phase = 'me'; g.typed = ''; g.asked = g.asked || {}; g.tOwn = call ? 'call' : st.kind;
+    g.tlev = st.kind === 'level' ? { second: false, misses: 0, shown: false, help: {} } : null;
+    announce(st.kind === 'level' ? (g.replay ? 'The last word is yours.' : 'Your word.')
+      : call ? call + ' — that one is yours to spell.' : 'Steady beat: this one is yours to spell.', 'Your word.');
+    aqWord(st.w.w); render(); keepCaret();
+  }
+  function teamSpell() {
+    const g = mb(); if (!g || g.phase !== 'me' || !g.st) return;
+    const st = g.st, w = st.w, typed = g.typed || '', ok = sameSpelling(typed, w.w), lev = g.tlev;
+    if (lev && lev.second) {             /* the second try: help from the lectern, then the answer — it ends right */
+      if (!ok) { lev.misses++; if (lev.misses >= 3) lev.shown = true; g.typed = ''; tlog(g, 'secondMiss', { misses: lev.misses });
+        try { sfx('wrong'); } catch (e) {} render(); keepCaret(); return; }
+      tlog(g, 'level', { ok: true, second: true }); return teamDone(g, true);
+    }
+    record(g.atMic, w, ok, typed, 'team', g.turnAsks || []);
+    if (ok) { tlog(g, st.kind === 'level' ? 'level' : 'own', { ok: true, w: w.w }); try { sfx('correct'); burstConfetti(24); } catch (e) {} return teamDone(g, true); }
+    if (lev) {
+      lev.second = true; g.typed = ''; tlog(g, 'levelMiss', { w: w.w });
+      try { sfx('wrong'); } catch (e) {}
+      announce('Second try. Your teammates can help.', 'Second try.');
+      render(); keepCaret(); return;
+    }
+    tlog(g, 'own', { ok: false, w: w.w });
+    g.phase = 'meDone'; g.meOk = false; g.meTry = typed;
+    g.hold = () => { const gg = mb(); if (gg !== g || !g.hold) return; g.hold = null;
+      const mc = g.missCard; g.missCard = null; try { if (mc && mc.held) mc.close(); } catch (e) {}
+      teamDone(g, false); };
+    try { sfx('wrong'); } catch (e) {} render(); mountMiss(g);
+  }
+  /* the answer stands on the card after three misses on the second try: Continue, and the word is level */
+  app2.tnLevelOn = () => { const g = mb(); if (!g || g.phase !== 'me' || !g.tlev || !g.tlev.shown) return; tlog(g, 'level', { ok: true, shown: true }); teamDone(g, true); };
+  const HELP = {
+    koi: ['Ask Nova', 'says it twice, slowly'], beaker: ['Ask Rafi', 'the root split'], astro: ['Ask Mira', 'the origin'],
+    snowfox: ['Ask Suki', 'breathe out first'], melody: ['Ask Ines', 'its home language'], samurai: ['Ask Kwame', 'prefix, root and suffix'],
+    scopey: ['Ask Theo', 'definition and sentence'] };
+  const helpers = g => LECTERN[g.lect].filter(id => HELP[id]);
+  const PRE = /^(trans|inter|super|under|over|counter|circum|contra|extra|intra|multi|semi|anti|auto|sub|pre|pro|con|com|dis|mis|non|un|re|de|ex|in|im|ad|ob|per)/;
+  const SUF = /(ation|ition|tion|sion|ment|ness|able|ible|ance|ence|ious|eous|ous|ive|ity|ure|ism|ist|ize|ise|ful|less|ly|al|er|or|ar|ary|ery)$/;
+  function partsOf(word) {
+    const w = String(word || '').toLowerCase(); const p = (w.match(PRE) || [''])[0], s = (w.match(SUF) || [''])[0];
+    if (!p && !s || p.length + s.length >= w.length - 1) return 'No part to split off: spell it sound by sound.';
+    return (p ? p + ' + ' : '') + w.slice(p.length, w.length - s.length).replace(/./g, '▁') + (s ? ' + ' + s : '');
+  }
+  function helpText(id, w) {
+    if (id === 'koi') return 'Said twice, slowly.';
+    if (id === 'beaker' || id === 'samurai') return partsOf(w.w);
+    if (id === 'astro') return 'Origin: ' + (mask(w.o, w.w) || 'none on file');
+    if (id === 'snowfox') return 'Breathe out. Then spell it one sound at a time.';
+    if (id === 'melody') return 'Home language: ' + (firstLang(w.o) || 'none on file');
+    if (id === 'scopey') return [mask(w.d, w.w), w.s ? mask(w.s, w.w) : ''].filter(Boolean).join(' — ');
+    return '';
+  }
+  app2.tnHelp = id => {
+    const g = mb(); if (!g || g.phase !== 'me' || !g.tlev || !g.tlev.second) return;
+    const hs = helpers(g), i = hs.indexOf(id); if (i < 0 || i > g.tlev.misses) return;   /* escalating: one more after each miss */
+    g.tlev.help[id] = helpText(id, g.st.w); tlog(g, 'help', { who: id });
+    if (id === 'koi') { aqStop(); aqPush({ kind: 'tts', text: g.st.w.w, rate: .7, gap: 500 }); aqPush({ kind: 'tts', text: g.st.w.w, rate: .7 }); }
+    render(); keepCaret();
+  };
+  function teamDone(g, ok) {
+    if (ok) g.score.c++;
+    g.tVerdict = ok; g.phase = 'tAfter';
+    announce(ok ? (g.tlev ? 'Correct. The score is level.' : 'Correct. A point to the Circuit.') : 'Not this time. No point to the Circuit.');
+    render(); after(1300, teamNext);
+  }
+  function dramaTurn(g, st) {
+    const lect = g.lect, first = lect === '11-15' ? 'samurai' : 'beaker', recall = lect === '11-15' ? 'French' : 'Greek';
+    const seat = CALLS.find(x => x.call === recall)[lect];
+    g.phase = 'tDrama'; g.tDrama = { step: 0, call: 'Latin', seat: first };
+    tlog(g, 'drama', { w: st.w.w, origin: firstLang(st.w.o), first: 'Latin', to: first });
+    announce('The captain takes this call himself: Latin, to ' + botById(first).name + '.', 'The captain calls it.');
+    aqWord(st.w.w); render();
+    after(2400, () => { g.tDrama = { step: 1, call: 'Latin', seat: first, ask: chairAnswer(st.w, 'org') };
+      announce('The captain asks the Pronouncer the language of origin.'); render();
+      after(2400, () => { g.tDrama = { step: 2, call: recall, seat };
+        tlog(g, 'recall', { call: recall, to: seat });
+        const b = botById(seat); g.tSp = { bot: b, ok: true, call: recall };
+        announce('Changed call: ' + recall + ', to ' + b.name + '.');
+        spellOut(g, st.w.w, b.pace, () => { g.score.c++; g.tVerdict = true; tlog(g, 'dramaRight', { who: seat });
+          try { sfx('correct'); } catch (e) {} announce('Correct. A point to the Circuit.'); render(); after(1400, teamNext); });
+        render(); }); });
+  }
+  function vesperTurn(g, st) {
+    const V = botById('goldlegend');
+    g.phase = 'tTeam'; g.tSp = { bot: V, ok: true, call: 'Tiebreaker' };
+    g.botAsk = ['def', 'org', 'sent'].map(k => ({ k, label: CHAIR_NAME[k], answer: chairAnswer(st.w, k) || 'none on file' }));
+    tlog(g, 'tiebreak', { to: 'goldlegend', asks: g.botAsk.map(a => a.k) });
+    announce('The tiebreaker. The captain calls it to Vesper.', 'The tiebreaker.');
+    aqWord(st.w.w); render();
+    after(700 + 3 * 450, () => spellOut(g, st.w.w, V.pace, () => { g.score.c++; g.tVerdict = true; tlog(g, 'won', {});
+      try { sfx('correct'); } catch (e) {} announce('Correct. The Circuit wins.'); render(); after(1700, teamFinish); }));
+  }
+  function teamFinish() {
+    const g = mb(); if (!g || g.mode !== 'team' || g.view === 'result') return;
+    g.view = 'result'; g.phase = 'over'; g.clock = null;
+    const S = g.score, own = g.mine.filter(m => m.kind === 'team');
+    const ownRight = own.filter(m => m.ok).length, callsRight = g.calls.filter(x => x.right).length;
+    const items = own.length + g.calls.length;
+    g.merit = items ? (ownRight + callsRight) / items : 0;
+    /* PAY (L11): the answer coins were paid as the child's own words were spelt; the contest event is the child's
+       merit — their own words and their calls — at the 70% mark. Nothing for the team's result or for finishing. */
+    let contest = 0;
+    const pass = items >= 4 && g.merit >= .7;
+    if (pass) contest = addCoins('contest') || 0;
+    g.contest = contest; g.pay = (g.bonus || 0) + contest;
+    g.won = S.c > S.r; g.margin = S.c - S.r;
+    tlog(g, 'result', { won: g.won, margin: g.margin });
+    try { save(); } catch (e) {}
+    try { if (g.won) { burstConfetti(120); sfx('win'); } } catch (e) {}
+    const missed = []; own.filter(m => !m.ok).forEach(m => { if (missed.indexOf(m.w) < 0) missed.push(m.w); });
+    const r = { place: g.won ? 1 : 2, of: 2, words: own.map(m => ({ w: m.w, ok: m.ok, asks: (m.asks || []).length })), missed,
+      levelMiss: g.tlog.some(e => e.k === 'levelMiss'),
+      calls: { right: callsRight, of: g.calls.length, list: g.calls.map(x => ({ w: x.w, call: x.call, right: x.right, answer: x.cls })) },
+      replay: g.replay, score: { circuit: S.c, ravenmere: S.r }, margin: g.margin, band: g.band, lectern: g.lect, seed: g.seed,
+      mastered: !!(g.steps.find(st => st.kind === 'level') || {}).mastered, log: g.tlog.map(e => Object.assign({}, e)) };
+    g.report = r;
+    circTell(() => window.SB_CIRCUIT && typeof SB_CIRCUIT.onTeamNight === 'function' && SB_CIRCUIT.onTeamNight(r));
+    render();
+  }
+
+  /* leave a hall: back to the region's board, where the hall pin stands */
+  function circQuit(g) {
+    const act = (g && g.circ && g.circ.act) || 'meadow';
+    aqStop(); dropMiss(g); if (_kb) { try { _kb.destroy(); } catch (e) {} _kb = null; }
+    state.mb = null;
+    Object.assign(state, { nav: 'trail', screen: 'app', trailView: 'act', trailAct: act, trailActCrs: 'honey', trailCourse: 'honey', trailStop: null, tq: null });
+    render();
+  }
+
+  /* THE CIRCUIT'S OWN STYLE, put on the page by this lazy file (index.html carries the hall's; nothing here is
+     first-load): the venue's plate drawn at its far end, the lights out, the thunder, a rival's requests, and Team
+     Night's scoreboard, calls and help. Every control is at least 44 px; no emoji anywhere. */
+  (function circCss() { try {
+    if (!document.createElement || document.getElementById('mb-circ-css')) return;
+    const st = document.createElement('style'); st.id = 'mb-circ-css'; st.textContent = `
+  .sb-stage.mb-stage.mb-venue{background-position:100% 50%,center}
+  .mb-st.mb-venue{background-position:100% 50%}
+  .sb-stage.mb-stage.mb-dark{background-color:#07040F}
+  .sb-stage.mb-stage.mb-dark::after,.mb-st.mb-dark::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 50% 38%,rgba(10,6,24,.42),rgba(4,2,10,.86))}
+  .sb-stage.mb-stage.mb-flash::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:rgba(236,240,255,.5);animation:mb-flash .9s ease-out both}
+  @keyframes mb-flash{0%{opacity:0}8%{opacity:1}22%{opacity:.15}30%{opacity:.75}100%{opacity:0}}
+  @media (prefers-reduced-motion:reduce){.sb-stage.mb-stage.mb-flash::after{animation:none;opacity:0}}
+  :root[data-motion="off"] .sb-stage.mb-stage.mb-flash::after{animation:none;opacity:0}
+  .mb-botask{margin-top:7px;text-align:left}
+  .mb-botask-h{font-family:var(--mono,monospace);font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--mb-dim)}
+  .mb-headtag{font-style:normal;font-weight:800;color:var(--mb-gold)}
+  .mb-lobby .mb-card.head{border-color:rgba(240,180,41,.6);box-shadow:0 0 0 2px rgba(240,180,41,.18)}
+  .tn-night{display:flex;flex-direction:column;align-items:center;gap:10px;width:min(760px,100%);margin:0 auto}
+  .tn-score{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+  .tn-team{display:flex;align-items:center;gap:8px;min-width:0;padding:6px 10px;border-radius:14px;background:var(--mb-panel);border:1px solid var(--mb-line);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+  .tn-team.r{justify-content:flex-end}
+  .tn-faces{display:flex;min-width:0;overflow:hidden}
+  .tn-faces>*{flex-shrink:0;line-height:0;margin-right:-6px}
+  .tn-f{line-height:0;border-radius:50%}
+  .tn-f.now{box-shadow:0 0 0 2px var(--mb-gold);position:relative;z-index:1}
+  .tn-name{font-family:var(--mono,monospace);font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mb-dim);white-space:nowrap}
+  .tn-pts{font-family:var(--display);font-weight:800;font-size:24px;color:var(--mb-ink);font-variant-numeric:tabular-nums}
+  .tn-faces2{display:flex;gap:4px}
+  .tn-calls{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:7px;width:100%;margin-top:4px}
+  .tn-callb{display:grid;grid-template-columns:24px 1fr;grid-template-rows:auto auto;column-gap:7px;align-items:center;text-align:left;min-height:48px;padding:6px 10px;border-radius:14px;cursor:pointer;
+    color:var(--mb-ink);background:rgba(20,12,38,.7);border:1.5px solid var(--mb-line)}
+  .tn-callb b{font-family:var(--display);font-weight:800;font-size:13.5px;line-height:1.15}
+  .tn-callb i{grid-column:2;font-style:normal;font-size:11.5px;color:var(--mb-dim)}
+  .tn-callb .tn-k{grid-row:1 / span 2;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;font-family:var(--mono,monospace);font-size:11px;font-weight:800;color:#3A2504;background:rgba(240,180,41,.75)}
+  .tn-callb.on{border-color:var(--mb-gold);box-shadow:0 0 0 3px rgba(240,180,41,.25);background:linear-gradient(160deg,rgba(84,58,16,.92),rgba(28,16,48,.88))}
+  .tn-help{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px}
+  .tn-help .mb-ask{flex-direction:column;align-items:flex-start;gap:1px;min-height:48px;border-radius:14px;text-align:left}
+  .tn-help .mb-ask i{font-style:normal;font-size:11px;color:var(--mb-dim)}
+  .tn-help .mb-ask[disabled]{opacity:.45;cursor:default}
+  .tn-answer{margin-top:7px;font-size:14px;font-weight:700;color:var(--mb-ink)}
+  .tn-answer b{font-family:var(--display);letter-spacing:.04em;color:var(--mb-gold)}
+  .tn-hom{color:#E9DCFF}
+  .sb-stage.mb-venue .mb-playin{justify-content:safe center}
+  .mb-hall-lobby .mb-lvlrow{align-self:center;padding:4px 6px 4px 12px;border-radius:99px;color:var(--mb-ink);background:var(--mb-panel)}
+  .mb-hall-lobby .mb-field-h,.tn-lobby .mb-field-h{align-self:center;padding:5px 12px;border-radius:99px;color:var(--mb-ink);background:var(--mb-panel);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+  .tn-side{display:flex;flex-direction:column;gap:7px;min-width:0}
+  .tn-sides{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .tn-lobby .tn-side .mb-cards{grid-template-columns:1fr;gap:6px}
+  .tn-lobby .mb-card.tn-card{flex-direction:row;text-align:left;align-items:center;padding:6px 9px;gap:8px}
+  .tn-lobby .mb-card.tn-card .mb-note{font-size:11px}
+  .tn-lobby .mb-card.bench{border-style:dashed}
+  .tn-rules{max-width:70ch;padding:9px 14px;border-radius:14px;color:var(--mb-ink);background:var(--mb-panel);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+  .mb-submit[disabled]{opacity:.5;cursor:default}
+  @media (max-width:640px){
+    .tn-lobby .mb-card.tn-card .mb-card-in>b{font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+    .tn-lobby .mb-card.tn-card .mb-note{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .tn-lobby .tn-side.r .mb-note{display:none}
+    .tn-lobby .mb-card.tn-card{padding:4px 8px;gap:7px}
+    .sb-stage.mb-venue .mb-title{font-size:15px;letter-spacing:0}
+    .tn-lobby .mb-card-face img,.tn-lobby .mb-card-face svg{width:30px!important;height:30px!important}
+    .tn-night.calling .mb-ann,.tn-night.calling .tn-call .mb-truth{display:none}
+    .tn-night{gap:7px}.tn-team{padding:4px 8px}
+    .tn-rules{font-size:12px;line-height:1.4;padding:7px 10px}
+    .tn-calls{grid-template-columns:1fr 1fr}
+    .tn-pts{font-size:20px}
+    .tn-faces>*:nth-child(n+4){display:none}
+  }`;
+    document.head.appendChild(st);
+  } catch (e) {} })();
 
   /* ================= rendering ================= */
   const nameOf = s => !s ? '' : s.kind === 'me' ? ((mb() && mb().name) || 'You') : s.kind === 'player' ? s.name : s.bot.name;
@@ -1416,11 +2238,12 @@
   function stageHTML(o) {
     const play = '<div class="mb-in mb-playin">' + (o.play || '') + '</div>';
     const controls = o.controls ? '<div class="mb-in mb-ctlin">' + o.controls + '</div>' : '';
+    const xc = o.cls ? ' ' + o.cls : '';
     if (kitStage()) {
-      try { return SGUI.stage({ plate: o.plate, name: 'mockbee', cls: 'mb-stage', region: false, label: 'Mock Spelling Bee', hud: o.hud, play, controls }); } catch (e) {}
+      try { return SGUI.stage({ plate: o.plate, name: 'mockbee', cls: 'mb-stage' + xc, region: false, label: o.label || 'Mock Spelling Bee', hud: o.hud, play, controls }); } catch (e) {}
     }
     setTimeout(fitStage, 0);
-    return `<div class="mb-st" style="--mb-plate:url('${o.plate}')">
+    return `<div class="mb-st${xc}" style="--mb-plate:url('${o.plate}')">
       <div class="mb-st-hud"><div class="mb-st-l">${o.hud.left || ''}</div><div class="mb-st-c">${o.hud.center || ''}</div><div class="mb-st-r">${o.hud.right || ''}</div></div>
       <div class="mb-st-play">${play}</div>
       <div class="mb-st-ctrl">${controls}</div></div>`;
@@ -1473,7 +2296,11 @@
   /* the input a typing phase draws: on a touch screen it only shows the letters */
   const inputAttrs = () => kitKeys() ? ' readonly inputmode="none"' : '';
   const keysHost = () => kitKeys() ? '<div id="mb-keys" class="mb-keys"></div>' : '';
-  const plate = () => { try { return PLATE; } catch (e) { return ''; } };
+  /* a hall stands in its venue: the region's own panorama, drawn at its far end, where the painter put the venue
+     (the Hive Gates, the Grand Archive … the Grand Marquee) — no new art */
+  const plate = () => { try { const c = circ(mb()); return c ? 'app-art/map-' + c.act + '-pano.webp' : PLATE; } catch (e) { return PLATE; } };
+  /* the stage's own classes in a hall: the venue's plate, the lights out (Round IX), the thunder (Round IV) */
+  const stageCls = g => !circ(g) ? '' : ['mb-venue', g.dark ? 'mb-dark' : '', g.flash ? 'mb-flash' : '', g.mode === 'team' ? 'mb-team' : ''].filter(Boolean).join(' ');
   /* The local stage fills the window between the shell's bar and its foot (the tab bar on a
      phone) and never makes the page scroll (§5.0 rule 1): measured, because #root is zoomed
      and the shell's bars differ by width. If the hall is ever taller than that, the play area
@@ -1524,6 +2351,166 @@
         center: `<span class="sg-st-title mb-ttl"><span class="mb-title">Mock <span class="mb-wide">Spelling </span>Bee</span>${mode === 'bee' ? '<span class="mb-wide"> ' + lvlChip() + '</span>' : ''}</span>`,
         right: `<span class="mb-rec">${p.played ? (p.wins || 0) + ' won · best ' + ordinal(p.best || (B.rivals + 1)) : (B.rivals + 1) + ' spellers'}</span>` },
       play, controls })}</div>`;
+  }
+
+  /* ---------- a Bee Hall: the venue, the round, who is seated ---------- */
+  const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'];
+  const cap1 = t => String(t || '').charAt(0).toUpperCase() + String(t || '').slice(1);
+  function viewVenueLobby() {
+    const g = mb(); const C = g.circ; const H = CIRC[C.act]; const c = active() || {};
+    const ids = (HALL_FIELDS[bandKey(c)] || HALL_FIELDS['8-10'])[H.n] || [];
+    const heads = H.head;
+    const play = `<div class="mb-lobby mb-hall-lobby">
+        <div class="mb-field-h">Round ${ROMAN[H.n]} of the Bee Circuit · ${ids.length + 1} spellers</div>
+        <div class="mb-lvlrow mb-narrow">Word level ${lvlChip()}</div>
+        <div class="mb-cards">${ids.map(botById).map(b => `<div class="mb-card${heads.indexOf(b.id) >= 0 ? ' head' : ''}">
+          <span class="mb-card-face">${window.SB_AVATAR ? SB_AVATAR(faceOf(b), 48) : ''}</span>
+          <span class="mb-card-in"><b>${esc(b.name)}<i>${b.age}</i></b><span class="mb-note">${heads.indexOf(b.id) >= 0 ? '<em class="mb-headtag">Headlining</em> ' : ''}${esc(b.note)}</span></span></div>`).join('')}</div>
+      </div>`;
+    const controls = `<div class="mb-go-row"><button data-act="mbStart" class="mb-go">${iconSVG('crown', 17)} Take the stage</button></div>`;
+    return `<div class="mb-wrap">${stageHTML({ plate: plate(), cls: stageCls(g), label: 'Bee Hall, ' + H.venue,
+      hud: { left: `<button data-act="mbQuit" class="mb-back">← Map</button>`,
+        center: `<span class="sg-st-title mb-ttl"><span class="mb-title">${esc(cap1(H.venue))}</span><span class="mb-wide"> ${lvlChip()}</span></span>`,
+        right: `<span class="mb-rec"><span class="mb-wide">Bee </span>Hall ${ROMAN[H.n]}</span>` },
+      play, controls })}</div>`;
+  }
+
+  /* ---------- Team Night: the lobby, the night, the result ---------- */
+  const seatName = (id, g) => id === 'you' ? ((g && g.name) || 'you') : (botById(id) || {}).name || '';
+  const callsFor = (id, lect) => CALLS.filter(x => x[lect] === id).map(x => x.call).join(' · ');
+  function tnCard(face, name, sub, cls) {
+    return `<div class="mb-card tn-card${cls ? ' ' + cls : ''}"><span class="mb-card-face">${face}</span><span class="mb-card-in"><b>${esc(name)}</b><span class="mb-note">${esc(sub)}</span></span></div>`;
+  }
+  function viewTeamLobby() {
+    const g = mb(); const c = active() || {}; const lect = lectOf(bandKey(c)); const replay = !!(g.circ && g.circ.replay);
+    const av = (id, s) => window.SB_AVATAR ? SB_AVATAR(id, s || 34) : '';
+    const circuitCards = [tnCard(av(c.avatar || 'bizzy'), c.name || 'You', 'the caller · ' + callsFor('you', lect))]
+      .concat(LECTERN[lect].map(id => tnCard(av(faceOf(botById(id))), botById(id).name, callsFor(id, lect) || 'the tiebreaker')))
+      .concat([tnCard(av(faceOf(botById('comet'))), 'Dax', 'captain, from the bench', 'bench')]);
+    const ravCards = RAVEN.map(r => tnCard(av(ravFace(r)), r.name, r.tell));
+    const play = `<div class="mb-lobby tn-lobby">
+        <p class="mb-fam-note tn-rules">${replay ? 'Ravenmere’s second team. ' : ''}A point a word, Ravenmere first. You are the caller: ask the Pronouncer, then call who takes each word — it can change until you send it. Every third word is yours.</p>
+        <div class="tn-sides"><div class="tn-side c"><div class="mb-field-h">The Circuit</div><div class="mb-cards">${circuitCards.join('')}</div></div>
+        <div class="tn-side r"><div class="mb-field-h">Ravenmere</div><div class="mb-cards">${ravCards.join('')}</div></div></div>
+      </div>`;
+    const controls = `<div class="mb-go-row"><button data-act="mbStart" class="mb-go">${iconSVG('users', 17)} Start Team Night</button></div>`;
+    return `<div class="mb-wrap">${stageHTML({ plate: plate(), cls: stageCls(g), label: 'Team Night',
+      hud: { left: `<button data-act="mbQuit" class="mb-back">← Map</button>`, center: `<span class="sg-st-title mb-ttl"><span class="mb-title">Team Night</span></span>`,
+        right: `<span class="mb-rec">${replay ? 'Second team' : '<span class="mb-wide">vs </span>Ravenmere'}</span>` },
+      play, controls })}</div>`;
+  }
+  function tnScore(g) {
+    const av = (id, s) => window.SB_AVATAR ? SB_AVATAR(id, s || 26) : '';
+    const live = g.tSp || {};
+    const cFaces = [av(g.avatar)].concat(LECTERN[g.lect].map(id => `<span class="tn-f${live.bot && live.bot.id === id ? ' now' : ''}">${av(faceOf(botById(id)))}</span>`));
+    const rFaces = RAVEN.map(r => `<span class="tn-f${live.rav && live.rav.some(x => x.id === r.id) ? ' now' : ''}">${av(ravFace(r))}</span>`);
+    return `<div class="tn-score" role="group" aria-label="Score: the Circuit ${g.score.c}, Ravenmere ${g.score.r}">
+      <div class="tn-team c"><span class="tn-faces">${cFaces.join('')}</span><span class="tn-name">Circuit</span><b class="tn-pts">${g.score.c}</b></div>
+      <div class="tn-team r"><b class="tn-pts">${g.score.r}</b><span class="tn-name">Ravenmere</span><span class="tn-faces">${rFaces.join('')}</span></div></div>`;
+  }
+  function tnChairHTML(g) {
+    const w = (g.st && g.st.w) || {}; const asked = g.asked || {}; const keys = chairKeys(w);
+    const answers = ['def', 'ps', 'org', 'sent', 'alt'].filter(k => asked[k] && keys.indexOf(k) >= 0).map(k =>
+      `<div><b>${CHAIR_NAME[k]}.</b> ${esc(k === 'alt' ? chairAnswer(w, k).replace(/^said$/, 'said aloud') : chairAnswer(w, k))}</div>`).join('');
+    /* the older lectern's "needs questions": the definition tells you there is a sound-alike */
+    const hom = g.lect === '11-15' && asked.def && isHom(w) ? '<div class="tn-hom"><b>Pronouncer.</b> It sounds like another word.</div>' : '';
+    return `<div class="mb-chair" role="group" aria-label="Ask the Pronouncer">${CHAIR.filter(x => keys.indexOf(x[0]) >= 0).map(([k, l, ic]) =>
+        `<button data-act="mbAsk" data-arg="${k}" class="mb-ask${asked[k] ? ' on' : ''}" data-q="${k}">${iconSVG(ic, 15)}<span>${l}</span></button>`).join('')}</div>
+      ${answers || hom ? `<div class="mb-answers">${answers}${hom}</div>` : ''}`;
+  }
+  function tnCentre(g) {
+    const st = g.st || {}; const sp = g.tSp || {};
+    const av = (id, s) => window.SB_AVATAR ? SB_AVATAR(id, s || 64) : '';
+    const ghost = n => new Array(Math.max(1, n)).fill('X').join(' ');
+    const verdict = g.tVerdict == null ? '' : `<div class="mb-truth">${g.tVerdict ? 'Correct' : 'Not correct'}</div>`;
+    if (g.phase === 'tIn') return `<div class="mb-mic idle"><div class="mb-mic-in"><span class="mb-mic-name">The hall settles…</span></div></div>`;
+    if (g.phase === 'tRav' || g.phase === 'tTeam' || (g.phase === 'tDrama' && g.tDrama && g.tDrama.step === 2)) {
+      const faces = sp.rav ? sp.rav.map(r => av(ravFace(r))).join('') : sp.bot ? av(faceOf(sp.bot)) : '';
+      const who = sp.rav ? sp.rav.map(r => r.name).join(' and ') + ' · Ravenmere' : sp.bot ? sp.bot.name + ' · the Circuit' + (sp.call ? ' · ' + esc(sp.call) : '') : '';
+      const done = g.tVerdict != null;
+      return `<div class="mb-mic ${done ? (g.tVerdict ? 'ok' : 'no') : ''}"><span class="mb-mic-face tn-faces2">${faces}</span>
+        <div class="mb-mic-in"><span class="mb-mic-name">${esc(who)}</span>
+          <div class="mb-letters"><span class="mb-l-ghost" aria-hidden="true">${ghost((st.w && st.w.w || '').length + 1)}</span><span class="mb-l-live" id="tn-live">${g.tOut || ''}</span>${g.tOut ? '' : '<span class="mb-thinking">thinking…</span>'}</div>
+          ${g.botAsk && sp.bot ? botAskHTML({ bot: sp.bot }, g.botAsk) : ''}${verdict}</div></div>`;
+    }
+    if (g.phase === 'tDrama') {
+      const d = g.tDrama || {}; const cap = botById('comet');
+      return `<div class="mb-mic"><span class="mb-mic-face">${av(faceOf(cap))}</span><div class="mb-mic-in"><span class="mb-mic-name">Dax · captain</span>
+        <div class="mb-truth" data-live-prompt>${d.step === 0 ? 'Call: ' + esc(d.call) + ', to ' + esc(seatName(d.seat, g)) : 'Language of origin, please.'}</div>
+        ${d.step === 1 ? `<div class="mb-answers"><div><b>Origin.</b> ${esc(d.ask || 'none on file')}</div></div>` : ''}</div></div>`;
+    }
+    if (g.phase === 'tCall') {
+      const o = callsAt(g.lect); const pk = g.tc && g.tc.pick;
+      return `<div class="mb-mic me tn-call"><div class="mb-mic-in">
+        <span class="mb-mic-name">Your call</span>
+        <div class="mb-truth" data-live-prompt="${escA('Your call. Listen, ask the Pronouncer, then call who takes it.')}">Who takes this word?</div>
+        ${tnChairHTML(g)}
+        <div class="tn-calls" role="radiogroup" aria-label="Your call">${o.map((x, i) => `<button class="tn-callb${pk === i ? ' on' : ''}" role="radio" aria-checked="${pk === i}" data-act="tnPick" data-arg="${i}">
+          <span class="tn-k">${i + 1}</span><b>${esc(x.call)}</b><i>${esc(seatName(x[g.lect], g))}</i></button>`).join('')}</div></div></div>`;
+    }
+    if (g.phase === 'me' || g.phase === 'meDone' || g.phase === 'tAfter') {
+      const lev = g.tlev;
+      const head = lev ? (lev.second ? 'Second try' : 'Your word') : g.tOwn === 'call' ? 'Your word · ' + esc((g.tc && g.tc.sent) || '') : 'Steady beat · your word';
+      const helpRow = lev && lev.second && g.phase === 'me' ? `<div class="tn-help" role="group" aria-label="Your teammates' help">${helpers(g).map((id, i) =>
+          `<button class="mb-ask${lev.help[id] ? ' on' : ''}" data-act="tnHelp" data-arg="${id}"${i > lev.misses ? ' disabled' : ''}>${esc(HELP[id][0])}<i>${esc(HELP[id][1])}</i></button>`).join('')}</div>
+        ${Object.keys(lev.help).length ? `<div class="mb-answers">${helpers(g).filter(id => lev.help[id]).map(id => `<div><b>${esc(botById(id).name)}.</b> ${esc(lev.help[id])}</div>`).join('')}</div>` : ''}
+        ${lev.shown ? `<div class="tn-answer" data-live-prompt>The word is <b>${esc(st.w.w)}</b>. Continue, and the score is level.</div>` : ''}` : '';
+      const done = g.phase === 'tAfter';
+      return `<div class="mb-mic me${done ? (g.tVerdict ? ' ok' : ' no') : ''}"><span class="mb-mic-face">${av(g.avatar)}</span>
+        <div class="mb-mic-in"><span class="mb-mic-name">${esc(g.name)} · ${head}</span>
+          ${done ? `<div class="mb-truth">${g.tVerdict ? 'Correct' : 'The word was <b>' + esc(st.w.w) + '</b>'}</div>`
+            : `<div class="mb-truth" data-live-prompt="${escA('Your turn, ' + g.name + '. Listen, then spell the word.')}">Listen, ask, then spell it.</div>`}
+          ${helpRow}</div></div>`;
+    }
+    return `<div class="mb-mic idle"><div class="mb-mic-in"><span class="mb-mic-name">…</span></div></div>`;
+  }
+  function tnControls(g) {
+    if (g.phase === 'tCall') return `<div class="mb-go-row"><button data-act="mbSay" class="mb-hear">${iconSVG('volume', 16)} Again</button>
+      <button data-act="tnSend" class="mb-submit"${g.tc && g.tc.pick != null ? '' : ' disabled'}>Send it →</button></div>`;
+    if (g.phase === 'me') {
+      if (g.tlev && g.tlev.shown) return `<div class="mb-go-row"><button data-act="tnLevelOn" class="mb-go">Continue →</button></div>`;
+      if (kitKeys()) return keysHost();
+      return (g.tlev && g.tlev.second ? '' : tnChairHTML(g)) + spellRow(g);
+    }
+    if (g.phase === 'meDone' && g.hold) return kitMiss() ? '' : `<div class="mb-go-row"><button data-act="mbGoOn" class="mb-submit">Continue →</button></div>`;
+    return `<div class="mb-go-row"><span class="mb-watching">${g.phase === 'tRav' ? 'Ravenmere spell' : 'Team Night'}</span></div>`;
+  }
+  function viewTeamStage() {
+    const g = mb(); const n = g.steps.length, k = Math.max(0, g.i) + 1;
+    setTimeout(() => { mountKeys(); if (g.phase === 'meDone' && g.hold) mountMiss(g); }, 0);
+    const touch = kitKeys() && g.phase === 'me' && !(g.tlev && g.tlev.shown) ? `<div class="mb-touchchair">${g.tlev && g.tlev.second ? '' : tnChairHTML(g)}${spellRow(g)}</div>` : '';
+    const play = `<div class="tn-night${g.phase === 'tCall' ? ' calling' : ''}">${tnScore(g)}
+        <div class="mb-centre"><div class="mb-ann"><span class="mb-ann-ic">${iconSVG('volume', 15)}</span><p>${esc(g.announce || '')}</p></div>
+        <div class="mb-podium">${tnCentre(g)}</div>${touch}</div></div>`;
+    return `<div class="mb-wrap">${stageHTML({ plate: plate(), cls: stageCls(g), label: 'Team Night',
+      hud: { left: `<button data-act="mbQuit" class="mb-back">← Leave</button>`,
+        center: `<span class="sg-st-title mb-ttl"><span class="mb-round"><span class="mb-wide">Team Night · </span>Round ${Math.min(Math.ceil(k / 2), Math.ceil(n / 2))} of ${Math.ceil(n / 2)}</span></span>`,
+        right: `<span class="mb-rec">${g.score.c} – ${g.score.r}</span>` },
+      play, controls: tnControls(g) })}</div>`;
+  }
+  function viewTeamResult() {
+    const g = mb(); const own = g.mine.filter(m => m.kind === 'team'); const cr = g.calls.filter(x => x.right).length;
+    const chip = m => `<span class="mb-wchip ${m.ok ? 'ok' : 'no'}">${esc(m.w)}</span>`;
+    const play = `<div class="mb-result${g.won ? ' won' : ''}">
+        <span class="mb-result-face">${window.SB_AVATAR ? SB_AVATAR(g.avatar, 92) : ''}</span>
+        <h2 data-live-prompt>${g.won ? 'The Circuit wins, ' + g.score.c + ' to ' + g.score.r + '.' : 'Ravenmere win, ' + g.score.r + ' to ' + g.score.c + '.'}</h2>
+        <p>${g.replay ? 'Against Ravenmere’s second team.' : 'Team Night at the Grand Marquee.'}</p>
+        <div class="mb-recap">
+          <div class="mb-rc-h">Your words: ${own.filter(m => m.ok).length} of ${own.length} right first time</div>
+          ${own.length ? `<div class="mb-wchips">${own.map(chip).join('')}</div>` : ''}
+          <div class="mb-rc-h">Your calls: ${cr} of ${g.calls.length} right</div>
+          ${g.calls.length ? `<div class="mb-wchips">${g.calls.map(x => `<span class="mb-wchip ${x.right ? 'ok' : 'no'}">${esc(x.call)}${x.right ? '' : ' · ' + esc(x.cls)}</span>`).join('')}</div>` : ''}
+        </div>
+        <div class="mb-pay">${iconSVG('coin', 16)} ${fmtN(g.pay || 0)} ${g.pay === 1 ? 'coin' : 'coins'}</div>
+      </div>`;
+    const miss = own.filter(m => !m.ok);
+    const controls = `<div class="mb-go-row">
+        ${miss.length ? (g.addedMissed ? `<span class="mb-watching">${iconSVG('check', 15)} On your revision list</span>` : `<button data-act="mbAddMissed" class="mb-back2">${iconSVG('plus', 15)} Add missed words to revision</button>`) : ''}
+        <button data-act="mbQuit" class="mb-go">${iconSVG('arrow', 17)} Back to the map</button>
+        <button data-act="mbAgain" class="mb-back2">Play the second team</button></div>`;
+    return `<div class="mb-wrap">${stageHTML({ plate: plate(), cls: stageCls(g), label: 'Team Night',
+      hud: { left: `<button data-act="mbQuit" class="mb-back">← Map</button>`, center: `<span class="sg-st-title mb-ttl"><span class="mb-title">Team Night</span></span>`,
+        right: `<span class="mb-rec">${g.score.c} – ${g.score.r}</span>` }, play, controls })}</div>`;
   }
 
   /* ---------- Family Bee night: who is playing ---------- */
@@ -1626,8 +2613,14 @@
       <div class="mb-mic-in"><span class="mb-mic-name">${esc(s.bot.name)} · ${s.bot.age} · number ${s.n}</span>
         <div class="mb-letters"><span class="mb-l-ghost" aria-hidden="true">${ghost}</span>
           <span class="mb-l-live" id="mb-live">${g.botOut || ''}</span>${g.botOut ? '' : '<span class="mb-thinking">thinking…</span>'}</div>
+        ${g.botAsk && g.botAskFor === s ? botAskHTML(s, g.botAsk) : ''}
         ${lp ? `<div class="mb-prac-fb ${lp.correct ? 'ok' : 'no'}">You wrote <b>${esc(lp.typed.toUpperCase())}</b> — ${lp.correct ? 'you had it too.' : 'not quite that time.'}</div>` : ''}
       </div></div>`;
+  }
+  /* a rival's requests on the Chair, each with the Pronouncer's answer (masked like the child's) */
+  function botAskHTML(s, asks) {
+    return `<div class="mb-answers mb-botask" data-asks="${asks.map(a => a.k).join(' ')}"><div class="mb-botask-h">${esc(s.bot.name)} asks the Pronouncer</div>${asks.map(a =>
+      `<div><b>${esc(a.label)}.</b> ${esc(a.answer)}</div>`).join('')}</div>`;
   }
 
   /* the controls band: the Chair and the input on a turn; the write-along; the choices */
@@ -1727,7 +2720,7 @@
         </div>
         <div class="mb-bench r">${Rb.map(s => benchChip(s, g)).join('')}</div>
       </div>`;
-    return `<div class="mb-wrap${rise}">${stageHTML({ plate: plate(),
+    return `<div class="mb-wrap${rise}">${stageHTML({ plate: plate(), cls: stageCls(g), label: circ(g) ? 'Bee Hall, ' + CIRC[g.circ.act].venue : '',
       hud: { left: `<button data-act="mbQuit" class="mb-back">← Leave</button>`,
         center: `<span class="sg-st-title mb-ttl"><span class="mb-round">${R.name.indexOf(' · ') > 0 ? `<span class="mb-wide">${esc(R.name.split(' · ')[0])} · </span>${esc(R.name.split(' · ')[1])}` : esc(R.name)}<i>${esc(R.sub)}</i></span></span>`,
         right: `<span class="mb-rec">${live.length} of ${g.field.length}<span class="mb-wide"> standing</span></span>` },
@@ -1859,19 +2852,24 @@
         </div>
         <div class="mb-pay">${iconSVG('coin', 16)} ${fmtN(g.pay || 0)} ${g.pay === 1 ? 'coin' : 'coins'}${g.contest ? ' · podium' : ''}</div>
       </div>`;
+    const hall = circ(g);
     const controls = `<div class="mb-go-row">
         ${miss.length ? (g.addedMissed ? `<span class="mb-watching">${iconSVG('check', 15)} On your revision list</span>` : `<button data-act="mbAddMissed" class="mb-back2">${iconSVG('plus', 15)} Add missed words to revision</button>`) : ''}
-        <button data-act="mbAgain" class="mb-go">${iconSVG('crown', 17)} Another bee</button>
-        <button data-act="mbLobby" class="mb-back2">Change the bee</button></div>`;
-    return `<div class="mb-wrap">${stageHTML({ plate: plate(),
-      hud: { left: `<button data-act="mbQuit" class="mb-back">← Play</button>`, center: `<span class="sg-st-title mb-ttl"><span class="mb-title">${title}</span></span>`,
-        right: `<span class="mb-rec">${p.played ? p.played + (p.played === 1 ? ' bee' : ' bees') + ' · ' + (p.wins || 0) + ' won' : g.field.length + ' spellers'}</span>` },
+        ${hall ? `<button data-act="mbQuit" class="mb-go">${iconSVG('arrow', 17)} Back to the map</button>
+        <button data-act="mbAgain" class="mb-back2">Play the hall again</button>`
+        : `<button data-act="mbAgain" class="mb-go">${iconSVG('crown', 17)} Another bee</button>
+        <button data-act="mbLobby" class="mb-back2">Change the bee</button>`}</div>`;
+    return `<div class="mb-wrap">${stageHTML({ plate: plate(), cls: stageCls(g), label: hall ? 'Bee Hall, ' + CIRC[hall.act].venue : '',
+      hud: { left: `<button data-act="mbQuit" class="mb-back">${hall ? '← Map' : '← Play'}</button>`, center: `<span class="sg-st-title mb-ttl"><span class="mb-title">${title}</span></span>`,
+        right: `<span class="mb-rec">${hall ? '<span class="mb-wide">Bee </span>Hall ' + ROMAN[CIRC[hall.act].n] : p.played ? p.played + (p.played === 1 ? ' bee' : ' bees') + ' · ' + (p.wins || 0) + ' won' : g.field.length + ' spellers'}</span>` },
       play, controls })}</div>`;
   }
 
   window.MOCKBEE = {
     open: (m) => app2.mbOpen(m),
     view: () => { const g = mb(); if (!g) return viewLobby();
+      if (g.mode === 'team') return g.view === 'stage' ? viewTeamStage() : g.view === 'result' ? viewTeamResult() : viewTeamLobby();
+      if (g.mode === 'venue' && g.view === 'lobby') return viewVenueLobby();
       return g.view === 'stage' ? viewStage() : g.view === 'result' ? viewResult() : g.view === 'family' ? viewFamily() : viewLobby(); },
     stats: () => prog(),
     /* THE CAST — one table of rivals, not a copy (games spec §2.5/§4.7): the Atlas duel (trail.js) and Mock Analogy Bee
@@ -1895,13 +2893,27 @@
     /* the words a round of the bee on stage would deal, n of them */
     draw: (n, r) => (state.mb && state.mb.field ? drawWords(n, roundAt(r)) : []),
     cap: CAP_MS, qCost: Q_COST, turnMs: TURN_MS,
+    /* THE BEE CIRCUIT — the tables the halls and Team Night play from (tests/circuit-halls.cjs and circuit-team.cjs
+       hold them to circuit/script.json), and the classifier a call is graded by */
+    circuit: { halls: () => JSON.parse(JSON.stringify(CIRC)), fields: () => JSON.parse(JSON.stringify(HALL_FIELDS)),
+      lectern: () => JSON.parse(JSON.stringify(LECTERN)), calls: () => JSON.parse(JSON.stringify(CALLS)),
+      raven: () => RAVEN.map(r => ({ id: r.id, name: r.name, age: r.age, tell: r.tell, face: ravFace(r), own: r.face, alt: r.alt })),
+      classify: (w, lect) => classify(w, lect), firstLang: o => firstLang(o), report: () => (state.mb && state.mb.report) || null },
   };
 
   /* keyboard: Enter spells on a turn, continues after a miss, moves a rival on during the
      write-along, takes Ready on Family night */
   window.addEventListener('keydown', e => { try {
     const g = mb(); if (!g || state.nav !== 'mockbee') return;
+    /* Team Night's caller: 1–7 marks a call, Enter sends it; Enter goes on once the answer stands on the card */
+    if (g.mode === 'team' && g.phase === 'tCall' && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      const t = e.target; if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return;
+      if (/^[1-9]$/.test(e.key)) { e.preventDefault(); app2.tnPick(+e.key - 1); return; }
+      if (e.key === 'Enter') { e.preventDefault(); app2.tnSend(); return; }
+      return;
+    }
     if (e.key !== 'Enter') return;
+    if (g.mode === 'team' && g.phase === 'me' && g.tlev && g.tlev.shown) { e.preventDefault(); app2.tnLevelOn(); return; }
     if (g.phase === 'me') { e.preventDefault(); app2.mbSpell(); }
     else if ((g.phase === 'meDone' || g.phase === 'vmeDone') && g.hold) { e.preventDefault(); app2.mbGoOn(); }
     else if (g.phase === 'practice') { e.preventDefault(); app2.mbPracSkip(); }
