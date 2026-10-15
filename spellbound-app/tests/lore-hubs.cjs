@@ -243,6 +243,11 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
 
   /* ---- no question gives itself away: distinct options, one right, the right one in any slot, and a
      meaning→word prompt that never prints its own word (the question-leaks rules, for the hubs) ---- */
+  /* The sample is drawn on a SEEDED page generator (15 Oct 2026, full run 20: 22% 33% 26% 19% against the 32% line, on an
+     unseeded draw — the shuffle is app3's Fisher–Yates `sample`, uniform by construction, so an unseeded 240 tips over the
+     line about one run in forty and says nothing about the build). The same build is now the same 240 questions; the line
+     is unchanged — if it fails on this seed, grow the sample, never move the line. */
+  await pg.evaluate(() => { window.__realRandom2 = Math.random; let s = 15102026; Math.random = () => { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; }; });
   const lk = await pg.evaluate(() => { const qs = []; for (let k = 0; k < 8; k++) qs.push(...SB_QHUB._meaningRound('lore', 'meanings', 20), ...SB_QHUB._figRound('lore', 'idioms', 10));
     const bad = [], slot = [0, 0, 0, 0];
     for (const q of qs) { const low = q.opts.map(o => String(o).trim().toLowerCase());
@@ -251,6 +256,7 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
       if (q.dir === 'm2w' && new RegExp('\\b' + q.word.w + '\\b', 'i').test(q.prompt)) bad.push('leak ' + q.word.w);
       slot[q.ans]++; }
     return { n: qs.length, bad: bad.slice(0, 5), slot: slot.map(x => x / qs.length) }; });
+  await pg.evaluate(() => { Math.random = window.__realRandom2; });
   ok(lk.n >= 200 && !lk.bad.length && Math.max(...lk.slot) < 0.32, `${lk.n} Meanings and Idioms questions: options distinct, exactly one right, the right one in any slot (${lk.slot.map(x => (x * 100).toFixed(0) + '%').join(' ')}), no meaning prints its own word` + (lk.bad.length ? ' — ' + lk.bad.join(', ') : ''));
 
   /* ---- Origins: whatever a guesser always picks wins one time in four ---- */
