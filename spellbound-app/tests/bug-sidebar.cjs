@@ -22,7 +22,11 @@ const ok = (b, msg) => { console.log((b ? '  OK   ' : '  FAIL ') + msg); if (!b)
     state.devUnlock = true; render(); await W(150);
     // ---- with testing mode on, the tab is there, quiet, on the app shell ----
     out.tab = !!document.querySelector('.sb-bug-tab');
-    document.querySelector('.sb-bug-tab').click(); await W(250);
+    /* a tap is held until the word tier lands (app3 tapAct; bugToggle is not one of the shell's WORDLESS controls) — ask for
+       the tier, then wait for the panel itself, never a fixed 250 ms (P3 full run 13 read no panel on a loaded machine) */
+    await new Promise(res => SB_LAZY.need('words1', res));
+    document.querySelector('.sb-bug-tab').click();
+    for (const t0 = Date.now(); Date.now() - t0 < 15000 && !document.querySelector('.sb-bug-panel');) await W(50);
     out.panel = !!document.querySelector('.sb-bug-panel') && /stays.*on this device|on this device/i.test(document.querySelector('.sb-bug-panel').textContent);
 
     // ---- categories, typing, saving ----
