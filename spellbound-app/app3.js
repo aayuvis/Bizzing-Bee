@@ -3657,7 +3657,7 @@ const SCR_ACTS = {
     'practiceRevisions revTab reviseHistoryAgain reviseComplete',
   scrShared: 'openChallenge selectList exitGame gSubmit gKey gReveal gSaySlow gMissGo vocSelectList vocDeck wqStart ' +
     'ttChapter reviseOne',
-  scrMe: 'printAvCards collTab buyFrame wearFrame buyWorld shopTab buyItem wearItem',
+  scrMe: 'printAvCards collTab buyFrame wearFrame buyWorld shopTab buyItem wearItem hivePost',
   scrGames: 'gReplay beatStart magicBoard magicPick magicSubmit magicNext magicKey magicHear magicNew magicCell ' +
     'duelEnter duelKey duelType duelSay duelP2 duelBegin duelName playCard arcadeMenu',
   scrGrown: 'kudosSend kudosGrown ttChapterFrom ttList metricPick progHeatPick progHeat bkAskErase bkDownload bkEraseGo certPng cloudPush ' +
