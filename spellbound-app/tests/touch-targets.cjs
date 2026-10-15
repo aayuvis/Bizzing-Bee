@@ -118,8 +118,9 @@ const SCREENS = [
         /* the 44px circle centred on it: four points 21px out on the axes, four on the diagonals
            (a round 48px button is a 44px target; a 44px square test would fail it on its corners) */
         const pts = [[-15, -15], [0, -21], [15, -15], [-21, 0], [21, 0], [-15, 15], [0, 21], [15, 15]];
-        const miss = pts.filter(([dx, dy]) => { const h = document.elementFromPoint(cx + dx, cy + dy); return !(h && (h === e || e.contains(h))); }).length;
-        if (miss) out.push(label);
+        const missed = pts.map(([dx, dy]) => [dx, dy, document.elementFromPoint(cx + dx, cy + dy)]).filter(([, , h]) => !(h && (h === e || e.contains(h))));
+        /* say what a missed point landed on: a neighbour over the control is a different fault from a control too small */
+        if (missed.length) { const [dx, dy, h] = missed[0]; out.push(label + ' (' + missed.length + ' of 8 points; at ' + dx + ',' + dy + ': ' + (h ? h.tagName.toLowerCase() + '.' + String(h.className && h.className.baseVal != null ? h.className.baseVal : h.className || '').split(' ').filter(Boolean).slice(0, 3).join('.') : 'nothing') + ')'); }
       }
       window.scrollTo(0, 0);
       return { out: [...new Set(out)], ex: [...new Set(ex)], n: els.length, detached };
