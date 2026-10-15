@@ -630,8 +630,20 @@
     const pips = o.mail.map((m, i) => ({ m, i })).filter((x) => /\.pieces\.pip$/.test(x.m.key) && x.m.d && x.m.d.tapped);
     const pipCard = pips.length ? `<div class="hp-card"><p class="hp-k">Pip’s words</p><ul class="hp-rows">${pips.map(({ m }) => { const pw = at(m.key.replace(/\.pip$/, '.pipWord'));
       return `<li class="hp-pipitem"><b>${H(pw.word)}</b> — ${H(pw.real)}</li>`; }).join('')}</ul></div>` : '';
-    return `<ul class="hp-stamps">${grid}</ul>${pipCard}`;
+    /* a solved Surprise Stop leaves a team photo (§7: "a team-photo sticker for the Hive Post"; circuit-cases.js writes
+       `sticker:'team'` on the case's record) — drawn in code, named by the case's own title, nothing paid */
+    const photos = (D().cases || []).filter((cs) => o.cases[cs.id] && o.cases[cs.id].state === 'solved' && o.cases[cs.id].sticker === 'team');
+    const photoCard = photos.length ? `<div class="hp-card"><p class="hp-k">Team photos</p><ul class="hp-photos">${photos.map((cs) =>
+      `<li class="hp-photo" role="img" aria-label="${H('Team photo: ' + cs.title)}">${teamPhotoSVG()}<span>${H(cs.title)}</span></li>`).join('')}</ul></div>` : '';
+    return `<ul class="hp-stamps">${grid}</ul>${photoCard}${pipCard}`;
   }
+  /* a Polaroid of five heads and shoulders in the team's colours — no faces drawn, nobody a type */
+  function teamPhotoSVG() {
+    const C = ['#E9A23B', '#4F7CD8', '#3BA675', '#C25B9A', '#8A6DE0'];
+    const people = C.map((c, i) => { const x = 14 + i * 13, y = i % 2 ? 30 : 26;
+      return `<circle cx="${x}" cy="${y}" r="5.2" fill="${c}"/><path d="M${x - 7} ${y + 17} q7 -11 14 0 z" fill="${c}"/>`; }).join('');
+    return `<svg viewBox="0 0 80 64" width="80" height="64" aria-hidden="true"><rect x="2" y="2" width="76" height="60" rx="4" fill="#FFFDF6" stroke="#D9CFB8"/>` +
+      `<rect x="7" y="7" width="66" height="40" rx="2" fill="#F3E7C9"/>${people}</svg>`; }
 
   /* ================================================================ ACTIONS (app3-me.js `hivePost` → here) */
   function refocus(sel) { setTimeout(() => { try { const e = document.querySelector(sel); if (e && !e.disabled) e.focus({ preventScroll: true }); else { const r = document.querySelector('.hp-reader, .hp-post'); if (r) { r.setAttribute('tabindex', '-1'); r.focus({ preventScroll: true }); } } } catch (e) {} }, 0); }
@@ -829,6 +841,8 @@
 .hp-src summary{min-height:44px;display:flex;align-items:center;font-size:12.5px;font-weight:700;color:var(--muted);cursor:pointer}
 .hp-src ul{margin:0;padding-left:18px;font-size:12px;color:var(--muted)}
 .hp-stamps{list-style:none;margin:0 0 12px;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.hp-photos{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+.hp-photo{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12.5px;font-weight:700;text-align:center}
 .hp-stampbtn{width:100%;padding:0;border:0;background:none;color:inherit}
 .hp-stamp{display:flex;flex-direction:column;align-items:center;gap:3px;min-height:118px;padding:12px 8px;border-radius:6px;background:#FFF6DD;color:#3B2A06;border:2px dashed #B07A12;text-align:center}
 .hp-stamp.empty{background:transparent;color:var(--muted);border-color:var(--line);filter:grayscale(1);opacity:.7}

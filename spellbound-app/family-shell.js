@@ -143,6 +143,7 @@
     try { if (typeof tyStop === 'function') tyStop(); } catch (e) {}
     try { if (window.SB_GYM) SB_GYM.stop(); } catch (e) {}   // a gym round ends where it stands; nothing is paid for leaving
     try { if (window.SB_ANL) SB_ANL.stop(); } catch (e) {}   // an analogy round or clock stops where it stands; nothing is paid for leaving
+    try { if (window.SB_CIRCUIT_CASES && document.querySelector('.cc-play')) SB_CIRCUIT_CASES.drop(); } catch (e) {}   // a Surprise Stop left mid-case keeps its record
     try { state.game = null; state.sq = null; } catch (e) {}
   }
 
@@ -308,6 +309,8 @@
        so a locked stop's address lands on the map; and Mock Analogy Bee at #/anlbee */
     if (head === 'analogies' && typeof app.openAnalogies === 'function') { app.openAnalogies(p.slice(1).join('/')); return; }
     if (head === 'anlbee' && typeof app.openAnlBee === 'function') { app.openAnlBee(); return; }
+    /* a Surprise Stop's own address (Bee Circuit §7): opens only a case the child's season has reached — the runner checks */
+    if (head === 'case' && p[1]) { app.setNav('trail'); lazyNeed('circuitCases', function () { try { if (window.SB_CIRCUIT_CASES) SB_CIRCUIT_CASES.open(p[1]); } catch (e) {} }); return; }
     /* the Library's Link Finder: #/links, #/links/<word>, #/links/link/<lesson> */
     if (head === 'links' && typeof app.openAnlTool === 'function') {
       /* the opener holds the analogy gate (app3 anlOpen): gated, it lands on the Library and nothing is fetched here either */

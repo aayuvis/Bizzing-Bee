@@ -210,7 +210,10 @@
        tools/circuit/build-data.cjs, and its core (state, mail, the Hive Post, the moment card). Fetched at a door
        (the Hive Post tab, a region board's extras) and on the idle queue — never on the first screen. */
     circuitData: 'circuit-data.js',
-    circuit: 'circuit.js'
+    circuit: 'circuit.js',
+    /* The Bee Circuit's five Surprise Stops (BEE-CIRCUIT.md §7): the case runner and its data, cut from circuit/script.json by
+       tools/circuit/build-cases.cjs — one bundle, after the season's core (DEPS); never on a first screen */
+    circuitCases: ['circuit-cases-data.js', 'circuit-cases.js']
   };
 
   /* Groups, so a caller can ask for a feature rather than a filename. */
@@ -270,18 +273,19 @@
     scrGames: ['words1', 'scrShared', 'scrGames'],
     scrMe: ['scrShared', 'scrMe'],
     scrTools: ['words1', 'scrShared', 'scrTools'],
-    circuit: ['circuitData', 'circuit']
+    circuit: ['circuitData', 'circuit'],
+    circuitCases: ['words1', 'saga2', 'circuitCases']   // the engine kit (SGUI) the cases play on
   };
 
   /* A file that must not run before another. load() fetches the prerequisite first and
      injects the dependant only once it has run — async scripts otherwise execute in
      whatever order they arrive. */
   /* words2 and the boot sentences land on the boot tier's records (in order, by word), so the tier comes first */
-  var DEPS = { words2: ['words1'], sents: ['words1'], trailCode: ['trail'], scrLib: ['scrShared'], scrGym: ['scrShared'], scrGrown: ['scrShared'], scrGames: ['scrShared'], scrMe: ['scrShared'], scrTools: ['scrShared'], sagaMap: ['sagaArt'], worldsArt: ['sagaMap'], sagaDom: ['worldsArt'], saga2: ['sagaDom'], feedView: ['feedEngine', 'feedMeta'], forgeUI: ['forgeCore', 'forgeData', 'saga2'], gym: ['saga2'], mockbee: ['saga2'], anlUI: ['anlData'], placeUI: ['placeData'], library: ['libIndex'], circuit: ['circuitData'] };
+  var DEPS = { words2: ['words1'], sents: ['words1'], trailCode: ['trail'], scrLib: ['scrShared'], scrGym: ['scrShared'], scrGrown: ['scrShared'], scrGames: ['scrShared'], scrMe: ['scrShared'], scrTools: ['scrShared'], sagaMap: ['sagaArt'], worldsArt: ['sagaMap'], sagaDom: ['worldsArt'], saga2: ['sagaDom'], feedView: ['feedEngine', 'feedMeta'], forgeUI: ['forgeCore', 'forgeData', 'saga2'], gym: ['saga2'], mockbee: ['saga2'], anlUI: ['anlData'], placeUI: ['placeData'], library: ['libIndex'], circuit: ['circuitData'], circuitCases: ['circuit'] };
 
   var IDLE = ['words1', 'trail', 'trailCode', 'scrShared', 'scrGym', 'scrLib', 'scrGames', 'scrMe', 'scrGrown', 'scrTools', 'sents', 'words2', 'wordband', 'lore', 'saga2', 'concepts', 'trail', 'sounds', 'pron', 'voiceWords', 'quotes',
     'themeLore', 'fig', 'lessons', 'advConcepts', 'cscript', 'advTips', 'vocab26', 'finals500',
-    'scripps', 'southasia', 'voiceFrench', 'story', 'alts', 'syn', 'coachRules', 'avatarArt', 'forgeData', 'adv', 'ttIcons', 'circuitData', 'circuit', 'sync'];
+    'scripps', 'southasia', 'voiceFrench', 'story', 'alts', 'syn', 'coachRules', 'avatarArt', 'forgeData', 'adv', 'ttIcons', 'circuitData', 'circuit', 'sync', 'circuitCases'];
 
   var state = {};          // name -> 'loading' | 'done'
   var waiters = {};        // name -> [cb]
