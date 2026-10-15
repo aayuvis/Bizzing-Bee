@@ -13,8 +13,8 @@
       eight points, all landing on the control): EVERY control on the hall's lobby, turn, result and finish and on a
       notebook page; on each region board the hall's three controls (the pin, the hall bar, the notebook button), and
       no stop's 44px circle lands on any of them — the overlay takes nothing from a stop. (The boards' own stops are
-      the Atlas's, measured by touch-targets.cjs on Twin Ponds; Orchard Hill's level check, 18px from the board's top at
-      390, has the top of its circle clipped by the board — before the halls and apart from them; see BUILD-reasoning.)
+      the Atlas's, measured by touch-targets.cjs on Twin Ponds; every board's stops at four widths are held inside their
+      board by tests/analogy-board-fit.cjs since 15 Oct 2026 — Orchard Hill's level check used to lose its top at 390.)
    4  FITS 390. Nothing spills sideways on a board, a hall screen or a notebook page (scrollWidth ≤ 390).
    5  NO EMOJI in a control, a HUD or a board (tests/hud-emoji.cjs's scan: Chromium's Extended_Pictographic, © ® ™ aside)
       on each board, each hall screen and each notebook page, phone and desktop.
