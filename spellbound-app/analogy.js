@@ -380,7 +380,12 @@
       const f = 0.07 + 0.88 * (j / (nStops - 1)); const [x, y] = along(g, f); const open = stopOpen(reg, j);
       const done = isChk ? walked(reg.id) : passed(id); const L = st ? lesson(st.lesson) : null; const cur = at && at.r === reg && at.j === j;
       const label = isChk ? 'Level check' : L.title;
-      marks.push(`<button class="anl-stop${done ? ' done' : ''}${open ? '' : ' locked'}${cur ? ' cur' : ''}${s.stop === id ? ' sel' : ''}${isChk ? ' chk' : ''}" style="left:${(x / 16).toFixed(2)}%;top:${(y / 9).toFixed(2)}%" data-act="anl" data-arg="stop:${escA(id)}" aria-label="${escA(label + (done ? ', passed' : open ? '' : ', locked'))}">
+      /* a stop is placed on the road but never past the board's edge (the Atlas's mapPoints rule): --x/--y are its place,
+         the CSS clamps it by its own half-size — the medallion and its focus ring on a narrow board, the label as well on a
+         wide one (--hxw, the label's width from its letters, generously). Orchard Hill's level check sat 18px below the
+         top at 390 and lost the top of its 44px circle; Bridge Peaks' first label ran off the left at 768. */
+      const hxw = Math.ceil((16 + 8.6 * label.length) / 2) + 2;
+      marks.push(`<button class="anl-stop${done ? ' done' : ''}${open ? '' : ' locked'}${cur ? ' cur' : ''}${s.stop === id ? ' sel' : ''}${isChk ? ' chk' : ''}" style="--x:${(x / 16).toFixed(2)}%;--y:${(y / 9).toFixed(2)}%;--hxw:${hxw}px" data-act="anl" data-arg="stop:${escA(id)}" aria-label="${escA(label + (done ? ', passed' : open ? '' : ', locked'))}">
         <span class="anl-med">${open ? (done && !isChk ? ic('check', 20) : lic(isChk ? 'check' : st.lesson, 22)) : ic('lock', 16)}</span><span class="anl-lab">${esc(label)}</span>
         ${cur && W.SB_AVATAR && c ? `<span class="anl-me" aria-hidden="true">${SB_AVATAR(c.avatar || 'bizzy', 40)}</span>` : ''}</button>`); }
     /* the walked part of the road, solid, up to where the child stands */
@@ -971,7 +976,7 @@
 .anl-scene,.anl-walk{position:absolute;inset:0;width:100%;height:100%;display:block}
 .anl-paint img{width:100%;height:100%;object-fit:cover;display:block}
 .anl-board.painted .anl-walk{filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))}
-.anl-stop{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:3px;min-width:48px;min-height:48px;background:none;border:0;padding:0;cursor:pointer;z-index:2}
+.anl-stop{--hx:max(32px,var(--hxw,32px));--hy:42px;position:absolute;left:clamp(var(--hx),var(--x),calc(100% - var(--hx)));top:clamp(var(--hy),var(--y),calc(100% - var(--hy)));transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:3px;min-width:48px;min-height:48px;background:none;border:0;padding:0;cursor:pointer;z-index:2}
 .anl-med{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:#FFFFFF;color:#3A2A5A;border:3px solid #F2A93B;box-shadow:0 3px 10px rgba(0,0,0,.28)}
 .anl-stop.done .anl-med{background:#F2A93B;color:#FFFFFF;border-color:#FFFFFF}
 .anl-stop.chk .anl-med{border-color:#7A4FD0;color:#7A4FD0}
@@ -980,7 +985,7 @@
 .anl-stop.sel .anl-med{outline:4px solid rgba(255,255,255,.95);outline-offset:2px}
 .anl-stop:focus-visible .anl-med{outline:4px solid #3B6FE0;outline-offset:2px}
 .anl-lab{font-family:var(--display);font-weight:800;font-size:12px;line-height:1.1;padding:3px 8px;border-radius:999px;background:rgba(255,255,255,.92);color:#2A2140;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.18)}
-@container (max-width:560px){.anl-lab{display:none}.anl-med{width:44px;height:44px}}
+@container (max-width:560px){.anl-lab{display:none}.anl-med{width:44px;height:44px}.anl-stop{--hx:32px;--hy:32px}}
 .anl-me{position:absolute;bottom:calc(100% - 4px);left:50%;transform:translate(-50%,0);width:40px;height:40px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.35));pointer-events:none}
 .anl-me svg,.anl-me img{width:100%;height:100%}
 .anl-card{background:var(--paper,var(--bg2));border:1px solid var(--line);box-shadow:var(--sh-rest,none);border-radius:18px;padding:16px 18px;margin-top:12px}

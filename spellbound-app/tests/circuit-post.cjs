@@ -38,7 +38,7 @@
 'use strict';
 const { chromium } = require('playwright');
 const fs = require('fs'), path = require('path');
-const { until } = require('./lib/wait.cjs');
+const { until, quietRender, frames } = require('./lib/wait.cjs');
 const ROOT = process.env.SB_ROOT ? path.resolve(process.env.SB_ROOT) : path.resolve(__dirname, '..');
 const AXE = (() => { try { return require.resolve('axe-core/axe.min.js'); } catch (e) {} const p = path.join(__dirname, '..', 'node_modules', 'axe-core', 'axe.min.js'); return fs.existsSync(p) ? p : null; })();
 let fails = 0;
@@ -88,7 +88,10 @@ const AUDIT = (sel) => { const root = document.querySelector(sel); if (!root) re
     await pg.waitForFunction(() => typeof state !== 'undefined' && typeof app !== 'undefined' && !!state.screen, null, { timeout: 30000 });
     return { ctx, pg };
   };
-  const settle = (pg) => pg.waitForTimeout(120);
+  /* a step is settled when the app has stopped redrawing (no render() for 120 ms — a lazy file landing redraws it) and two
+     frames have painted. It was a fixed 120 ms sleep, and once under a loaded machine the moment card was still up over
+     the envelope the next line tapped (BUILD-halls.md); circuit-halls-board waits the same way. */
+  const settle = async (pg) => { await quietRender(pg, 120); await frames(pg, 2); };
 
   /* ================================================================ phone */
   {

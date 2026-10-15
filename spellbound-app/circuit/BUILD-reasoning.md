@@ -116,9 +116,11 @@ Files: `analogy.js` (the whole build — the section "THE REASONING ROUNDS"), `t
    (`const podium = b.place <= 3 && b.log.slice(1).filter((x) => x.ok).length >= 3;`) cuts the guesser to 0.6% at a
    cost of 3.7 points to a 70% speller. It changes the plain bee too (one shared line); `tests/analogies.cjs` §8's bot
    (right in rounds 1–3) would then need a fourth right answer. Not done here: it is a pay-rule change.
-2. **Orchard Hill's level check, at 390px**, sits 18.5px below the board's top edge, so its medallion's top 8px and the
+2. ~~**Orchard Hill's level check, at 390px**, sits 18.5px below the board's top edge, so its medallion's top 8px and the
    top 2.5px of its 44px circle are clipped by the board's `overflow:hidden` (measured with the halls switched off;
-   touch-targets.cjs only measures Twin Ponds' board). Before the halls and apart from them.
+   touch-targets.cjs only measures Twin Ponds' board). Before the halls and apart from them.~~ **Fixed 15 Oct 2026
+   (batch 3)**: every stop is clamped inside its board by its own half-size; `tests/analogy-board-fit.cjs` holds all four
+   boards at 360, 390, 768 and 1280.
 3. **`bridge()` puts an article inside "the"** for the reviewed `use` template "We use the {A} to {B}.": for a pair like
    pen/write the tab's "Yes." and miss lines read "We use the a pen to write." (36 live `function` items), and the
    reviewed part template "The {A} is part of the {B}." reads "The a blade is part of the a knife." (5 live `part`
