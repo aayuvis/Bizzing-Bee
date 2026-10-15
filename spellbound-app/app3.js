@@ -8205,6 +8205,10 @@ function render(){
   // the evolution rail scrolls on narrow screens — park it on the speller's current stage
   try{ if(window.evoLadderSync) evoLadderSync(); }catch(e){}
   try{ if(window.SB_SHELL) SB_SHELL.afterRender(); }catch(e){}   // hash route + Hive milestones
+  /* the Bee Circuit's moment card belongs to the region board it was drawn over: off the board, it closes (its words are in
+     the Hive Post's mail). The app moves its address with the history API, which fires no hashchange — so circuit.js's own
+     hashchange close never saw a child (or a test, drill-resume in full run 16) leave the board; the card stayed over Home. */
+  try{ if(window.SB_CIRCUIT&&SB_CIRCUIT.closeMoment&&!(state.screen==='app'&&state.nav==='trail'&&state.trailView==='act')) SB_CIRCUIT.closeMoment(); }catch(e){}
   trapFocusAfterRender();
   save();
 }

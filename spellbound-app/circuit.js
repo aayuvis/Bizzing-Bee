@@ -870,6 +870,6 @@
     piece: (c, i) => { const o = rec(c || kid()); return o && o.mail[i] ? piece(o, o.mail[i], i) : null; },
     lineHTML: (path) => { const v = at(path); return typeof v === 'string' ? `<p class="hp-line">${H(fill(v, null, path))}</p>` : ''; },
     fill: (path, d) => fill(at(path), d || null, path),
-    at, sequence: (c) => sequence(rec(c || kid())), moments: () => moments.slice(), showMoment, ensureStyle
+    at, sequence: (c) => sequence(rec(c || kid())), moments: () => moments.slice(), showMoment, closeMoment, ensureStyle
   };
 })();
