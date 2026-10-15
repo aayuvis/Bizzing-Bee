@@ -52,6 +52,12 @@ async function open(b, o) {
 }
 /* open the Daily Bee and wait for today's board (or its end card) */
 async function bee(pg, how) {
+  /* the word tier first (CLAUDE.md: a test that calls into the app right after boot asks for words1). A page opened at an
+     address (#/play) holds that address until the tier lands (family-shell wordsHold) — and then applies it. Called before,
+     openDailyBee ran first and the held #/play landed after it and took the page back to Play: no board, nav 'games',
+     forever (P3 full runs 9 and 12; reproduced 2 in 11 opens under load). The held address's callback was queued first,
+     so when this one runs the page is already where the address put it. */
+  await pg.evaluate(() => new Promise(r => SB_LAZY.need('words1', r)));
   await pg.evaluate(h => { if (h === 'route') location.hash = '#/daily'; else app.openDailyBee(); }, how || 'tap');
   return W.until(pg, () => !!document.querySelector('#db-host .db-grid, #db-host #db-end') && !!(active().dbee && active().dbee.word), null, 60000);
 }
