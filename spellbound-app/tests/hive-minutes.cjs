@@ -38,12 +38,27 @@ const SEED = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0, ch
      off-the-record context holds localStorage in memory, and on a loaded or long run a reload there can start on EMPTY
      storage — the quiet full run read "(0)", i.e. the real feed was gone, not written to by ?demo (pin-mandatory measured
      the artefact: off-the-record 3 of 48 reloads empty, on-disk 0 of 72). */
-  const dir = fs.mkdtempSync(path.join(require('os').tmpdir(), 'sb-hivemin-profile-'));
-  const ctx = await chromium.launchPersistentContext(dir, { viewport: { width: 1000, height: 900 },
+  /* A FRESH PROFILE WHOSE STORAGE LINK HOLDS (15 Oct 2026; P3 full run 14 read "2 → 0" at the leave-and-return): about one
+     boot in eight of a fresh profile breaks the page's storage link — every minute written stays in the renderer, and the
+     page after about:blank starts on none of them. That is the browser, not the drop-in. So the walk checks the link right
+     after the first boot (wait.cjs storageLinked), before it counts a minute; a broken one is discarded and the walk starts
+     again in a fresh profile — three attempts at most, the checks always judge the one that runs (said in the output). */
+  let dir, ctx, pg, errs, up0 = false;
+  for (let attempt = 1; ; attempt++) {
+  dir = fs.mkdtempSync(path.join(require('os').tmpdir(), 'sb-hivemin-profile-'));
+  ctx = await chromium.launchPersistentContext(dir, { viewport: { width: 1000, height: 900 },
     executablePath: process.env.SB_CHROME || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => fs.existsSync(p)) });
   await ctx.clock.install();
   await ctx.addInitScript(s => { try { if (!localStorage.getItem('t_hm')) { localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_splash', '0'); localStorage.setItem('t_hm', '1'); } } catch (e) {} }, SEED);
-  const pg = ctx.pages()[0] || await ctx.newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));
+  pg = ctx.pages()[0] || await ctx.newPage(); errs = []; pg.on('pageerror', e => errs.push(e.message));
+  await pg.goto(URL); await pg.waitForTimeout(2500);
+  up0 = await pg.evaluate(() => typeof state !== 'undefined' && state.screen === 'app' && !!window.BZ_ACTIVITY);
+  const linked = await require('./lib/wait.cjs').storageLinked(pg);
+  if (linked) break;
+  if (attempt >= 3) { console.log('  note the storage link broke at boot in three fresh profiles — judging this one anyway'); break; }
+  console.log(`  note attempt ${attempt}: the storage link broke at boot (a second page never saw the page's write) — a fresh profile`);
+  await ctx.close(); try { fs.rmSync(dir, { recursive: true, force: true }); } catch (e) {}
+  }
   const boot = async u => { await pg.goto(u || URL); await pg.waitForTimeout(2500);
     return pg.evaluate(() => typeof state !== 'undefined' && state.screen === 'app' && !!window.BZ_ACTIVITY); };
   const feed = () => pg.evaluate(() => { try { return JSON.parse(localStorage.getItem('bizzing.activity') || 'null'); } catch (e) { return null; } });
@@ -65,7 +80,7 @@ const SEED = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0, ch
     }
     return right; };
 
-  ok(await boot(), 'the app boots with the family drop-in loaded (window.BZ_ACTIVITY)');
+  ok(up0, 'the app boots with the family drop-in loaded (window.BZ_ACTIVITY)');
   /* start from a clean feed and a stopped count: hide once (which flushes whatever the boot's own
      two-minute window held), then empty the key — test code may; the app never does */
   await show('hidden'); await pg.evaluate(() => localStorage.removeItem('bizzing.activity')); await show('visible');

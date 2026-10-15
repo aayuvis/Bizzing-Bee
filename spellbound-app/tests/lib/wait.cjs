@@ -100,6 +100,21 @@ async function storageSettled(ctx, n, ms = 8000, at, want) {
    main thread is not sent yet), then the browser holds every key the page holds, with the same values (storageSettled
    on the page's own context and origin), then page.reload(opts). Returns false (and still reloads) only if they never
    settle, so a test that asserts its starting storage can say why. */
+/* storageLinked(page): is this page's storage link to the browser working? (CLAUDE.md, "the broken storage link": about
+   one boot in eight of a fresh profile ends with every write the app makes kept in its renderer and never reaching the
+   browser — a second page never sees it.) A canary the page writes must reach a second page of the profile within `ms`.
+   Ask it right after the FIRST boot, before the walk counts anything: false means this attempt proves nothing — start
+   again in a fresh profile (trust-v2, hive-minutes). The canary is removed again. */
+async function storageLinked(page, ms = 4000) {
+  const key = '__sb_link', v = String(Date.now()), at = page.url();
+  await page.evaluate(([k, x]) => localStorage.setItem(k, x), [key, v]);
+  const probe = await page.context().newPage();
+  try {
+    await probe.goto(/^https?:/.test(at) ? new URL('tests/lib/storage-probe.html', at).href : 'file://' + require('path').resolve(__dirname, 'storage-probe.html'));
+    for (const t0 = Date.now(); Date.now() - t0 < ms;) { if (await probe.evaluate((k) => localStorage.getItem(k), key) === v) return true; await new Promise((r) => setTimeout(r, 50)); }
+    return false;
+  } finally { await probe.close(); await page.evaluate((k) => localStorage.removeItem(k), key).catch(() => {}); }
+}
 async function reloadSettled(page, opts) {
   /* capped from Node: a test on Playwright's installed clock (hive-activity) fakes requestIdleCallback and its timeout too */
   await Promise.race([page.evaluate(() => new Promise((r) => (window.requestIdleCallback || setTimeout)(() => r(), { timeout: 3000 }))).catch(() => {}),
@@ -135,4 +150,4 @@ async function reloadSettled(page, opts) {
   return ok;
 }
 
-module.exports = { until, booted, lazy, frames, still, quietRender, storageSettled, reloadSettled, STILL, raceTime, RACE_DT_MAX };
+module.exports = { until, booted, lazy, frames, still, quietRender, storageSettled, reloadSettled, storageLinked, STILL, raceTime, RACE_DT_MAX };
