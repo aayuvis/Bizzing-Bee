@@ -200,6 +200,12 @@ const MODES = ['warmup', 'sprint', 'dictation', 'spot', 'squares', 'doctor', 'ch
     const L = () => (window.SB_LEVEL && SB_LEVEL.get) ? SB_LEVEL : null;
     const rows = [];
     for (const m of ['warmup', 'sprint', 'dictation', 'spot', 'squares', 'doctor']) {
+      /* a mode here is seconds of play; one still running after 30 s says what the page is doing every 30 s — or that the
+         page does not answer at all (frozen) — so a hang names itself (full run 21: T13 timed out with nothing printed) */
+      const watch = setInterval(async () => { const st = await Promise.race([pg.evaluate(() => { const p = SB_GYM.peek(); let full = '?'; try { full = _fullState; } catch (e) {}
+          return JSON.stringify({ round: p && { mode: p.mode, phase: p.phase, view: p.view, asked: p.asked }, nav: state.nav, screen: state.screen, gymMode: state.gymMode, full,
+            held: !!(window.SGUI && SGUI.held), miss: document.querySelectorAll('.sg-miss').length, input: !!document.querySelector('.gym-in') }); }).catch(e => 'evaluate failed: ' + e.message),
+        new Promise(r => setTimeout(() => r('the page did not answer in 5 s (frozen?)'), 5000))]); console.log('  note T13 ' + m + ' still running: ' + st); }, 30000);
       const r = await pg.evaluate(async m => { const { round } = __gym;
         const Lv = (window.SB_LEVEL && SB_LEVEL.get) ? SB_LEVEL : null;
         const get = k => Lv ? Lv.get(k) : ((active().gym || {}).lv || {})[k] ? active().gym.lv[k].level : 'auto';
@@ -213,7 +219,7 @@ const MODES = ['warmup', 'sprint', 'dictation', 'spot', 'squares', 'doctor', 'ch
         for (let n = 0; n < 3; n++) { const res = await round(m, m === 'squares' ? (i => i < 2 || (i >= 5 && i < 7) ? 'right' : 'wrong') : forty, limit); seq.push(get(k) + '@' + res.pct); }
         set(k, 'medium'); const r50 = await round(m, half, limit); seq.push(get(k) + '@' + r50.pct);
         set(k, 'champ'); app.openGym(m); await __gym.U(() => __gym.P().mode === m); const used = __gym.P().level;
-        return { m, seq, used, after: get(k) }; }, m);
+        return { m, seq, used, after: get(k) }; }, m).finally(() => clearInterval(watch));
       rows.push(r); }
     for (const r of rows) {
       const lv = r.seq.map(s => s.split('@')[0]);
