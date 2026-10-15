@@ -19,7 +19,12 @@
      · pay is `answer` 1 per right only from the sixth right in a round (above chance), `contest` only
        behind a pass or a podium, `mastery` only from the later-day record — nothing for finishing;
      · nothing here calls Math.random: option order, stems and rivals all come from a hash;
-     · no definition is on screen while a question is open (it would give the link away). */
+     · no definition is on screen while a question is open (it would give the link away).
+   THE REASONING ROUNDS (the Bee Circuit §11, build step 9) are an OVERLAY on the four region boards: a hall pin on
+   each board opens the Mock Analogy Bee at that region's level with the Circuit's cast seated (Theo headlines every
+   hall, Rafi joins from Workshop Valley on), and Theo's notebook keeps a page a hall, quoted from the region's own
+   lessons. Nothing in the tab reads a hall: the stops, checks, unlocks and mastery are what they were. See the
+   section "THE REASONING ROUNDS" below, and tests/analogy-halls*.cjs. */
 (function () {
   'use strict';
   const W = window;
@@ -130,9 +135,12 @@
   function stop() { stopClock(); const s = state.anl; if (s && s.run && s.run.phase !== 'done') s.run.phase = 'left'; }
   const route = () => { const s = state.anl || {}; if (s.v === 'clock') return 'analogies/clock';
     if (s.stop && (s.v === 'lesson' || s.v === 'words')) return 'analogies/' + s.stop + '/' + (s.v === 'lesson' ? 'learn' : 'words');
+    if (s.v === 'note' && s.reg) return 'analogies/' + s.reg + '/notebook';
     return 'analogies' + (s.reg ? '/' + s.reg : ''); };
   function openRoute(parts) { open(parts[0] === 'clock' ? 'clock' : null); const s = S();
-    if (parts[0] && regionById(parts[0])) { s.reg = parts[0]; }
+    if (parts[0] && regionById(parts[0])) { s.reg = parts[0]; if (parts[1] === 'notebook' && noteKept(parts[0])) { aimAt(parts[0]); s.v = 'note'; }
+      /* #/analogies/<region>/hall: the hall's own door, for an address (the hall itself runs at #/anlbee — BUILD-reasoning.md) */
+      if (parts[1] === 'hall' && HALLS[parts[0]]) { aimAt(parts[0]); openHall(parts[0]); if (state.nav === 'anlbee') return; } }
     const hit = parts[0] && stopById(parts[0]);
     if (hit) { const i = regions().indexOf(hit.r); const j = hit.s ? hit.r.stops.indexOf(hit.s) : hit.r.stops.length;
       if (stopOpen(hit.r, j)) { s.reg = hit.r.id; s.stop = parts[0]; if (parts[1] === 'learn') s.v = 'lesson'; else if (parts[1] === 'words') s.v = 'words'; } }
@@ -352,6 +360,7 @@
     if (s.v === 'lesson') return lessonView();
     if (s.v === 'words') return wordsView();
     if (s.v === 'clock') return clockIntro();
+    if (s.v === 'note') return noteView();
     return mapView(); }
   function head(title, sub, back, backLabel, icon) {
     try { return pageHead(title, '', sub || '', W.coinChip ? coinChip() : '', back || 'goHome', backLabel || 'Home', back === 'anl' ? 'map' : null, icon || ''); }
@@ -376,7 +385,7 @@
     const walkD = walkPts.length > 1 ? 'M' + walkPts.map((p) => p.map((v) => v.toFixed(0)).join(' ')).join(' L') : '';
     const board = `<div class="anl-board${ART[reg.id] ? ' painted' : ''}" role="group" aria-label="${escA(reg.name + ' map')}">${sceneFor(reg.id)}
       <svg class="anl-walk" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><path d="${g.d}" fill="none" stroke="#FFFFFF" stroke-width="7" stroke-dasharray="4 16" stroke-linecap="round" opacity=".9"/>${walkD ? `<path d="${walkD}" fill="none" stroke="#F2A93B" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>` : ''}</svg>
-      ${marks.join('')}</div>`;
+      ${marks.join('')}${hallPin(reg, ri)}</div>${hallBar(reg, ri)}`;
     const tabIc = (() => { try { return navIcon('analogy', 24); } catch (e) { return lic('family', 20); } })();
     return `<div class="anl-page">${head('Analogy Atlas', esc(reg.about), 'goHome', 'Home', tabIc)}
       <div class="anl-rtabs" role="group" aria-label="Regions">${tabs}</div>
@@ -593,6 +602,9 @@
       s.reg = v; const r = regions()[i]; const j = r.stops.findIndex((st, x) => stopOpen(r, x) && !passed(st.id)); s.stop = j >= 0 ? r.stops[j].id : r.id + '-check'; s.v = 'map'; render(); return; }
     if (k === 'stop') { const hit = stopById(v); if (!hit) return; s.reg = hit.r.id; s.stop = v; s.v = 'map'; render();
       setTimeout(() => { try { const el = document.querySelector('.anl-card'); if (el && el.scrollIntoView) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (e) {} }, 30); return; }
+    if (k === 'hall') { openHall(v); return; }
+    if (k === 'note') { openNote(v); return; }
+    if (k === 'noteSay') { noteSay(v); return; }
     const hit = stopById(s.stop);
     if (k === 'learn') { if (hit && hit.s) { s.v = 'lesson'; s.ls = null; render(); try { window.scrollTo(0, 0); } catch (e) {} } return; }
     if (k === 'ls') { lessonAct(v); return; }
@@ -616,6 +628,8 @@
     if (state.nav === 'anltool') { const t = state.anlTool; if (t && t.ask && t.ask.picked == null && /^[1-3]$/.test(e.key)) { e.preventDefault(); toolAct('pick:' + (+e.key - 1)); } return; }
     if (state.nav !== 'analogy') return; const s = state.anl; if (!s) return;
     const g = s.run; const k = e.key;
+    if (s.v === 'note') { if (k === 'ArrowRight' || k === 'ArrowLeft') { const kept = regions().filter((r) => noteKept(r.id)), i = kept.findIndex((r) => r.id === s.reg);
+      const to = kept[i + (k === 'ArrowRight' ? 1 : -1)]; if (to) { e.preventDefault(); openNote(to.id); } } return; }
     if (s.v === 'lesson' && s.ls) { const hit = stopById(s.stop); if (!hit || !hit.s) return; const step = lessonSteps(lesson(hit.s.lesson)).steps[s.ls.i] || {};
       if (k === 'ArrowRight' || k === 'Enter') { e.preventDefault(); lessonAct('next'); return; }
       if (k === 'ArrowLeft') { e.preventDefault(); lessonAct('back'); return; }
@@ -645,7 +659,9 @@
   const LVL_LO = { easy: 1, medium: 3, hard: 5, champ: 7 };
   function beeLevel() { let L = 'auto'; try { L = W.SB_LEVEL ? SB_LEVEL.get('mockAnalogy') : 'auto'; } catch (e) {}
     if (LVL_LO[L]) return LVL_LO[L]; const h = here(); return h ? h.r.lv[0] : 1; }
-  function beePool() { const A0 = D(); const ids = new Set(A0.games || []); regions().forEach((r) => { r.stops.forEach((st) => st.items.forEach((x) => ids.add(x))); r.check.forEach((x) => ids.add(x)); }); let L = 'auto'; try { L = W.SB_LEVEL ? SB_LEVEL.get('mockAnalogy') : 'auto'; } catch (e) {} return bandIds(safeIds([...ids]), L); }
+  /* a hall asks the same pool at ITS region's level: the Mock Analogy Bee level whose first analogy level is the region's
+     (Easy 1 = Twin Ponds, Medium 3 = Orchard Hill, Hard 5 = Workshop Valley, Champ 7 = Bridge Peaks) */
+  function beePool(hall) { const A0 = D(); const ids = new Set(A0.games || []); regions().forEach((r) => { r.stops.forEach((st) => st.items.forEach((x) => ids.add(x))); r.check.forEach((x) => ids.add(x)); }); let L = 'auto'; try { L = W.SB_LEVEL ? SB_LEVEL.get('mockAnalogy') : 'auto'; } catch (e) {} if (hall) L = hallLevel(hall); return bandIds(safeIds([...ids]), L); }
   const B = () => state.anlBee;
   function openBee() { stopClock(); state.anlBee = { phase: 'lobby' }; state.nav = 'anlbee'; state.screen = 'app'; state.game = null; try { render(); } catch (e) {} }
   /* the seven seats: [face, name, chance, rival id] from Mock Bee's cast, for the child on screen ([] until mockbee.js is in) */
@@ -654,11 +670,13 @@
     if (!all.length) return [];
     const from = Math.max(0, Math.min(all.length - SEATS, Math.round(((lo || beeLevel()) - 1) / 2)));
     return all.slice(from, from + SEATS).map((r) => [r.face, r.name, skillOf(r), r.id]); }
-  function beeStart() { if (!castFor().length) { try { if (W.SB_LAZY) SB_LAZY.need('mockbee', () => { if (state.nav === 'anlbee') beeStart(); }); } catch (e) {} return; }
+  function beeStart() { const hall = hallIdOf(B());
+    if (!(hall ? hallSeats(hall) : castFor()).length) { try { if (W.SB_LAZY) SB_LAZY.need('mockbee', () => { if (state.nav === 'anlbee') beeStart(); }); } catch (e) {} return; }
+    if (hall) { hallStart(hall); return; }
     const lo = beeLevel(); const seed = day() + '|bee|' + (rec().n++); const names = castFor(lo).map(([id, name, sk, rid]) => ({ id, rid, name, sk, out: 0 }));
     state.anlBee = { phase: 'turn', seed, lo, round: 1, field: names, me: { out: 0 }, used: {}, log: [], e0: (W.earnedSoFar ? earnedSoFar() : 0) };
     store(); beeAsk(); }
-  function beeAsk() { const b = B(); const lv = Math.min(9, b.lo + Math.floor((b.round - 1) / 2)); const pool = beePool();
+  function beeAsk() { const b = B(); const lv = Math.min(9, b.lo + Math.floor((b.round - 1) / 2)); const pool = beePool(b.hall);
     const A0 = D(); const fits = pool.filter((id) => { const it = A0.items[id]; return it && !b.used[id] && it[1] >= lv - 1 && it[1] <= lv + 1 && it.length >= 7; });
     const P = fits.length ? fits : pool.filter((id) => !b.used[id]); const id = P[hash(b.seed + '|' + b.round) % Math.max(1, P.length)];
     b.used[id] = 1; b.q = question(id, b.round >= 5 ? 5 : 4, b.seed + '|' + b.round); b.picked = null; b.phase = 'turn'; b.qAt = Date.now(); b.fx = null; render(); }
@@ -683,7 +701,9 @@
       if (!b.field.some((x) => !x.out)) { const last = b.field.filter((x) => x.out === r); last.forEach((x) => { x.out = 0; }); if (last.length === 1) break; } }
     const outAt = (x) => (x.out || 999); const myOut = b.me.out || 999;
     b.place = 1 + b.field.filter((x) => outAt(x) > myOut).length;
-    b.phase = 'done'; const p = rec().bee; p.played = (p.played || 0) + 1; p.best = Math.min(p.best || 99, b.place); if (b.place === 1) p.wins = (p.wins || 0) + 1;
+    b.phase = 'done';
+    if (b.hall) hallDone(b);   /* a hall keeps its own record (c.anl.halls); the Mock Analogy Bee's best finish is its own */
+    else { const p = rec().bee; p.played = (p.played || 0) + 1; p.best = Math.min(p.best || 99, b.place); if (b.place === 1) p.wins = (p.wins || 0) + 1; }
     /* a podium is a pass mark: one contest coin for first, second or third */
     const podium = b.place <= 3;
     if (podium) { try { addCoins('contest'); } catch (e) {} }
@@ -700,18 +720,20 @@
     if (!kit()) return needKit('anlbee');
     const me = c && W.SB_AVATAR ? SB_AVATAR(c.avatar || 'bizzy', 46) : '';
     const face = (id) => { try { return W.SB_AVATAR ? SB_AVATAR(id, 46) : ''; } catch (e) { return ''; } };
-    const back = backIn('openAnalogies', '', 'Back to Analogies');
-    const title = ttl('Mock Analogy Bee', 'Analogy Bee');
-    const stage = (o) => stageAnl(Object.assign({ plate: PLATE.bee, label: 'Mock Analogy Bee', cls: 'anl-beest' }, o), b.phase !== 'lobby');
-    if (b.phase === 'lobby') { const seats = castFor();
+    /* a hall is this same bee, seated and titled for its region, its way back the region's board (THE REASONING ROUNDS) */
+    const H = hallsOn() ? regionById(hallIdOf(b)) : null;
+    const back = H ? backIn('openAnalogies', H.id, 'Back to ' + H.name) : backIn('openAnalogies', '', 'Back to Analogies');
+    const title = H ? ttl(H.name + ' Hall', HALLS[H.id].short) : ttl('Mock Analogy Bee', 'Analogy Bee');
+    const stage = (o) => stageAnl(Object.assign({ plate: PLATE.bee, label: H ? H.name + ' Hall' : 'Mock Analogy Bee', cls: 'anl-beest' + (H ? ' anl-hallst' : '') }, o), b.phase !== 'lobby');
+    if (b.phase === 'lobby') { const seats = H ? hallSeats(H.id) : castFor();
       if (!seats.length) { try { if (W.SB_LAZY) SB_LAZY.need('mockbee', () => { if (state.nav === 'anlbee') render(); }); } catch (e) {} }
-      const cast = seats.map(([id, name]) => `<li class="anl-rival">${face(id)}<span>${esc(name)}</span></li>`).join('');
-      const p = rec().bee;
-      return stage({ hud: { left: back + stat('spellers', String(seats.length + 1), 'users'), center: title, right: stat('best finish', p.played ? ordOf(p.best) : '–', 'trophy') + pad },
+      const cast = seats.map(([id, name, sk, rid]) => (H && rid === THEO) ? `<li class="anl-rival head">${face(id)}<span>${esc(name)}</span><small class="anl-headl">Headliner</small></li>` : `<li class="anl-rival">${face(id)}<span>${esc(name)}</span></li>`).join('');
+      const p = rec().bee, hp = H ? hallGet(H.id) : null;
+      return stage({ hud: { left: back + stat('spellers', String(seats.length + 1), 'users'), center: title, right: stat('best finish', H ? (hp.best ? ordOf(hp.best) : '–') : p.played ? ordOf(p.best) : '–', 'trophy') + pad },
         play: `<div class="anl-card sg-panel anl-center anl-lobby"><ul class="anl-field">${cast}<li class="anl-rival me">${me}<span>You</span></li></ul>
         <p class="anl-big">Every speller gets one analogy a round. Round one is a warm-up: nobody sits down. After that, miss the link and you sit down. The last speller standing wins.</p>
-        <p class="anl-note">The analogies climb a level every two rounds.${p.played && p.wins ? ' ' + p.wins + ' won so far.' : ''}</p></div>`,
-        controls: `<div class="anl-btns center">${W.SB_LEVEL && SB_LEVEL.chip ? SB_LEVEL.chip('mockAnalogy', 'Mock Analogy Bee') : ''}<button class="anl-btn main" data-act="anlBee" data-arg="start">${ic('trophy', 16)} Take the stage <span class="anl-kb">Enter</span></button></div>` }); }
+        <p class="anl-note">The analogies climb a level every two rounds.${!H && p.played && p.wins ? ' ' + p.wins + ' won so far.' : ''}</p></div>`,
+        controls: `<div class="anl-btns center">${!H && W.SB_LEVEL && SB_LEVEL.chip ? SB_LEVEL.chip('mockAnalogy', 'Mock Analogy Bee') : ''}<button class="anl-btn main" data-act="anlBee" data-arg="start">${ic('trophy', 16)} Take the stage <span class="anl-kb">Enter</span></button></div>` }); }
     const standing = b.field.filter((r) => !r.out || r.out >= b.round).length + (b.me.out && b.me.out < b.round ? 0 : 1);
     const field = `<ul class="anl-field run${b.phase === 'result' ? ' res' : ''}" aria-label="The field">${b.field.map((r) => { const call = (b.calls || []).find((x) => x.r === r); const st = r.out && r.out < b.round ? ' sat' : (b.phase === 'result' && call) ? (call.right ? ' right' : (b.round > 1 ? ' sat now' : ' miss')) : '';
       return `<li class="anl-rival${st}">${face(r.id)}<span>${esc(r.name)}</span></li>`; }).join('')}<li class="anl-rival me${b.me.out && b.me.out < b.round ? ' sat' : ''}">${me}<span>You</span></li></ul>`;
@@ -722,7 +744,8 @@
       return stage({ hud: { left: back + stat('place', ordOf(b.place), 'trophy'), center: title, right: stat('coins', String(b.coins || 0), 'coin') + pad },
         play: `<div class="anl-card sg-panel anl-center anl-done${fresh(b.doneAt, 900) ? ' sg-fx-done' : ''}" data-live-prompt="${escA(big + ' ' + line)}">${field}<div class="anl-db">${esc(big)}</div><p class="anl-big">${esc(line)}</p>${b.coins ? `<p class="anl-note anl-pay">${ic('coin', 14)} +${b.coins} coins</p>` : ''}
         <ul class="anl-log">${words}</ul></div>`,
-        controls: `<div class="anl-btns center"><button class="anl-btn" data-act="openAnalogies">${ic('arrowLeft', 16)} Analogies</button><button class="anl-btn main" data-act="anlBee" data-arg="start">${ic('retry', 16)} New bee <span class="anl-kb">Enter</span></button></div>` }); }
+        controls: H ? `<div class="anl-btns center"><button class="anl-btn" data-act="anlBee" data-arg="start">${ic('retry', 16)} Again</button><button class="anl-btn main" data-act="anl" data-arg="note:${escA(H.id)}">${nbIcon(16)} Theo's notebook <span class="anl-kb">Enter</span></button></div>`
+          : `<div class="anl-btns center"><button class="anl-btn" data-act="openAnalogies">${ic('arrowLeft', 16)} Analogies</button><button class="anl-btn main" data-act="anlBee" data-arg="start">${ic('retry', 16)} New bee <span class="anl-kb">Enter</span></button></div>` }); }
     const q = b.q; if (!q) return '';
     const opts = q.opts.map((o, i) => { const st = b.picked == null ? '' : i === q.ans ? ' ok' : i === b.picked ? ' no' : ' dim';
       return `<button type="button" class="anl-opt${st}${fxOpt(b, i, q.ans, b.picked)}" data-act="anlBee" data-arg="pick:${i}"${b.picked != null ? ' disabled' : ''}><span class="anl-k">${KEYS[i]}</span><span class="anl-ow">${esc(o)}</span></button>`; }).join('');
@@ -743,10 +766,116 @@
     if (arg === 'next') { beeNext(); return; }
     if (arg === 'hear') { if (b && b.q) try { say(b.q.a + ' is to ' + b.q.b + ', as ' + b.q.c + ' is to what?'); } catch (e) {} return; } }
   function beeKey(e) { const b = B(); if (!b) return; const k = e.key;
-    if (k === 'Enter') { if (b.phase === 'lobby' || b.phase === 'done') { e.preventDefault(); beeStart(); } else if (b.phase === 'result') { e.preventDefault(); beeNext(); } return; }
+    if (k === 'Enter') { if (b.phase === 'done' && b.hall && hallsOn()) { e.preventDefault(); openNote(b.hall); } else if (b.phase === 'lobby' || b.phase === 'done') { e.preventDefault(); beeStart(); } else if (b.phase === 'result') { e.preventDefault(); beeNext(); } return; }
     if (b.phase !== 'turn') return; const n = /^[1-5]$/.test(k) ? +k - 1 : /^[a-eA-E]$/.test(k) ? KEYS.indexOf(k.toUpperCase()) : -1; if (n < 0) return; e.preventDefault(); beePick(n); }
   const beeBest = () => { const p = rec().bee || {}; if (!p.played || !p.best) return ''; const n = p.best;
     return 'Best finish: ' + n + (n % 100 > 10 && n % 100 < 14 ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' })[n % 10] || 'th') + (p.wins ? ' · ' + p.wins + ' won' : ''); };
+
+  /* ================================================================== THE REASONING ROUNDS (the Bee Circuit §11) */
+  /* circuit/BEE-CIRCUIT.md §11, build step 9: "Four Mock Analogy Bee halls: Twin Ponds, Orchard Hill, Workshop Valley and
+     Bridge Peaks. Same cast. Theo headlines, and Rafi joins at Workshop Valley. Theo's notebook: one page per round on how
+     he finds the bridge between two words. It doubles as the lesson recap. Opens only after the analogy content passes
+     the three review rounds." What that is here, and the rules it keeps (tests/analogy-halls.cjs, analogy-halls-stage.cjs):
+       · A HALL PIN on each region board (a lectern-and-bell medallion, drawn here, ≥ 44px, off the road and clear of every
+         stop) and a hall bar under the board. OVERLAY ONLY (Circuit L1/L2): no stop, check, unlock or mastery reads a
+         hall, and a child who never opens one has exactly the tab as it was. A hall opens with its region's board.
+       · A HALL IS THE MOCK ANALOGY BEE (state.anlBee with `hall`): the same lobby, rounds, sit-downs, hash-decided rivals
+         and finish, at the region's level (beePool/hallLevel), and it PAYS AS THE BEE PAYS — beeFinish's one podium
+         `contest` coin, nothing for finishing, nothing per answer. Its record is the child's own `c.anl.halls[<region>]`
+         = {n, done, best, last, at}, made lazily the first time a hall starts (no store step; ?demo keeps it in memory).
+         Its seeds count on the hall's own `n`, so playing a hall never moves the tab's own seeds (rec().n).
+       · THE CAST is Mock Bee's (MOCKBEE.rivals — names, and faces with the child's own face swapped for the speller's
+         stand-in): the seven nearest the region's level, as the bee seats them, then Theo always seated (he headlines),
+         Rafi seated from Workshop Valley on and not before ("joins"). A missing speller takes the seat at the edge of the
+         window nearest him; a seat Rafi leaves goes to the next speller past the window.
+       · THEO'S NOTEBOOK: a page a hall, kept once that hall has been played (the done screen's main button, Enter; then
+         the board's "Theo's notebook"). A page is a FIXED FRAME — "Theo's notebook — <region>" and the four labels the
+         Learn steps already use — around the region's own lessons QUOTED VERBATIM from analogy-data.js (the reviewed
+         text): each lesson's title, idea, how to spot it and the trap, and its bridge sentence filled with the lesson's
+         own first stem pair (the Learn step's "Say the link"). Nothing on a page is written for it. Read aloud on a tap,
+         sentence by sentence, by the device voice — no recording.
+       · THE GATE: everything here asks anlOpen() (app3, SB_ANL_OPEN) — the same gate as the tab. */
+  /* `at` is the pin's place in the board's 1600×900 space, picked by eye on each painting (a cottage row, the bee-hives,
+     the water-wheel, the rope bridge) and measured clear of every stop (tests/analogy-halls-stage.cjs: no overlap at 390
+     or 1280, every control a 44px target) — repaint a map, re-place its hall */
+  const HALLS = { ponds: { at: [530, 775], short: 'Ponds Hall' }, orchard: { at: [1360, 440], short: 'Orchard Hall' },
+    workshop: { at: [1080, 400], short: 'Workshop Hall' }, peaks: { at: [800, 200], short: 'Peaks Hall' } };
+  const THEO = 'scopey', RAFI = 'beaker', RAFI_FROM = 2;   /* Mock Bee's ids for Theo and Rafi; Rafi from the third region */
+  const NOTE_LABELS = { idea: 'The idea', bridge: 'Say the link', spot: 'How to spot it', trap: 'Watch out' };
+  const gateOpen = () => { try { return typeof W.SB_ANL_OPEN === 'function' ? !!W.SB_ANL_OPEN() : false; } catch (e) { return false; } };
+  const hallsOn = () => W.SB_ANL_HALLS !== false && gateOpen();
+  const hallIdOf = (b) => (b && b.hall && HALLS[b.hall] && regionById(b.hall) && hallsOn()) ? b.hall : null;
+  function hallLevel(id) { const r = regionById(id); const lv = r ? r.lv[0] : 1; return Object.keys(LVL_LO).find((k) => LVL_LO[k] === lv) || 'auto'; }
+  /* reads never create the record; only a hall that starts does */
+  const hallGet = (id) => ((rec().halls || {})[id]) || {};
+  function hallRec(id) { const r = rec(); const H = r.halls || (r.halls = {}); return H[id] || (H[id] = {}); }
+  const noteKept = (id) => !!HALLS[id] && hallsOn() && !!hallGet(id).done;
+  /* the seven seats of a hall: [face, name, chance, rival id], Theo first */
+  function hallSeats(id) { const R = regions(), i = R.findIndex((r) => r.id === id); if (i < 0) return [];
+    const c = kid(), mine = (c && c.avatar) || 'bizzy';
+    const all = (W.MOCKBEE && typeof MOCKBEE.rivals === 'function') ? MOCKBEE.rivals(mine).slice().sort((a, b) => a.lvl - b.lvl) : [];
+    if (!all.length) return [];
+    const from = Math.max(0, Math.min(all.length - SEATS, Math.round((R[i].lv[0] - 1) / 2)));
+    const need = i >= RAFI_FROM ? [THEO, RAFI] : [THEO], bar = i >= RAFI_FROM ? [] : [RAFI];
+    const seats = all.slice(from, from + SEATS).filter((r) => bar.indexOf(r.id) < 0);
+    need.forEach((nid) => { const r = all.find((x) => x.id === nid); if (!r || seats.indexOf(r) >= 0) return;
+      if (seats.length >= SEATS) { const edge = (r.lvl < seats[0].lvl ? seats : seats.slice().reverse()).find((x) => need.indexOf(x.id) < 0); seats.splice(seats.indexOf(edge), 1); }
+      seats.push(r); });
+    for (let k = 1; seats.length < SEATS && k < all.length; k++) [all[from + SEATS - 1 + k], all[from - k]].forEach((r) => { if (r && seats.length < SEATS && bar.indexOf(r.id) < 0 && seats.indexOf(r) < 0) seats.push(r); });
+    seats.sort((a, b) => (a.id === THEO ? -1 : b.id === THEO ? 1 : a.lvl - b.lvl));
+    return seats.map((r) => [r.face, r.name, skillOf(r), r.id]); }
+  function hallStart(id) { const R = regionById(id); const hr = hallRec(id); hr.n = (hr.n || 0) + 1;
+    const field = hallSeats(id).map(([fid, name, sk, rid]) => ({ id: fid, rid, name, sk, out: 0 }));
+    state.anlBee = { phase: 'turn', hall: id, seed: day() + '|hall|' + id + '|' + hr.n, lo: R.lv[0], round: 1, field, me: { out: 0 }, used: {}, log: [], e0: (W.earnedSoFar ? earnedSoFar() : 0) };
+    store(); beeAsk(); }
+  function hallDone(b) { const h = hallRec(b.hall); h.done = (h.done || 0) + 1; h.best = Math.min(h.best || 99, b.place); h.last = b.place; h.at = day(); }
+  /* the board's door: the hall's lobby (the bee's lobby, seated for the region); a stale tap behind the gate lands on Home */
+  function openHall(id) { if (!gateOpen()) { try { app.setNav('home'); } catch (e) {} return; }
+    const R = regions(), i = R.findIndex((r) => r.id === id); if (i < 0 || !HALLS[id] || !hallsOn()) return;
+    if (!regionOpen(i)) { try { flash('Pass the level check before it to open ' + R[i].name); } catch (e) {} return; }
+    stopClock(); const s = state.anl; if (s) { if (s.run && s.run.phase !== 'done') s.run.phase = 'left'; s.run = null; s.v = 'map'; s.reg = id; }
+    state.anlBee = { phase: 'lobby', hall: id }; state.nav = 'anlbee'; state.screen = 'app'; state.game = null;
+    try { if (!W.MOCKBEE && W.SB_LAZY) SB_LAZY.need('mockbee', () => { if (state.nav === 'anlbee') render(); }); } catch (e) {}
+    try { render(); window.scrollTo(0, 0); } catch (e) {} }
+  /* the region on the board, with its first open stop not yet passed picked (what tapping its region tab does) */
+  function aimAt(id) { const s = S(), R = regions(), i = R.findIndex((r) => r.id === id); if (i < 0) return; const r = R[i];
+    const j = r.stops.findIndex((st, x) => stopOpen(r, x) && !passed(st.id)); s.reg = id; s.stop = j >= 0 ? r.stops[j].id : r.id + '-check'; }
+  function openNote(id) { if (!noteKept(id)) return; stopClock();
+    const s = S(); if (s.run && s.run.phase !== 'done') s.run.phase = 'left'; s.run = null; aimAt(id); s.v = 'note';
+    state.nav = 'analogy'; state.screen = 'app'; state.game = null; try { render(); window.scrollTo(0, 0); } catch (e) {} }
+  /* drawn here, no emoji: a bell over a lectern (the hall), a spiral notebook (Theo's) */
+  const hallSVG = (size) => `<svg viewBox="0 0 24 24" width="${size}" height="${size}" aria-hidden="true" focusable="false"><path d="M12 2.4c-2.3 0-3.7 1.7-3.7 3.9v2.5l-1.3 1.7h10l-1.3-1.7V6.3c0-2.2-1.4-3.9-3.7-3.9z" fill="currentColor"/><circle cx="12" cy="11.6" r="1.1" fill="currentColor"/><path d="M5 13.8h14l-2.2 3H7.2z" fill="currentColor"/><path d="M12 16.8v4.4M8.6 21.4h6.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
+  const nbIcon = (size) => `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="6" y="3" width="13" height="18" rx="2"/><path d="M4 7h3M4 12h3M4 17h3M10 8h6M10 12h6M10 16h4"/></svg>`;
+  function hallPin(reg, i) { if (!HALLS[reg.id] || !hallsOn() || !regionOpen(i)) return ''; const [x, y] = HALLS[reg.id].at;
+    return `<button class="anl-hall${hallGet(reg.id).done ? ' done' : ''}" style="left:${(x / 16).toFixed(2)}%;top:${(y / 9).toFixed(2)}%" data-act="anl" data-arg="hall:${escA(reg.id)}" aria-label="${escA(reg.name + ' Hall: Mock Analogy Bee')}">
+      <span class="anl-hmed">${hallSVG(26)}</span><span class="anl-lab">Mock Analogy Bee</span></button>`; }
+  function hallBar(reg, i) { if (!HALLS[reg.id] || !hallsOn() || !regionOpen(i)) return ''; const h = hallGet(reg.id);
+    return `<div class="anl-hallbar"><button class="anl-hallgo" data-act="anl" data-arg="hall:${escA(reg.id)}"><span class="anl-hic">${hallSVG(20)}</span>
+        <span class="anl-htx"><b>${esc(reg.name)} Hall</b><small>Mock Analogy Bee${h.best ? ' · Best finish: ' + ordOf(h.best) : ''}</small></span></button>
+      ${noteKept(reg.id) ? `<button class="anl-btn anl-nbgo" data-act="anl" data-arg="note:${escA(reg.id)}">${nbIcon(18)} Theo's notebook</button>` : ''}</div>`; }
+  /* ------------------------------------------------------------------ Theo's notebook: a fixed frame, the lessons' own words */
+  function noteLessons(r) { const out = []; (r.stops || []).forEach((st) => { const L = lesson(st.lesson); if (L && out.indexOf(L) < 0) out.push(L); }); return out; }
+  /* the lesson's bridge, filled with its own first stem pair — the sentence its Learn step says aloud */
+  function noteLink(L) { const p = (L.stems || []).find((x) => x && x[0] && x[1]); return p ? bridge(L.bridge, p[0], p[1], relOf(L, p)) : ''; }
+  const noteLines = (L) => [L.title, L.idea, noteLink(L), L.spot, L.trap].filter(Boolean);
+  function theoFace() { try { if (!W.MOCKBEE || !W.SB_AVATAR) { if (W.SB_LAZY) SB_LAZY.need('mockbee', () => { if (state.nav === 'analogy' && S().v === 'note') render(); }); return ''; }
+      const c = kid(), r = MOCKBEE.rivals((c && c.avatar) || 'bizzy').find((x) => x.id === THEO); return r ? `<span class="anl-nbface" aria-hidden="true">${SB_AVATAR(r.face, 40)}</span>` : ''; } catch (e) { return ''; } }
+  function noteView() { const s = S(); const r = regionById(s.reg); if (!r || !noteKept(r.id)) { s.v = 'map'; return mapView(); }
+    const kept = regions().filter((x) => noteKept(x.id));
+    const tabs = kept.length > 1 ? `<div class="anl-nbtabs" role="group" aria-label="Pages">${kept.map((x) => `<button class="anl-rtab${x === r ? ' on' : ''}" data-act="anl" data-arg="note:${escA(x.id)}" aria-pressed="${x === r}"><span class="anl-rname">${esc(x.name)}</span></button>`).join('')}</div>` : '';
+    const blocks = noteLessons(r).map((L) => { const p = (L.stems || []).find((x) => x && x[0] && x[1]);
+      return `<section class="anl-nbl" data-lesson="${escA(L.id)}"><h3 class="anl-nbt"><span class="anl-cic">${lic(L.id, 20)}</span><span class="anl-nbtt">${esc(L.title)}</span>
+          <button class="anl-say" data-act="anl" data-arg="noteSay:${escA(L.id)}" aria-label="Hear it">${ic('volume', 16)}</button></h3>
+        ${p ? pairHTML(L, p) : ''}
+        <dl class="anl-nbd"><dt>${NOTE_LABELS.idea}</dt><dd>${esc(L.idea)}</dd><dt>${NOTE_LABELS.bridge}</dt><dd>${esc(noteLink(L))}</dd>
+          <dt>${NOTE_LABELS.spot}</dt><dd>${esc(L.spot)}</dd><dt>${NOTE_LABELS.trap}</dt><dd>${esc(L.trap)}</dd></dl></section>`; }).join('');
+    return `<div class="anl-page">${head(esc("Theo's notebook — " + r.name), '', 'anl', r.name, theoFace() || nbIcon(22))}${tabs}
+      <article class="anl-card anl-nb" aria-label="${escA("Theo's notebook — " + r.name)}">${blocks}</article></div>`; }
+  /* read aloud on a tap, a sentence at a time (a long utterance is cut short by some device voices) */
+  function noteSay(id) { const L = lesson(id); if (!L) return; const lines = [];
+    noteLines(L).forEach((t) => String(t).split(/(?<=[.!?])\s+/).forEach((x) => { if (x.trim()) lines.push(x.trim()); }));
+    try { const ss = W.speechSynthesis; if (ss && typeof W.utter === 'function') { ss.cancel(); const rt = 0.95 * ((state && state.voiceRate) || 1); lines.forEach((t) => ss.speak(utter(t, rt))); return; } } catch (e) {}
+    try { say(lines.join(' ')); } catch (e) {} }
 
   /* ================================================================== LINK FINDER (the Library's analogy tool) */
   /* Owner, 10 Oct 2026: "we need analogy tool in the library … a full page stretch thin banner under the book series".
@@ -1041,11 +1170,38 @@
   .anl-kit .anl-field.run .anl-rival svg,.anl-kit .anl-field.run .anl-rival img{width:30px;height:30px}
   .anl-kit .anl-field.run.res .anl-rival span{display:none}.anl-kit .anl-field.run.res .anl-rival svg,.anl-kit .anl-field.run.res .anl-rival img{width:28px;height:28px}
   .anl-kit .anl-lobby .anl-rival{width:56px}.anl-kit .anl-lobby .anl-rival svg,.anl-kit .anl-lobby .anl-rival img{width:40px;height:40px}}
+/* THE REASONING ROUNDS: the hall pin on the board, the hall bar under it, the headliner's seat, Theo's notebook */
+.anl-hall{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:3px;min-width:52px;min-height:52px;background:none;border:0;padding:0;cursor:pointer;z-index:2;color:inherit}
+.anl-hmed{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:#2B2350;color:#FFD98A;border:3px solid #FFD98A;box-shadow:0 3px 10px rgba(0,0,0,.32)}
+.anl-hall.done .anl-hmed{background:#5B3FB0}
+.anl-hall:focus-visible .anl-hmed{outline:4px solid #3B6FE0;outline-offset:2px}
+@container (max-width:560px){.anl-hmed{width:48px;height:48px}}
+.anl-hallbar{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.anl-hallgo{flex:1 1 230px;min-height:52px;display:flex;align-items:center;gap:10px;padding:7px 14px 7px 8px;border-radius:16px;border:0;background:linear-gradient(140deg,#20385E,#16233F);color:#FFFFFF;text-align:left}
+.anl-hallgo:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.anl-hic{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#2B2350;color:#FFD98A;border:2px solid #FFD98A}
+.anl-htx{display:grid;gap:1px;min-width:0}.anl-htx b{font-family:var(--display);font-weight:900;font-size:16px;line-height:1.2}.anl-htx small{font-size:12px;color:#FFE7B0}
+.anl-hallbar .anl-nbgo{min-height:52px;flex:0 1 auto}
+@media (max-width:480px){.anl-hallbar .anl-nbgo{flex:1 1 100%;justify-content:center}}
+.anl-rival.head span{color:var(--accent)}
+.anl-headl{font-size:10px;font-weight:800;line-height:1;padding:2px 6px;border-radius:999px;background:#2B2350;color:#FFD98A}
+.anl-nbtabs{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 4px}.anl-nbtabs .anl-rtab{min-height:44px;flex:1 1 140px}
+.anl-nb{padding:6px 18px 14px 22px;border-left:5px solid color-mix(in srgb,#D14343 34%,var(--line));
+  background:repeating-linear-gradient(to bottom,transparent 0 33px,color-mix(in srgb,#3B82F6 13%,transparent) 33px 34px),var(--paper,var(--bg2))}
+.anl-nbface{display:inline-flex;width:40px;height:40px}.anl-nbface svg,.anl-nbface img{width:40px;height:40px}
+.anl-nbl{display:grid;gap:10px;padding:14px 0 6px}.anl-nbl+.anl-nbl{border-top:1px dashed var(--line)}
+.anl-nbt{display:flex;align-items:center;gap:10px;font-family:var(--display);font-size:19px;margin:0}
+.anl-nbt .anl-cic{width:38px;height:38px;border-radius:12px}.anl-nbt .anl-say{margin-left:auto;flex:none}
+.anl-nbd{margin:0;display:grid;gap:3px}
+.anl-nbd dt{font-family:var(--display);font-size:13px;font-weight:800;color:var(--accent)}
+.anl-nbd dd{margin:0 0 8px;font-size:16px;line-height:1.55;max-width:68ch}
+@media (max-width:480px){.anl-nb{padding:4px 12px 10px 14px}.anl-nbd dd{font-size:15px}}
 `; document.head.appendChild(st); }
 
   /* ------------------------------------------------------------------ the door */
   const API = { open, openRoute, view, beeView, openBee, stop, route, act, beeAct, beeBest, toolView, openTool, toolRoute, toolAct, here: () => { const h = here(); return h ? { region: h.r.id, name: h.r.name } : null; },
-    _question: question, _bridge: bridgeQ, _linkLine: linkLine, _safeIds: safeIds, _bandIds: bandIds, _beePool: beePool, _itemBand: itemBand };
+    _question: question, _bridge: bridgeQ, _linkLine: linkLine, _safeIds: safeIds, _bandIds: bandIds, _beePool: beePool, _itemBand: itemBand,
+    _hallSeats: hallSeats, _halls: HALLS, _noteLines: noteLines };
   W.SB_ANL = API;
   try { Object.assign(app, { anl: (a) => act(a), anlBee: (a) => beeAct(a), anlTool: (a) => toolAct(a), anlToolType: (v) => toolType(v), anlToolKey: (e) => toolKey(e) }); } catch (e) {}
   try { if (state.nav === 'analogy' || state.nav === 'anlbee' || state.nav === 'anltool') render(); } catch (e) {}
