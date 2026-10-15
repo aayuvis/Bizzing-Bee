@@ -2955,10 +2955,11 @@
      44 px to a finger, and sits where the reveal law already lets the camera go. */
   const CIRC_ACTS = ['meadow', 'library', 'forum', 'storm', 'roots', 'strait', 'junkyard', 'sprints', 'stage'];
   let _circKick = 0;
-  /* the board asks for the Circuit once; when it lands the board redraws with whatever it has to show */
+  /* the board asks for the Circuit once; when it lands, boot-lazy's own soft redraw (every landing has one) draws the board
+     with whatever the Circuit has to show — no second redraw of our own */
   function circKick() {
     if (window.SB_CIRCUIT || _circKick) return; _circKick = 1;
-    setTimeout(() => { try { lazyNeed('circuit', () => { if (window.SB_CIRCUIT && state.nav === 'trail') render(); }); } catch (e) {} }, 0);
+    setTimeout(() => { try { lazyNeed('circuit', () => {}); } catch (e) {} }, 0);
   }
   const circCall = (fn, ...a) => { try { const C = window.SB_CIRCUIT; return C && typeof C[fn] === 'function' ? C[fn](...a) : undefined; } catch (e) { return undefined; } };
   /* the halls' records, through the contract (state(c).halls[act] = {done, best, last}; .team for Team Night) */
@@ -3043,7 +3044,15 @@
   function circHook(fn, key, ...a) {
     const k = fn + '|' + key + '|' + ((state && state.activeIdx) || 0);
     if (_circTold[k]) return; _circTold[k] = 1;
-    setTimeout(() => { const got = circCall(fn, ...a); if (got === true && state.nav === 'trail') { try { render(); } catch (e) {} } }, 0);
+    setTimeout(() => { const got = circCall(fn, ...a); if (got === true) circRedraw(); }, 0);
+  }
+  /* mail arrived: one soft redraw on the next frame (a background redraw — it keeps the keyboard focus, app3), so the
+     envelope shows; coalesced, and only while a board is up */
+  let _circRaf = 0;
+  function circRedraw() {
+    if (_circRaf) return;
+    _circRaf = requestAnimationFrame(() => { _circRaf = 0; if (state.nav !== 'trail') return;
+      window.SB_RENDER_SOFT = 1; try { render(); } catch (e) {} window.SB_RENDER_SOFT = 0; });
   }
   /* a region walked end to end: every stop and checkpoint of it on this lap's road walked (a later lap has walked them all) */
   function circRegions(c) {

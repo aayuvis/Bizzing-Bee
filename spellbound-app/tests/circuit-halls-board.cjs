@@ -44,8 +44,16 @@
                                                                              top bar 62px, Bee's is 56px …)
      mockbee   a call sent the moment it is picked ......................... the keys check fails (the first pick graded)
      mockbee   the word printed on the caller's card ....................... the call check fails (the word on the stage)
+     trail.js  onHallOpen never told ......................................... STORY ORDER's onHallOpen check and REAL fail
+                                                                             (no invitation at the pin)
+     trail.js  onRegionDone told for every region ............................ STORY ORDER fails (junkyard … stage too)
+     trail.js  the Team Night pin by the Round IX record, not teamOpen() ..... the teamOpen check fails
+     mockbee   onHall never told ............................................. both REAL checks after the hall fail (nothing
+                                                                             recorded; Round II's hall never stands)
    Before the breaks, the first run caught two of its own faults: lobby geometry read during a lazy file's redraw
-   (now quietRender first) and innerText under text-transform (the side headings read "THE CIRCUIT").
+   (now quietRender first) and innerText under text-transform (the side headings read "THE CIRCUIT"). On the tree merged
+   with CORE (more files landing on the idle queue, each a soft redraw) two checks raced a redraw — a board snapshot and a
+   pin tap — so board() now waits for rendering to go quiet too.
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/circuit-halls-board.cjs                             */
 'use strict';
 const { chromium } = require('playwright');
@@ -120,7 +128,8 @@ const firstUnit = act => NODES.find(n => n.act === act && n.kind === 'unit').u.i
   async function board(pg, act) {
     await pg.evaluate(a => app.trailHere('honey|' + a), act);
     return until(pg, a => { if (state.nav !== 'trail' || state.trailAct !== a) return false; const im = document.querySelector('#sb-pan .act-board img');
-      return !!im && im.complete && im.naturalWidth > 0 && document.querySelectorAll('.act-board .atlas-stop').length > 0; }, act, 30000);
+      return !!im && im.complete && im.naturalWidth > 0 && document.querySelectorAll('.act-board .atlas-stop').length > 0; }, act, 30000)
+      .then(async ok1 => { if (ok1) { await quietRender(pg); await frames(pg, 2); } return ok1; });   /* and settled: no redraw pending */
   }
   /* a tap on the open map folds the stop card away (trailShut), as a child does before tapping a pin it covers */
   const fold = async pg => { await pg.evaluate(() => { state.trailStop = -9; render(); }); await until(pg, () => !document.querySelector('.atlas-pop')); await frames(pg, 2); };
@@ -223,6 +232,13 @@ const firstUnit = act => NODES.find(n => n.act === act && n.kind === 'unit').u.i
       r.forEach(p => { if (p.w < 44 || p.h < 44 || !p.inside || EMO.test(p.txt)) bad.push(`${act} ${p.k}: ${Math.round(p.w)}×${Math.round(p.h)}${p.inside ? '' : ' outside (' + p.at + ')'}${EMO.test(p.txt) ? ' emoji' : ''}`); });
     }
     ok(!bad.length, `${where} PHONE (t9): on all nine boards every hall pin, and the Team Night pin, is at least 44×44, inside its board, no emoji` + (bad.length ? ' — ' + bad.join(' · ') : ''));
+    if (phone) {   /* Team Night's pin is the Circuit's to open: teamOpen() says no, and it is gone though Round IX is played */
+      await pg.evaluate(() => { window.__circCfg.team = false; render(); });
+      const gone = await until(pg, () => !document.querySelector('.circ-team') && !!document.querySelector('.circ-hall'));
+      await pg.evaluate(() => { window.__circCfg.team = true; render(); });
+      const back = await until(pg, () => !!document.querySelector('.circ-team'));
+      ok(gone && back, 'STORY ORDER: the Team Night pin follows teamOpen(), not the Round IX record (played, and still shut until the Circuit opens it)');
+    }
     /* the Visitor line on an ordinary stop's card, and what it calls */
     await pg.evaluate(id => app.trailHere('honey|meadow', 0), null);
     await until(pg, () => !!document.querySelector('.atlas-pop .circ-vis'));
@@ -238,8 +254,11 @@ const firstUnit = act => NODES.find(n => n.act === act && n.kind === 'unit').u.i
     ok(chip.h >= 44 && chip.t === 'The Bee Circuit · Season 1' && chip.wide <= 0 && chip.r <= (phone ? 390 : 1280) && ccall, `${where}: the Atlas header chip "${chip.t}" (${Math.round(chip.h)} px), no sideways scroll, ${phone ? 'a tap' : 'Enter'} opens the Circuit`);
     /* a hall pin, by Enter or a tap */
     await board(pg, 'storm'); await fold(pg);
+    const hit = await pg.evaluate(() => { const p = document.querySelector('.circ-hall'); if (!p) return 'no pin'; const r = p.getBoundingClientRect();
+      const e = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return e && e.closest('.circ-hall') ? '' : 'covered by ' + (e ? e.className || e.tagName : 'nothing') + ' at ' + Math.round(r.left) + ',' + Math.round(r.top); });
     if (phone) await pg.tap('.circ-hall'); else { await pg.focus('.circ-hall'); await pg.keyboard.press('Enter'); }
     const lobby = await until(pg, () => state.nav === 'mockbee' && state.mb && state.mb.mode === 'venue' && state.mb.view === 'lobby' && !!document.querySelector('.sb-stage .mb-hall-lobby'), null, 30000);
+    if (!lobby) console.log('  note the hall did not open: ' + (hit || 'the pin was clear') + ' — ' + await pg.evaluate(() => JSON.stringify({ nav: state.nav, mb: state.mb && { mode: state.mb.mode, view: state.mb.view } })));
     await pg.evaluate(() => new Promise(r => SB_LAZY.need('arcade', r))); await quietRender(pg); await frames(pg, 2);
     const lg = await SC.geometry(pg); const lwide = await pg.evaluate(() => document.documentElement.scrollWidth - innerWidth);
     ok(lobby && lg && !lg.none && lg.scroll <= 1 && !lg.under.length && lwide <= 0, `${where}: ${phone ? 'a tap' : 'Enter'} on the Eye of the Storm's pin opens its hall; the lobby fits (no control under the tab bar, no page scroll, nothing wider than the screen)` + (lg && lg.under && lg.under.length ? ' — under: ' + lg.under.join(', ') : ''));

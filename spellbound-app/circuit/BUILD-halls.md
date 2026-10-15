@@ -96,8 +96,10 @@ build rules `hall-fields`, `scripted-outcomes`, `story-order` (the pins' half), 
   tapping it calls `SB_CIRCUIT.open()`.
 - **Visitor line** on an ordinary stop's card: `SB_CIRCUIT.visitorFor(unitId)` → "Visitor: <figure>" (string, or an object's
   `figure | name | who`) → `SB_CIRCUIT.openVisitor(id)` if it exists, else `SB_CIRCUIT.open('visitors', id)`.
-- Before the Circuit is on the page nothing extra is drawn; a board asks for `lazyNeed('circuit')` once and redraws when it
-  lands. Actions `hallOpen teamOpen circuitOpen visitorOpen` are on `TRAIL_ACTS` (app3.js, the only app3 change).
+- Before the Circuit is on the page nothing extra is drawn; a board asks for `lazyNeed('circuit')` once, and boot-lazy's
+  own soft redraw (every landing has one) draws the pins when it lands — no second redraw of ours. A hook that delivers
+  mail asks for one SOFT redraw on the next frame (`SB_RENDER_SOFT`, so the keyboard focus stays), coalesced, only while a
+  board is up. Actions `hallOpen teamOpen circuitOpen visitorOpen` are on `TRAIL_ACTS` (app3.js, the only app3 change).
 - Pin CSS is injected by trail.js (`#circ-pin-css`).
 
 ## The contract as used (window.SB_CIRCUIT — CORE's; always guarded, always after lazyNeed('circuit'))
@@ -112,50 +114,70 @@ page without the Circuit, or a Circuit without one of these, plays the same and 
 ## Tests
 | test | kind | holds |
 |---|---|---|
-| `tests/circuit-halls.cjs` | node (VM, fake clock), ~20 s | TABLES, FIELDS (hall-fields), SCRIPT I–IX (scripted-outcomes, nine halls × 2 bots × 3 bands × 10 seeds = 540; `HALL_SEEDS=50` = the rule's 50, 2,700 halls, all green), PLACING + CAP (no-placing), PAY (§13 t6), REPORT, WORDS (60/25/15 through the door), RANDOM |
-| `tests/circuit-team.cjs` | node (VM), ~20 s | ROSTER (+ faces), OUTCOME (§13 t7: wins on every seed, the levelling word always counts), CALLS, DRAMA, SECOND TRY, PAY (§13 t6), REPLAY, REPORT, RANDOM (`TEAM_SEEDS=50`: 600 nights, all green) |
-| `tests/circuit-halls-board.cjs` | browser, ~6 min | OVERLAY (§13 t1), GATES (t2), STORY ORDER, PHONE (t9, 390×844 and desktop), FAMILY (t14), keys and touch, no emoji, no leak. `ONLY=overlay\|gates\|phone\|desk\|family` |
+| `tests/circuit-halls.cjs` | node (VM, fake clock), ~20 s | TABLES, FIELDS (hall-fields), SCRIPT I–IX (scripted-outcomes, nine halls × 2 bots × 3 bands × 10 seeds = 540; `HALL_SEEDS=50` = the rule's 50, 2,700 halls, all green), PLACING + CAP (no-placing), PAY (§13 t6), REPORT (and the shape circuit.js reads), WORDS (60/25/15 through the door), RANDOM |
+| `tests/circuit-team.cjs` | node (VM), ~20 s | ROSTER (+ faces), OUTCOME (§13 t7: wins on every seed, the levelling word always counts), CALLS, DRAMA, SECOND TRY, PAY (§13 t6), REPLAY, REPORT (levelMiss, lectern), RANDOM (`TEAM_SEEDS=50`: 600 nights, all green) |
+| `tests/circuit-halls-board.cjs` | browser, ~7 min | OVERLAY (§13 t1), GATES (t2), STORY ORDER (+ onHallOpen, onRegionDone, teamOpen), PHONE (t9, 390×844 and desktop), FAMILY (t14), keys and touch, no emoji, no leak — against a stubbed contract — and **REAL**, against CORE's real circuit.js (skipped, with a note, on a tree without it). `ONLY=<regex of overlay, gates, phone, desk, family, real>` |
 
-Both node tests join the deploy's data gate automatically (`run.cjs --node-only`, 46 of 46 green with them). The browser
-test injects a STUB `SB_CIRCUIT` before boot (its header documents it, driven by `window.__circCfg`); the node tests
-stub it in the VM. **The integrator re-runs all three against the real circuit.js.**
+The node tests stub `SB_CIRCUIT` in the VM; the browser test injects a stub before boot (its header documents it, driven
+by `window.__circCfg`) and answers circuit.js / circuit-data.js with an empty script so the real file cannot land over it;
+its REAL section uses nothing stubbed. On this branch (merged with CORE): the Meadow's hall stands for a child at the
+Strait and the Library's does not; the pin's `onHallOpen` delivers `rounds[0].pieces.inv` and `.prog` and the board shows
+CORE's envelope; the hall played to its end (the child out in round two, Finish now) reaches `onHall` — `halls.meadow`
+recorded, `bee.meadow.1` and `stamp.meadow` in the mail — and the Library's hall then stands.
 
 ### Proved by breaking (the tree never touched)
 Node tests: `MB_SRC=<scratch copy of mockbee.js with ONE change>`; browser: `SB_ROOT=<scratch root of symlinks with ONE
 file replaced>` and the section's `ONLY`. Every break was watched to fail; each test's header lists its own.
-- **circuit-halls** (9): Pip never sits → SCRIPT I · Kwame's slip one *n* short → SCRIPT V's slip check — **which first
+- **circuit-halls** (11): Pip never sits → SCRIPT I · Kwame's slip one *n* short → SCRIPT V's slip check — **which first
   passed**: the check asked only that he missed, so the stage's spelling is now logged (`said`) and read
   ("reconnaisance") · Vesper seated in VIII → TABLES + FIELDS · no cap miss → both CAP · contest paid for finishing →
   both PAY · no family words → WORDS · a quit hall reporting → REPORT · SB_CIRCUIT called without `lazyNeed` → REPORT ·
-  `Math.random` in a rival's turn → RANDOM ×2 (+ "plays the same with no SB_CIRCUIT").
-- **circuit-team** (8): the levelling second try ending wrong → OUTCOME ×2, SECOND TRY, REPORT · a lead of three
+  `Math.random` in a rival's turn → RANDOM ×2 (+ "plays the same with no SB_CIRCUIT") · "Say it again" left out of the
+  asks count → the asks check (5 over 5 words, not 15) · no `headPlace` → the shape check.
+- **circuit-team** (9): the levelling second try ending wrong → OUTCOME ×2, SECOND TRY, REPORT · a lead of three
   allowed → OUTCOME ×4 · contest without the 70% merit → PAY ×2 · Sloane in Nova's face → ROSTER · no "Needs questions"
   → CALLS ×2 · the second team free to lead → REPLAY · every help open at once → the escalation check — **which first
   passed**: it counted enabled buttons only; it now asks `tnHelp` itself for a teammate not yet open · `Math.random` in a
-  teammate's turn → RANDOM.
-- **circuit-halls-board** (9): a pin drawn as an `.atlas-stop` → OVERLAY ×2 · the reach ignored → "exactly the reached
+  teammate's turn → RANDOM · `levelMiss` always false → REPORT ×2.
+- **circuit-halls-board** (13): a pin drawn as an `.atlas-stop` → OVERLAY ×2 · the reach ignored → "exactly the reached
   regions" · `hallUnlocked` ignored → STORY ORDER · pins before the Circuit lands → OVERLAY + STORY ORDER · a stop
   refused until a hall is unlocked → GATES · a 30 px unlabelled pin → PHONE (33×33) · the chip's CSS leaking onto the
   family bar → FAMILY ×2 (checkShell: 62 px bar) · a call sent on its pick → the keys check · the word on the caller's
-  card → the leak check. Its first runs also caught two faults of its own: lobby geometry measured mid lazy-redraw (now
-  `quietRender` first) and `innerText` under `text-transform`. A broken trail.js used to cost 27 × 30 s of waiting;
-  a board that never draws now fails at once.
+  card → the leak check · `onHallOpen` never told → STORY ORDER + REAL (no invitation at the pin) · `onRegionDone` told
+  for every region → STORY ORDER · the Team Night pin by the Round IX record instead of `teamOpen()` → the teamOpen check
+  · mockbee never telling `onHall` → both REAL checks after the hall. Its first runs also caught faults of its own: lobby
+  geometry measured mid lazy-redraw, `innerText` under `text-transform`, and — on the merged tree, where more idle files
+  land — a board snapshot and a pin tap racing a soft redraw (`board()` now waits for rendering to go quiet). A broken
+  trail.js used to cost 27 × 30 s of waiting; a board that never draws now fails at once.
 
-### Kept green (run here, one at a time)
-Node: `run.cjs --node-only` 46/46 (mockbee-sim, word-door, pay-path, no-random-rewards, app3-split, first-load's
-static half, trail-home …). Browser: see the commit message for the list run on the final tree.
+### Kept green (run here, one at a time, on the tree merged with CORE)
+Node: `run.cjs --node-only` **49 / 49** (CORE's circuit-data / -mail / -store, mockbee-sim, word-door, pay-path,
+no-random-rewards, app3-split …). Browser, through `run.cjs`: circuit-halls-board (all sections, REAL included),
+mockbee-stage, mockbee-faces, live-prompts, hud-emoji, touch-targets, atlas-layout, living-atlas, living-meadow,
+living-advanced, home-here, home-continue, feed-screen, first-load, and CORE's circuit-post.
+
+Two things seen on the way, for whoever meets them next:
+- **atlas-layout §8 ("390px zoomed: the stop card stays inside the window")** failed 4 of 10 runs on the merged tree
+  while the first cut of trail.js redrew the board itself when the Circuit landed (`circKick` → `render()`), on top of
+  boot-lazy's soft redraw for the same landing (the child in §8 reaches no hall, so no pin or hook was involved); it
+  passed on CORE's tree. With that extra redraw gone it passed 4 runs of 4. The likely cause is a second redraw landing in
+  the middle of a zoomed pick; it was not proved further, so treat a red §8 on this branch as worth a look.
+- **circuit-post** (CORE's) failed once under a loaded machine — its moment card covered the envelope it then tapped —
+  and passed on every rerun; its `settle` is a fixed 120 ms sleep. Not this build's file.
 
 ## Left, and what the integrator must wire
-1. **boot-lazy.js must register the `circuit` group** (circuit.js and its data) — CORE's file. Until then every
-   `lazyNeed('circuit')` returns at once with no SB_CIRCUIT: the halls and Team Night play and tell nobody, the boards
-   show no pins and no chip (by design: nothing extra before the Circuit loads).
-2. CORE's `SB_CIRCUIT` must answer the seven calls above with these shapes; `state(c)` may return `{halls}` or
-   `{circuit:{halls}}` (both read). The optional four (`chip`, `line`, `openVisitor`, `hallFiled`) are no-ops if absent.
-3. Re-run `tests/circuit-halls-board.cjs` with the real circuit.js on the page (drop the init-script stub, or keep it
-   and compare): OVERLAY/GATES/FAMILY must stay green whatever the Circuit's own state.
-4. `app3.js` changed only on the TRAIL_ACTS line (`hallOpen teamOpen circuitOpen visitorOpen`); if another branch
-   touched that line, merge by adding the four names.
-5. Story lines: Team Night shows only neutral copy unless `SB_CIRCUIT.line(path)` supplies the script's lines; the
-   halls' story text (invitations, recaps) is CORE's, not drawn here.
-6. Not done: no games-bots driver for the halls (Mock Bee's own driver covers the engine; the halls' pay is held by
-   circuit-halls PAY); the Visitor card's content is CORE's (this side only draws the line and calls open).
+1. **This branch merges CORE's** (worktree-agent-a177fdd5fb0c47f3d at c7e7484c0) so the halls are tested against the real
+   circuit.js; merging both branches into the integration branch is a no-op for those commits. Nothing in CORE's files was
+   edited here.
+2. `app3.js` changed only on the TRAIL_ACTS line (`hallOpen teamOpen circuitOpen visitorOpen`); CORE changed only the
+   `SCR_ACTS.scrMe` line. If another branch touched TRAIL_ACTS, merge by adding the four names.
+3. **Still unwired, and not this build's files**: `SB_CIRCUIT.onLevelUp(level)` (app3's `gainXp`, per BUILD-core.md) and
+   `hivePost` in app3's `WORDLESS` (so a Hive Post tap does not wait for the word tier). The cases build's pins arrive
+   through `boardExtras`, which every Honey board already draws.
+4. `onRegionDone` is told when a Honey board or the Atlas overview is drawn with the region walked end to end — the
+   next time either is drawn after the last stop is walked, not inside the quiz itself. The postcard also needs three of
+   the child's own mastered words from that region (CORE's rule), so a child with fewer gets none yet; the hook is asked
+   again on the next page load.
+5. Not done: no games-bots driver for the halls (Mock Bee's driver covers the engine; the halls' pay is held by
+   circuit-halls PAY); a Team Night REAL walk in the browser (the node test plays 204 nights against the contract, and
+   circuit-mail plays Team Night's mail); the Visitor card's content is CORE's (this side draws the line and calls open).
