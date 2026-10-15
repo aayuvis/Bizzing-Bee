@@ -156,10 +156,19 @@ function kidAt(upto) {
         window.scrollTo(0, 0); return { out, detached }; });
       if (!r.detached) break; }
     return r.detached ? r.out.concat([r.detached + ' controls replaced while measured']) : r.out; };
-  /* the word printed anywhere on the stage (case-insensitive, as a whole word) */
+  /* the word printed anywhere on the stage (case-insensitive, as a whole word). The stage's own fixed copy — its buttons
+     ("Send it", "Again", "Leave", the calls, the Pronouncer's chair), the HUD and the announcer's line — is the same on
+     every turn; when the word IS one of those words (full run 21: the word was "send", and "Send it →" is the call's
+     button), only the rest of the stage is searched, or every such word would read as a leak. Any other word is searched
+     for everywhere, buttons included. */
   const leaks = (pg) => pg.evaluate(() => { const g = state.mb, w = g && g.st && g.st.w && g.st.w.w; if (!w) return null;
-    const t = (document.querySelector('.sb-stage') || {}).innerText || '';
-    const esc = w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); return new RegExp('(^|[^a-z])' + esc + '($|[^a-z])', 'i').test(t) ? w : null; });
+    const S = document.querySelector('.sb-stage'); if (!S) return null;
+    const esc = w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), re = new RegExp('(^|[^a-z])' + esc + '($|[^a-z])', 'i');
+    const CHROME = 'button, .sg-st-hud, .mb-ann';
+    const chrome = [...S.querySelectorAll(CHROME)].map(e => e.innerText || '').join(' ');
+    if (!re.test(chrome)) return re.test(S.innerText || '') ? w : null;
+    const k = S.cloneNode(true); k.querySelectorAll(CHROME).forEach(e => e.remove());
+    return re.test(k.textContent || '') ? w : null; });
 
   /* one night, played the careful way; `missLevel` misses the levelling word first (the phone) */
   async function play(pg, phone, o) {
