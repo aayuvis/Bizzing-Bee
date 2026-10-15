@@ -398,7 +398,13 @@
      it up (promote). Each queue keeps its order (a bundle is one entry, so one queue, and async=false keeps insertion
      order). No timer frees a slot: a stalled request ends in load or error, and a third stream is exactly what froze. */
   var HEAVY = { words1: 1, sents: 1, words2: 1, lore: 1, concepts: 1, alts: 1, syn: 1, quotes: 1, fig: 1, lessons: 1, advConcepts: 1, voiceWords: 1 };
-  var MAX_INFLIGHT = 99, HEAVY_MAX = 1, QUIET_MS = 450, inflight = 0, heavyIn = 0;
+  /* AND ONE LIBRARY CHUNK AT A TIME (15 Oct 2026). A lookup asks for one chunk (`wf:<chunk>`), so the chunks were left
+     light — but the WHOLE library (loadFullLibrary: Champ Dictation, the Whole Hive list, the Ultra road, "Load the whole
+     library") asks for all 86 at once, and 86 ~1 MB scripts streaming together is the freeze above, for good: spelling-gym
+     T13 opening Champ Dictation froze its page 1 run in 5 beside three busy loops (the page answered nothing for minutes).
+     Chunks keep their own lane — they never wait behind the word shards, and a lookup's one chunk still starts at once —
+     but only WF_MAX of them stream at a time, so no more than two big parses ever run together. */
+  var MAX_INFLIGHT = 99, HEAVY_MAX = 1, QUIET_MS = 450, inflight = 0, heavyIn = 0, WF_MAX = 1, wfIn = 0;
   /* the queues, each in its order: everything light a door or a kick asked for; a door's big data; a kick's big data;
      the idle queue's light and big files */
   var qL = [], qH = [], qKickH = [], qIdleL = [], qIdleH = [], queued = {}, asked = {};
@@ -419,7 +425,7 @@
     return false;
   }
   function nextScript() {
-    if (qL.length) return qL.shift();
+    for (var i = 0; i < qL.length; i++) if (!qL[i]._wf || wfIn < WF_MAX) return qL.splice(i, 1)[0];
     if (qH.length) return heavyIn < HEAVY_MAX ? qH.shift() : null;   // a door's big file waits: so does everything after it
     /* what follows never takes the last slot: whatever a door asks for next — a screen's code, the Finder's library
        chunk — starts at once, never behind data nobody is waiting on */
@@ -434,15 +440,15 @@
     while (inflight < MAX_INFLIGHT) { var s = nextScript(); if (!s) return; startScript(s); }
   }
   function startScript(s) {
-    inflight++; if (s._heavy) heavyIn++;
+    inflight++; if (s._heavy) heavyIn++; if (s._wf) wfIn++;
     var list = queued[s._name] || [], i = list.indexOf(s); if (i >= 0) list.splice(i, 1);
     var freed = false;
-    s._free = function () { if (freed) return; freed = true; inflight--; if (s._heavy) heavyIn--; if (s._lvl !== IDLE_LVL) lastDoor = Date.now(); startScripts(); };
+    s._free = function () { if (freed) return; freed = true; inflight--; if (s._heavy) heavyIn--; if (s._wf) wfIn--; if (s._lvl !== IDLE_LVL) lastDoor = Date.now(); startScripts(); };
     document.head.appendChild(s);
   }
   function queueOf(s) { return s._lvl === IDLE_LVL ? (s._heavy ? qIdleH : qIdleL) : s._heavy ? (s._lvl === KICK ? qKickH : qH) : qL; }
   function addScript(s, name, heavy, lvl) {
-    s._name = name; s._heavy = heavy; s._lvl = lvl;
+    s._name = name; s._heavy = heavy; s._lvl = lvl; s._wf = name.indexOf('wf:') === 0;
     (queued[name] = queued[name] || []).push(s);
     queueOf(s).push(s);
     startScripts();

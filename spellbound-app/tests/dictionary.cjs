@@ -120,6 +120,14 @@ const lib = (u) => (u.match(/words-full\/([^/?]+)\.js/) || [])[1];
   await pg.keyboard.press('Escape');
   await pg.evaluate(() => { app.openFinder(); state.finderQ = 'zzzzqx'; render(); });
   await until(pg, () => !!document.querySelector('[data-act="finderLoadFull"]'), null, 10000);
+  /* the chunks stream ONE AT A TIME (boot-lazy WF_MAX, 15 Oct 2026): count the chunk scripts in flight while the whole
+     library comes in — 86 at once froze the page for good (spelling-gym T13, Champ Dictation, beside busy loops) */
+  await pg.evaluate(() => { const H = document.head, add = H.appendChild.bind(H); window.__wf = { now: 0, max: 0, n: 0 };
+    H.appendChild = function (el) { if (el && el.tagName === 'SCRIPT' && /words-full\/(?!index)/.test(el.src || '')) { const w = window.__wf; w.n++; w.now++; w.max = Math.max(w.max, w.now);
+        /* counted done as the loader's own handler starts (it frees the slot and starts the next chunk inside itself) */
+        const done = () => { if (!el.__wfDone) { el.__wfDone = 1; w.now--; } };
+        const ol = el.onload, oe = el.onerror; el.onload = function () { done(); return ol && ol.apply(this, arguments); }; el.onerror = function () { done(); return oe && oe.apply(this, arguments); }; }
+      return add(el); }; });
   const tFull = Date.now();
   await pg.click('[data-act="finderLoadFull"]');
   const loaded = await until(pg, () => { try { return _fullState === 'loaded' && Array.isArray(window.SB_FULL); } catch (e) { return false; } }, null, 120000);
@@ -127,6 +135,8 @@ const lib = (u) => (u.match(/words-full\/([^/?]+)\.js/) || [])[1];
   const full = await pg.evaluate(() => ({ n: SB_FULL.length, hard: SB_FULL._hard, first: SB_FULL.slice(0, 15).map((r) => r.w), last: SB_FULL.slice(-15).map((r) => r.w),
     adv: (window.ADV && ADV.pool) ? ADV.pool().length : -1, hive: (coachCatalog().find((c) => c.key === 'all') || {}).count, err: (document.body.innerText.match(/Couldn.t load[^\n]*/) || [''])[0] }));
   ok(loaded, `"Load the whole library" finishes (${((Date.now() - tFull) / 1000).toFixed(1)} s unthrottled, ${full.n} words)`);
+  const wf = await pg.evaluate(() => window.__wf);
+  ok(wf.n >= 40 && wf.max === 1, `its chunks stream one at a time — ${wf.n} chunk scripts, never more than ${wf.max} in flight (boot-lazy WF_MAX; 86 at once froze the page)`);
   ok(full.n === WANT.n && full.hard === WANT.hard, `SB_FULL is the library app3's filter makes of the two sources: ${full.n} words (want ${WANT.n}), ${full.hard} from the championship shard (want ${WANT.hard})`);
   ok(JSON.stringify(full.first) === JSON.stringify(WANT.first) && JSON.stringify(full.last) === JSON.stringify(WANT.last), 'in the same order — the first and last fifteen words are words-full.js\'s and the shard\'s');
   ok(full.adv > 1000 && full.hive === full.n, `the Ultra road reads it (hardPool ${full.adv}) and the Whole Hive lists it (${full.hive})`);
