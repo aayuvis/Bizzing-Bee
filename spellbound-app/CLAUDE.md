@@ -2139,6 +2139,16 @@ Brief rows P1.16–P1.21 (the rubric's F1, B4, B9, E5, W2, G4). The rules a late
   fixed rounds keep the one round T1/T2 were written for. Never move a ceiling; if a gate is luck-bound, grow the sample on
   principle and say why. Note T1's "6 of 10 pays" is itself beatable by luck 2% of the time per round — a product rule, not
   the harness's to change.
+  **"The same build is the same run" was not true until 15 Oct 2026** (full run 17: lore/clock 39/112 against a 33% ceiling,
+  19/94 alone a minute later; every one of 576 clock questions had four options, slots spread — the sample moved, nothing
+  leaked). Three instrument faults, all fixed in the harness: the random bot's xorshift started from a small seed and picked
+  option 0 FIRST in every round (seeds are mixed now — 25.0% a slot); the page was seeded once at load while the app draws
+  frame decoration from the same Math.random, so a round's questions depended on the machine's pace (`window.__botReseed()`
+  now restarts the generator, and the hub drivers call it in the same synchronous step as the opener and Start, with
+  everything that call waits on loaded first); and a clock ran in real time between answers as well as losing PACE (it is now
+  held between answers and set to exactly what the bot spent). Proved: every T1/T2/T2b line identical quiet and beside four
+  busy loops. A driver whose questions use Math.random must reseed AT its draw the same way, or its T2 is a coin toss again.
+  anl/clock draws from the date and a counter, not Math.random, and still runs its clock in real time (±1 question at the end).
 - **`SGUI.held` counts the miss cards still ON THE PAGE** (saga2.js `_missOpen`), not a bare counter: a card taken away with its
   game (Back, `arcadeClose`) while it was up used to hold every `SGUI.clock` in the app still for good — Word Lore's clock never
   ended — and its key trap swallowed keys app-wide. The full bot harness found it (a Honeycomb round left with its card up, then
