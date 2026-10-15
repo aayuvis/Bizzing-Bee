@@ -137,6 +137,12 @@ what, the API as implemented, every test and every break — are `circuit/BUILD-
   (`tests/analogy-board-fit.cjs`, four boards × 360/390/768/1280). **The Mock Bee's letter keys were 42.7px at 390** — the
   bee's old `.mb-stage` 16px padding inside the kit's gutter (every other game's kit keys are 48); the walk found it,
   `.sb-stage.mb-stage .mb-keys` now takes the control row's gutter (45.8px), and touch-targets measures a Mock Bee turn.
+  **Full run 19 then caught a second phone fault, in Word Lore**: answers sit in the kit's control row, which a phone holds
+  to the bottom 38% (`.sg-st-ctl{max-height:38cqh}`); four two-line answers stood 265px in a 234px row, ran up out of it, and
+  the play region lay over the first answer's top 14px (7% of Meanings questions at 390 — touch-targets meets one random
+  question, so it was intermittent). lore.js's phone rule sets answers tighter (min-height 44px, padding 5px 10px,
+  line-height 1.22); `tests/quiz-opts-fit.cjs` (seeded page, 240 questions of Meanings, Idioms and Roots) holds every answer
+  whole and no list above its row — the old rule fails it 5 ways. touch-targets now names what a missed point lands on.
 - **Suki wears Snowfox** (alt Wisp) everywhere since 14 Oct (mockbee.js BOTS, the Grand Prix cast, the script's cast key).
 
 ## The Teacher's Corner and My Homework (15 Oct 2026) — READ FIRST; it overrides the sections below
