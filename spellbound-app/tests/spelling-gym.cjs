@@ -200,12 +200,12 @@ const MODES = ['warmup', 'sprint', 'dictation', 'spot', 'squares', 'doctor', 'ch
     const L = () => (window.SB_LEVEL && SB_LEVEL.get) ? SB_LEVEL : null;
     const rows = [];
     for (const m of ['warmup', 'sprint', 'dictation', 'spot', 'squares', 'doctor']) {
-      /* a mode here is seconds of play; one still running after 30 s says what the page is doing every 30 s — or that the
+      /* a mode here is under a minute of play (Word Doctor's the longest); one still running after 60 s says what the page is doing every 60 s — or that the
          page does not answer at all (frozen) — so a hang names itself (full run 21: T13 timed out with nothing printed) */
       const watch = setInterval(async () => { const st = await Promise.race([pg.evaluate(() => { const p = SB_GYM.peek(); let full = '?'; try { full = _fullState; } catch (e) {}
           return JSON.stringify({ round: p && { mode: p.mode, phase: p.phase, view: p.view, asked: p.asked }, nav: state.nav, screen: state.screen, gymMode: state.gymMode, full,
             held: !!(window.SGUI && SGUI.held), miss: document.querySelectorAll('.sg-miss').length, input: !!document.querySelector('.gym-in') }); }).catch(e => 'evaluate failed: ' + e.message),
-        new Promise(r => setTimeout(() => r('the page did not answer in 5 s (frozen?)'), 5000))]); console.log('  note T13 ' + m + ' still running: ' + st); }, 30000);
+        new Promise(r => setTimeout(() => r('the page did not answer in 5 s (frozen?)'), 5000))]); console.log('  note T13 ' + m + ' still running: ' + st); }, 60000);
       const r = await pg.evaluate(async m => { const { round } = __gym;
         const Lv = (window.SB_LEVEL && SB_LEVEL.get) ? SB_LEVEL : null;
         const get = k => Lv ? Lv.get(k) : ((active().gym || {}).lv || {})[k] ? active().gym.lv[k].level : 'auto';
