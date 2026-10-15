@@ -106,4 +106,5 @@ html[data-mode="dusk"] .bz-btn:not(.buy){color:var(--text)}
   .sb-fam-bar>.sb-fam-day::before,.sb-fam-bar>.bz-coinchip::before,.sb-fam-bar>.sb-fam-kid::before{content:"";position:absolute;inset:-4px 0}
   .sb-fam-bar>.sb-fam-brand{margin-left:8px}
   .sb-fam-bar>.sb-fam-lock{margin-left:3px}
+  .sb-fam-bar>.sb-fam-hw::before{content:"";position:absolute;inset:-5px -5px}   /* My homework: 34px drawn, a 44px target */
 }

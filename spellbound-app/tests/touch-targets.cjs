@@ -57,7 +57,15 @@ const SCREENS = [
   ['the analogy atlas', () => app.openAnalogies(), () => !!document.querySelector('.anl-board .anl-stop')],
   ['an analogy round', () => app.anl('practice'), () => !!document.querySelector('.sb-stage .anl-opt')],
   ['the mock analogy bee', () => { app.anl('leave'); app.openAnlBee(); }, () => !!document.querySelector('.sb-stage .anl-field .anl-rival')],
-  ['the mock spelling bee', () => app.mbOpen(), () => !!document.querySelector('.sb-stage.mb-stage')]];
+  ['the mock spelling bee', () => app.mbOpen(), () => !!document.querySelector('.sb-stage.mb-stage')],
+  /* My Homework and the Teacher's Corner (TEACHER-HOMEWORK.md): homework set as the Corner sets it, so every screen from here
+     on also measures the top bar's homework button */
+  ['my homework', () => { SB_LAZY.need(['scrHw', 'words1'], () => { const c = active();
+      if (!(c.hw && c.hw.items && c.hw.items.length)) SB_HW.add(c, { kind: 'words', ref: null, t: 'Words: Easy, 4', due: null,
+        words: nextWords.pool(c, { purpose: 'drill', level: 'easy', needDef: true }).slice(0, 4).map((w) => ({ w: w.w, d: w.d || '', s: w.s || '', p: w.p || '' })) });
+      app.openHomework('words'); }); }, () => !!document.querySelector('.hw-page [data-act="hwSpell"]')],
+  ['a homework word list being spelled', () => { const it = SB_HW.items(active())[0]; app.hwSpell(it.id); }, () => !!document.querySelector('.hw-card .hw-in')],
+  ["the teacher's corner", () => { state.nav = 'teacher'; state.screen = 'app'; state.teachOk = true; render(); }, () => !!document.querySelector('.tc-page [data-tc-list]')]];
 
 (async () => {
   const b = await chromium.launch({ executablePath: process.env.SB_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });

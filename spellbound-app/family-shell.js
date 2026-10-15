@@ -131,6 +131,7 @@
       if (S.nav === 'mockbee' && S.mb && S.mb.view === 'stage') return true;
       if ((S.nav === 'lore' || S.nav === 'hive') && S.qz && S.qz.mode && S.qz.phase === 'play') return true;
       if (S.nav === 'today' && window.SB_TODAY && SB_TODAY.live()) return true;   // Today's ten, a word open (P1.16)
+      if (S.nav === 'homework' && window.SB_HW && SB_HW.live()) return true;   // My Homework's word list, a word open
       return !!document.querySelector('.arc-play,.bz-play');
     } catch (e) { return false; }
   }
@@ -156,7 +157,8 @@
     collection: 1, finder: 1, games: 1, trivia: 1, journeys: 1, adv: 1, progress: 1, feed: 1, daily: 1, dailybuzz: 1 };
   /* screens with a gated opener — an address goes through it: the trainTools plan lock
      (gateFeature) and the Advanced Pack's sales page, which asks for the PIN first (T3) */
-  var DOOR = { quotes: 'openQuotes', vocab: 'openVocab', typing: 'openTyping', ipatrain: 'openIpaTrain', trivtrain: 'openTrivTrain', adv: 'openAdvanced' };
+  var DOOR = { quotes: 'openQuotes', vocab: 'openVocab', typing: 'openTyping', ipatrain: 'openIpaTrain', trivtrain: 'openTrivTrain', adv: 'openAdvanced',
+    teacher: 'openTeacher' };   // the Teacher's Corner: its opener asks for the grown-up PIN, so #/teacher cannot skip it
   var HUB_HIVE = { classic: 1, squares: 1, clock: 1 };   // Hive Mind's modes (lore.js MODES.hive)
   var PARENT = { train: 'coach', levelup: 'coach', leveltest: 'home', mockbee: 'games', anlbee: 'games', anltool: 'explore', sq: 'games', reader: 'explore',
     debug: 'home', voicetest: 'home', evofeedback: 'home', parent: 'progress' };
@@ -192,6 +194,7 @@
     if (n === 'train') return 'practice/drill';
     if (n === 'games' && S.game) return 'play/game';
     if (n === 'gym') return 'gym' + (S.gymMode ? '/' + S.gymMode : '');   // the Spelling Gym hub, and each of its modes
+    if (n === 'homework') return 'homework' + (S.hwTab ? '/' + S.hwTab : '');   // My Homework and its tab (TEACHER-HOMEWORK.md)
     if (n === 'analogy') return (window.SB_ANL && SB_ANL.route) ? SB_ANL.route() : 'analogies';   // the Analogies tab (9 Oct 2026)
     if (n === 'anltool') return (window.SB_ANL && SB_ANL.toolRoute) ? SB_ANL.toolRoute() : 'links';   // the Library's Link Finder (10 Oct 2026)
     return NAV_ROUTE[n] || n;
@@ -321,6 +324,7 @@
     if (head === 'daily' && typeof app.openDailyBee === 'function') { app.openDailyBee('route'); return; }   // Daily Bee (games spec §5.2) replaces Daily Buzz here
     if (head === 'buzz' && typeof app.openDailyBuzz === 'function') { app.openDailyBuzz(); return; }   // Daily Buzz, back as it was (owner, 5 Oct 2026)
     if (head === 'today' && typeof app.openToday === 'function') { app.openToday(); return; }   // Today's ten (road to 4.5, P1.16): it resumes where the day's session stands
+    if (head === 'homework' && typeof app.openHomework === 'function') { app.openHomework(p[1] || null); return; }   // My Homework, #/homework[/<tab>]
     /* Word Forge goes through its opener: the table's sign-off (or testing mode) is the lock */
     if (head === 'forge') { if (typeof app.openForge === 'function') app.openForge(); else app.openGames(); return; }
     if (head === 'support') { app.setNav('home'); return; }
@@ -556,6 +560,24 @@
     if (FROM_HIVE) return '<a class="sb-fam-hive sb-fam-day" href="' + HIVE_URL + '" aria-label="Back to my day in the Bizzing Hive">' + HEX + '<span class="sb-fam-dl">← back to my day</span><span class="sb-fam-ds">← my day</span></a>';
     return '<a class="sb-hdr-ico sb-fam-hive" href="' + HIVE_URL + '" aria-label="Back to the Bizzing Hive" title="Back to the Bizzing Hive">' + HEX + '</a>';
   }
+  /* [✎ My homework] — LEFT OF THE SEARCH BAR, only for a child who has homework (set in the Teacher's Corner, or
+     finished and in their history); a family without a teacher sees no change. A quiet dot while something is still
+     to do — never a count, never a streak. Its done-or-not is My Homework's own reading (SB_HW, app3-homework.js, lazy:
+     it derives completion from the main app's records) once that file is in, and the recorded `done` until then. Not
+     `.sb-hdr-ico`: the family's shell-check finds the look button by that class. Below 560px it is an icon with a
+     44px hit area (a11y.css) and the logo steps aside for it, as it does for the Hive's "my day" chip. Hidden in a
+     drill, like ⬡, so a stray tap cannot leave a word half-spelled. TEACHER-HOMEWORK.md. */
+  function hwBtn() {
+    try {
+      if (inDrill()) return '';
+      var c = active(), h = c && c.hw, its = h && Array.isArray(h.items) ? h.items : [];
+      if (!its.length) return '';
+      var open = (window.SB_HW && SB_HW.openCount) ? SB_HW.openCount(c) : its.filter(function (x) { return x && !x.done; }).length;
+      var on = state.nav === 'homework', ic = ''; try { ic = iconSVG('pencil', 19, 2.2); } catch (e) {}
+      return '<button data-act="openHomework" class="sb-fam-hw' + (on ? ' on' : '') + '" aria-label="My homework' + (open ? ' — something to do' : '') + '"' + (on ? ' aria-current="page"' : '') + ' title="My homework">'
+        + ic + '<span class="sb-fam-hwl" aria-hidden="true">My homework</span>' + (open ? '<i class="sb-fam-hwdot" aria-hidden="true"></i>' : '') + '</button>';
+    } catch (e) { return ''; }
+  }
   function lockBtn() {
     return '<button data-act="setNav" data-arg="parent" class="sb-hdr-ico sb-fam-lock" aria-label="Grown-ups — needs the PIN" title="Grown-ups (PIN)">' + LOCK + '</button>';
   }
@@ -643,7 +665,7 @@
     sync: function () { if (R.booted) syncHash(); }, playRoute: playRoute, leaveOverlay: leaveOverlay,
     startActivity: startActivity, milestone: milestone, watch: watch,
     bookOut: bookOut, bookIn: bookIn, switchChild: switchChild,
-    hiveBtn: hiveBtn, lockBtn: lockBtn, kidBtn: kidBtn, kidMenu: kidMenu, demoBar: demoBar,
+    hiveBtn: hiveBtn, hwBtn: hwBtn, lockBtn: lockBtn, kidBtn: kidBtn, kidMenu: kidMenu, demoBar: demoBar,
     sampleHousehold: sampleHousehold, install: install
   };
   window.SB_NEXT_STEP = nextStep;

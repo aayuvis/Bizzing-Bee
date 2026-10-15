@@ -78,7 +78,7 @@ const HH = { theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0, chil
 
   /* 2 — by its address */
   const ROUTES = { '#/practice': ['coach', 'quest'], '#/vocab': ['vocab'], '#/quotes': ['quotes'], '#/typing': ['typing'], '#/ipatrain': ['ipatrain'], '#/trivtrain': ['trivtrain'],
-    '#/progress': ['progress'], '#/shop': ['shop'], '#/hive/avatars': ['collection'], '#/play': ['games'], '#/library': ['explore'] };
+    '#/progress': ['progress'], '#/shop': ['shop'], '#/hive/avatars': ['collection'], '#/play': ['games'], '#/library': ['explore'], '#/homework/words': ['homework'] };
   const bad2 = [];
   for (const [hash, navs] of Object.entries(ROUTES)) {
     const { ctx, pg } = await cold(srv.url + 'index.html' + hash);
