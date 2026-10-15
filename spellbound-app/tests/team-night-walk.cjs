@@ -28,8 +28,22 @@
             teamNight.beats.levellingMiss on the phone (missed first), teamNight.beats.levelling on the desktop.
    REPLAY   (desktop) "Play the second team", reached by Tab and Enter: the replay is won by at least one, with no drama
             word and no tiebreaker, and reports replay:true; the season's beats are not delivered twice.
+   Its first full run found a real fault: the Mock Bee's letter keys (the halls' and Team Night's too) were 42.7px wide at
+   390 — the bee's old 16px stage padding inside the kit's gutter; every other game's kit keys are 48. Fixed in index.html
+   (`.sb-stage.mb-stage .mb-keys` takes the control row's gutter: 45.8px), and tests/touch-targets.cjs now measures a Mock
+   Bee turn. (The first cut of 44PX measured bounding boxes and also flagged "← Leave", 75×35 with its 44px hit area; it
+   now uses touch-targets' own measure — the 44px circle hit-tested at eight points.)
    Proved by breaking (15 Oct 2026; each a scratch root of symlinks with ONE file replaced, the test run with SB_ROOT on it,
-   the tree untouched): see the header's list below, filled in as each break was watched to fail.
+   the tree untouched; ONLY= the walk that reaches the fault):
+     · mockbee.js never telling the Circuit (`circTell(… onTeamNight(r))` taken out) → 2 fail (desktop REPORT: nothing
+       recorded, no mail; REPLAY: no bee file);
+     · trail.js drawing the Team Night pin whatever teamOpen() says (`const teamOk = true`) → 1 fails (SEASON: a pin at
+       eight halls);
+     · mockbee.js printing the word on a call ("Who takes this word? <word>") → 1 fails (LEAK, every call);
+     · mockbee.js paying an answer coin for finishing → 1 fails (PAY: the ledger took 14, the card said 13);
+     · circuit.js delivering the first-try levelling beat whatever happened (`deliver(o, base + 'levelling')`) → phone
+       REPORT fails (levelling where levellingMiss was owed);
+     · mockbee.js's call buttons 30px tall → phone 44PX fails (every call).
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/team-night-walk.cjs                                          */
 'use strict';
 const { chromium } = require('playwright');
@@ -117,11 +131,31 @@ function kidAt(upto) {
     if (!on) throw new Error('Tab never reached ' + sel + ' ' + JSON.stringify(await pg.evaluate(() => { const a = document.activeElement; return { a: a && (a.outerHTML || '').slice(0, 160), traps: [...document.querySelectorAll('[data-trap]')].map(e => e.className), moment: !!document.querySelector('.hp-moment'), view: state.mb && state.mb.view, phase: state.mb && state.mb.phase }; })));
     await pg.keyboard.press('Enter');
   }
-  /* the controls on the stage that are under 44 × 44 */
-  const small = (pg) => pg.evaluate(() => [...document.querySelectorAll('.sb-stage button, .sb-stage [role="button"], .sb-stage input')]
-    .filter(e => e.getClientRects().length && getComputedStyle(e).visibility !== 'hidden' && !e.disabled)
-    .map(e => [e, e.getBoundingClientRect()]).filter(([, r]) => r.width < 43.5 || r.height < 43.5)
-    .map(([e, r]) => (e.getAttribute('aria-label') || e.textContent.trim().slice(0, 18)) + ' ' + Math.round(r.width) + '×' + Math.round(r.height)));
+  /* tests/touch-targets.cjs's measure (as tests/analogy-halls-stage.cjs carries it), on the stage's controls as they stand:
+     the 44px circle round each control's centre, hit-tested at eight points, every one landing on the control — so an
+     invisible 44px hit area (a11y.css) counts and a box that merely looks big enough does not. The first cut of this
+     check measured bounding boxes and flagged "← Leave" (75×35, with its 44px ::before) and the kit's 43px-wide letter
+     keys, both of which pass the project's own measure. */
+  const small = async (pg) => { let r = null;
+    for (let tries = 0; tries < 3; tries++) { await quietRender(pg, 300);
+      r = await pg.evaluate(async () => {
+        const SEL = 'button, a[href], [data-act], input, select, textarea, [role="button"], summary';
+        const els = [...document.querySelectorAll('.sb-stage ' + SEL.split(', ').join(', .sb-stage '))].filter(e => !e.closest('[aria-hidden="true"]') && !(e.parentElement && e.parentElement.closest(SEL)) && !e.disabled
+          && e.getClientRects().length && getComputedStyle(e).visibility !== 'hidden' && getComputedStyle(e).pointerEvents !== 'none');
+        const out = []; let detached = 0;
+        for (const e of els) {
+          if (!e.isConnected) { detached++; continue; }
+          e.scrollIntoView({ block: 'center', inline: 'center' }); await new Promise(r => requestAnimationFrame(r));
+          if (!e.isConnected) { detached++; continue; }
+          const q = e.getBoundingClientRect(), cx = (q.left + q.right) / 2, cy = (q.top + q.bottom) / 2;
+          const label = (e.getAttribute('aria-label') || e.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 18) + ' ' + Math.round(q.width) + '×' + Math.round(q.height);
+          if (cx < 22 || cx > innerWidth - 22 || cy < 22 || cy > innerHeight - 22) { out.push(label + ' (too near the edge)'); continue; }
+          const pts = [[-15, -15], [0, -21], [15, -15], [-21, 0], [21, 0], [-15, 15], [0, 21], [15, 15]];
+          const miss = pts.map(([dx, dy]) => [dx, dy, document.elementFromPoint(cx + dx, cy + dy)]).filter(([, , h]) => !(h && (h === e || e.contains(h))));
+          if (miss.length) { const [dx, dy, h] = miss[0]; out.push(label + ' (at ' + dx + ',' + dy + ': ' + (h ? h.tagName.toLowerCase() + '.' + String(h.className || '').split(' ').filter(Boolean).slice(0, 2).join('.') : 'nothing') + ')'); } }
+        window.scrollTo(0, 0); return { out, detached }; });
+      if (!r.detached) break; }
+    return r.detached ? r.out.concat([r.detached + ' controls replaced while measured']) : r.out; };
   /* the word printed anywhere on the stage (case-insensitive, as a whole word) */
   const leaks = (pg) => pg.evaluate(() => { const g = state.mb, w = g && g.st && g.st.w && g.st.w.w; if (!w) return null;
     const t = (document.querySelector('.sb-stage') || {}).innerText || '';

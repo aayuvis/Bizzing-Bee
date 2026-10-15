@@ -163,7 +163,8 @@ Two things seen on the way, for whoever meets them next:
   passed on CORE's tree. With that extra redraw gone it passed 4 runs of 4. The likely cause is a second redraw landing in
   the middle of a zoomed pick; it was not proved further, so treat a red §8 on this branch as worth a look.
 - **circuit-post** (CORE's) failed once under a loaded machine — its moment card covered the envelope it then tapped —
-  and passed on every rerun; its `settle` is a fixed 120 ms sleep. Not this build's file.
+  and passed on every rerun; its `settle` was a fixed 120 ms sleep. (Batch 3, 15 Oct 2026: it waits for rendering to go
+  quiet and two frames, and passed beside four busy loops.)
 
 ## Left, and what the integrator must wire
 1. **This branch merges CORE's** (worktree-agent-a177fdd5fb0c47f3d at c7e7484c0) so the halls are tested against the real
@@ -178,6 +179,9 @@ Two things seen on the way, for whoever meets them next:
    next time either is drawn after the last stop is walked, not inside the quiz itself. The postcard also needs three of
    the child's own mastered words from that region (CORE's rule), so a child with fewer gets none yet; the hook is asked
    again on the next page load.
-5. Not done: no games-bots driver for the halls (Mock Bee's driver covers the engine; the halls' pay is held by
+5. ~~Not done: no games-bots driver for the halls (Mock Bee's driver covers the engine; the halls' pay is held by
    circuit-halls PAY); a Team Night REAL walk in the browser (the node test plays 204 nights against the contract, and
-   circuit-mail plays Team Night's mail); the Visitor card's content is CORE's (this side draws the line and calls open).
+   circuit-mail plays Team Night's mail)~~ **Done 15 Oct 2026 (batch 3)**: `tests/bots/_hall.mjs` (hall/meadow, hall/strait,
+   hall/stage in games-bots) and `tests/team-night-walk.cjs` (a whole night by touch and by keyboard against the real
+   circuit.js; it found the Mock Bee's letter keys 42.7px wide at 390 — fixed). The Visitor card's content is CORE's (this
+   side draws the line and calls open).

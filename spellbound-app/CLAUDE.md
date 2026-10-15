@@ -125,10 +125,18 @@ what, the API as implemented, every test and every break — are `circuit/BUILD-
   `circuit-halls`, `circuit-team`, `circuit-cases-data`, `analogy-bridge`; browser `circuit-post`, `circuit-halls-board`,
   `circuit-cases`, `analogy-halls`, `analogy-halls-stage`.
 - **Known, open**: atlas-layout §8's zoomed stop card is sensitive to an EXTRA board redraw when the circuit file lands
-  (trail.js must not redraw on that landing itself — boot-lazy's softRender already does); circuit-post waits a fixed 120 ms
-  in one place; in the Mock Analogy Bee (and so its halls) a random tapper reaches the podium ~2.4% of bees (a tie rule) — a
-  merit floor of 3 right after the warm-up cuts it to 0.6%, an owner call because it changes the plain bee's pay; not yet
-  done: a browser walk of Team Night against the real core, and a games-bots driver for the halls.
+  (trail.js must not redraw on that landing itself — boot-lazy's softRender already does); in the Mock Analogy Bee (and so
+  its halls) a random tapper reaches the podium ~2.4% of bees (a tie rule) — a merit floor of 3 right after the warm-up cuts
+  it to 0.6%, an owner call because it changes the plain bee's pay.
+- **Batch 3 (15 Oct 2026) closed the rest**: `tests/team-night-walk.cjs` (browser, ~5 min) walks Team Night against the REAL
+  Circuit — the nine halls through its API (teamOpen no at eight, yes at nine), the Big Stage pin, a whole night by touch at
+  390 (the levelling word missed first, a teammate's help) and by keyboard at 1280, the replay; calls, own words, no leak,
+  44px, the Circuit wins, the card's coins are the ledger's, the mail and the right levelling beat. The Bee Halls are in the
+  bot harness (`tests/bots/_hall.mjs`: hall/meadow, hall/strait, hall/stage — fixed seeds, the page reseeded at Start).
+  circuit-post's `settle` waits for rendering to go quiet. The Analogy Atlas's stops are clamped inside their boards
+  (`tests/analogy-board-fit.cjs`, four boards × 360/390/768/1280). **The Mock Bee's letter keys were 42.7px at 390** — the
+  bee's old `.mb-stage` 16px padding inside the kit's gutter (every other game's kit keys are 48); the walk found it,
+  `.sb-stage.mb-stage .mb-keys` now takes the control row's gutter (45.8px), and touch-targets measures a Mock Bee turn.
 - **Suki wears Snowfox** (alt Wisp) everywhere since 14 Oct (mockbee.js BOTS, the Grand Prix cast, the script's cast key).
 
 ## The Teacher's Corner and My Homework (15 Oct 2026) — READ FIRST; it overrides the sections below
