@@ -126,8 +126,11 @@ function landing() {
       /* ---- every next goes through the one function ---- */
       /* Home's Continue (a real tap), the drawer's row and the end of placement */
       {
-        await pg.click('.sb-content [data-act="goNext"]'); await pg.waitForTimeout(1800);
-        const viaHome = await pg.evaluate(landing);
+        /* wait on the landing itself — the camera homes once the panorama is laid out, which a loaded machine takes longer
+           than the fixed 1.8 s this read used to give it (P3 full run 14: ok, card and Start right; stop not yet in view) */
+        await pg.click('.sb-content [data-act="goNext"]');
+        let viaHome = null;
+        for (const t0 = Date.now(); Date.now() - t0 < 20000;) { viaHome = await pg.evaluate(landing); if (viaHome.ok && viaHome.seen && viaHome.rider) break; await pg.waitForTimeout(150); }
         ok(viaHome.ok && viaHome.seen && viaHome.rider, `${tag}: Home's Continue opens the Atlas on the child's region (${viaHome.h}) with their stop selected (${viaHome.on}), its card and Start open, the stop on screen with the avatar on it, not under the card` + (viaHome.ok && viaHome.seen && viaHome.rider ? '' : ' ' + JSON.stringify(viaHome)));
         await pg.goBack(); await pg.waitForTimeout(900);
         ok(await pg.evaluate(() => state.nav === 'home' && location.hash === '#/home'), `${tag}: Back from there returns to Home`);
