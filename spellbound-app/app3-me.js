@@ -232,7 +232,7 @@ function medalSVG(b, size, won, i, n){ size=size||96; if(won===undefined) won=tr
 const HIVE_POST_ICON='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block;flex-shrink:0"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3.6 6.6 12 13l8.4-6.4"/></svg>';
 function viewCollection(){ const S=state; const c=active(); let tab=S.collTab||'badges';
   if(tab==='artifacts') tab='badges';   // retired tab key — artifacts merged into Badges
-  const tabBtn=(k,ic,l)=>`<button data-act="collTab" data-arg="${k}" style="flex:1;min-width:96px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:10px;font-weight:800;font-size:13px;${tab===k?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted)'}">${ic.charAt(0)==='<'?ic:iconSVG(ic,15)} ${l}</button>`;
+  const tabBtn=(k,ic,l)=>`<button data-act="collTab" data-arg="${k}" style="flex:1;min-width:96px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;border-radius:10px;font-weight:800;font-size:13px;${tab===k?'background:var(--accent);color:#fff':'background:var(--surface2);color:var(--muted)'}">${ic.charAt(0)==='<'?ic:iconSVG(ic,15)} ${l}</button>`;
   let body='';
   if(tab==='post'){
     body=window.SB_CIRCUIT?SB_CIRCUIT.postHTML(c):(lazyNeed('circuit',()=>render()), hiveLoader('Opening the Hive Post'));

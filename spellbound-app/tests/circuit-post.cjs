@@ -20,16 +20,18 @@
      TEST 13      ?demo: a season played on a demo page leaves the real storage without a single Circuit piece.
      AXE          axe (WCAG 2.1 A + AA) finds nothing on the mail, a piece, the board and the stamps, light and dusk.
    SB_ROOT=<dir> runs against another tree (a scratch root of symlinks with one file replaced).
-   PROVED BY BREAKING (circuit/BUILD-core.md has the record):
-     - circuit.js without the fiction line on the reader → L9 fails;
-     - circuit.js bee file with its intro back in the open (no details) → "every delivered piece fits" fails (bee files);
-     - circuit.js reader controls at min-height 36px → TARGETS fails;
-     - circuit.js reading aloud the piece's label instead of its text → "Read aloud says exactly the piece" fails;
-     - circuit.js with a <textarea> on the Suspect Board → TEST 10 fails;
-     - circuit.js's keydown handler without Escape → KEYBOARD fails;
-     - circuit.js's persist() without its SB_DEMO guard and a save on a demo page… holds (the demo sandbox keeps it in
-       memory) — so this check was proved by pointing the demo page's writes at the real storage (app3.js's save()
-       writing through a non-demo SB_STORE): fails.
+   PROVED BY BREAKING (a scratch root of symlinks, ONE file replaced, SB_ROOT; circuit/BUILD-core.md has the record):
+     - circuit.js without the fiction line on the reader → 1 fails ("every delivered piece … without the fiction line");
+     - circuit.js's bee file with the corridor tip back inside it → 1 fails (bee.library.1 705px, bee.storm.1 698px > 672)
+       — the bee file's intro put back in the open did NOT fail (it still fits), so that break was replaced by this one;
+     - circuit.js's reader controls at 36px → 1 fails (Read aloud 124×39, Previous 52×39 …) and the run stops on a tap;
+     - circuit.js reading aloud the piece's label instead of its text → 1 fails (36 pieces checked);
+     - circuit.js with a <textarea> on the Suspect Board → 1 fails (the board view's audit);
+     - circuit.js's keydown handler not hearing Escape → 1 fails ("Esc goes back to the mail");
+     - index.html's ?demo sandbox without its storage swap (SB_DEMO still set) → 1 fails (sb_saas_v2 in the real storage
+       carries Circuit mail). The first version of this check could NOT fail: the context's seeding script also ran on
+       the probe page and wrote over the household before it was read; it skips storage-probe.html now.
+     The screen's height is measured below a STICKY top bar too (it was read as 776px before; 672px is the truth).
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/circuit-post.cjs                                       */
 'use strict';
 const { chromium } = require('playwright');
@@ -58,6 +60,9 @@ const SPACE = () => { const H = innerHeight; let top = 0, bot = H;
   for (const e of document.querySelectorAll('body *')) { const cs = getComputedStyle(e); if (cs.position !== 'fixed' || cs.display === 'none' || cs.visibility === 'hidden' || e.closest('.hp-moment')) continue;
     const r = e.getBoundingClientRect(); if (!r.height || r.height > H / 3 || r.width < innerWidth / 2) continue;
     if (r.top <= 1) top = Math.max(top, r.bottom); else if (r.bottom >= H - 1) bot = Math.min(bot, r.top); }
+  /* a sticky top bar covers the page's top once it is scrolled: count it as the top of the screen */
+  for (const e of document.querySelectorAll('#root *, body > *')) { const cs = getComputedStyle(e); if (cs.position !== 'sticky' || cs.display === 'none') continue;
+    const r = e.getBoundingClientRect(); if (r.height && r.height < H / 3 && r.width >= innerWidth / 2 && r.top <= 1) top = Math.max(top, r.bottom); }
   return { top, bot, h: bot - top }; };
 const AUDIT = (sel) => { const root = document.querySelector(sel); if (!root) return null;
   const RE = /\p{Extended_Pictographic}/u, OKC = /[©®™]/g;
@@ -73,7 +78,7 @@ const AUDIT = (sel) => { const root = document.querySelector(sel); if (!root) re
   const boot = async (vp, opts) => {
     opts = opts || {};
     const ctx = await b.newContext({ viewport: { width: vp.width, height: vp.height }, hasTouch: !!vp.touch, isMobile: !!vp.touch, reducedMotion: 'reduce' });
-    await ctx.addInitScript(([a, mode]) => { try { if (!/[?&]demo/.test(location.search) && !localStorage.getItem('t_seed')) { localStorage.setItem('sb_saas_v2', JSON.stringify({ theme: 'spellbound', mode, pin: '1234', activeIdx: 0, children: [a] }));
+    await ctx.addInitScript(([a, mode]) => { try { if (!/[?&]demo/.test(location.search) && !/storage-probe/.test(location.pathname) && !localStorage.getItem('t_seed')) { localStorage.setItem('sb_saas_v2', JSON.stringify({ theme: 'spellbound', mode, pin: '1234', activeIdx: 0, children: [a] }));
       localStorage.setItem('t_seed', '1'); localStorage.setItem('sb_splash', '0'); } } catch (e) {}
       window.__said = []; try { const S = window.speechSynthesis; if (S) { S.speak = (u) => { window.__said.push(String(u && u.text)); }; S.cancel = () => {}; } } catch (e) {} }, [KID, opts.mode || 'light']);
     const pg = await ctx.newPage(); pg.on('pageerror', (e) => errs.push(vp.n + ': ' + e.message));
@@ -134,6 +139,9 @@ const AUDIT = (sel) => { const root = document.querySelector(sel); if (!root) re
     await pg.evaluate(() => app.hivePost('view|visitors')); await settle(pg);
     const vis = await pg.evaluate(() => { const t = document.querySelector('.hp-post').textContent; return { echo: /Echo · echo/.test(t), diesel: /Rudolf Diesel · diesel/.test(t), sources: document.querySelectorAll('.hp-vis details').length }; });
     ok(vis.echo && vis.diesel && vis.sources >= 2, 'the Visitors\' Book shows the visitors at stops the child has walked (Echo, Rudolf Diesel), each with its sources');
+    await pg.evaluate(() => SB_CIRCUIT.openVisitor('u16')); await settle(pg);
+    const iris = await pg.evaluate(() => { const first = document.querySelector('.hp-vis .hp-k'); return { first: first && first.textContent, view: state.collTab }; });
+    ok(iris.view === 'post' && /Iris · iridescent/.test(iris.first || ''), 'a stop card\'s Visitor line (openVisitor) opens the book on that stop\'s visitor, first: ' + iris.first);
 
     /* touch flows */
     const idx = (k) => pg.evaluate((k) => SB_CIRCUIT.state().mail.findIndex((m) => m.key === k), k);
@@ -239,7 +247,9 @@ const AUDIT = (sel) => { const root = document.querySelector(sel); if (!root) re
   {
     const { ctx, pg } = await boot({ n: 'demo', width: 390, height: 844 }, { q: '?demo=1' });
     await pg.evaluate(() => new Promise((r) => SB_LAZY.need(['words1', 'circuit'], r)));
-    const n = await pg.evaluate(() => { state.screen = 'app'; return window.SB_DEMO ? (function () { const C = SB_CIRCUIT; SB_CIRCUIT_DATA.rounds.forEach((r) => C.onHall(r.act, { place: 1, of: 6, above: true, words: [] })); return C.state().mail.length; })() : -1; });
+    const n = await pg.evaluate(() => { state.screen = 'app'; return window.SB_DEMO ? (function () { const C = SB_CIRCUIT; SB_CIRCUIT_DATA.rounds.forEach((r) => C.onHall(r.act, { place: 1, of: 6, above: true, words: [] }));
+      try { save(); } catch (e) {}   /* the app saves for its own reasons too: whatever it saves on a demo page stays in memory */
+      return C.state().mail.length; })() : -1; });
     const real = await ctx.newPage(); await real.goto('file://' + ROOT + '/tests/lib/storage-probe.html').catch(() => {});
     const leak = await real.evaluate(() => { const out = []; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (/"circuit"/.test(localStorage.getItem(k) || '') && /rounds\[/.test(localStorage.getItem(k) || '')) out.push(k); } return out; }).catch((e) => ['probe failed: ' + e.message]);
     ok(n > 50 && !leak.length, `a season played on a ?demo page (${n} pieces, in memory) leaves the real storage without one Circuit piece` + some(leak));

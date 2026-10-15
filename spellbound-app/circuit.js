@@ -26,16 +26,21 @@
      state(c)                  the child's record, made if missing (written only when a hook saves)
      onHallOpen(act)           a hall's pin first shows (leg 4 reached, hallUnlocked true): its invitation and programme
      onHall(act, r)            a hall's result. r = {place, of, words:[{w, ok, asks?}], missed:[w], replay,
-                               above? (bool: the child finished above the headliner), headPlace?, asked?}.
+                               above? (bool: the child finished above the headliner), headPlace?, asked?, asks?,
+                               spelled?, lastMissed?} — asks per word as a count or the Chair's request list, or
+                               r.asked = [{w, ok, asks:[…]}] (mockbee's g.mine); r.asked/r.asks as a bare total.
                                Records halls[act], delivers the round's story mail (story order), the bee file, the
                                stamp, and makes the case whose `after` is this round available.
-     onTeamNight(r)            r = {place, of, words:[{w, ok, asks?}], calls:{right, of}, replay, levelMiss?, band?}
+     onTeamNight(r)            r = {place, of, words:[{w, ok, asks?}], calls:{right, of}, replay, levelMiss?, lectern?, band?}
      onRegionDone(act)         the guide's postcard (three of the child's own words from that region's stops)
      onLevelUp(level)          a diary line
      boardExtras(act)          HTML a region board drops in its overlay: the envelope (mail waiting; no count) and the
                                cases' pins (SB_CIRCUIT_CASES.pins). Also where a waiting moment card is shown.
      mailWaiting(c)            any unread mail
-     open(tab)                 opens the Hive Post: 'mail' | 'board' | 'visitors' | 'stamps'
+     open(tab, unitId?)        opens the Hive Post: 'mail' | 'board' | 'visitors' | 'stamps' (visitors + a stop: that
+                               stop's visitor first) — openVisitor(unitId) is the same for a stop card's Visitor line
+     hallFiled(act, c?)        the Mock Bee recap filed this hall's misses: its latest bee file reads "On your revision pile"
+     line(path)                a line by its path in the data, slots filled with the script's fallbacks
      visitorFor(unitId)        the Stop Visitor standing at an Atlas stop, or null (§10)
      caseState(c, id)          a case's record {state:'unseen'|'open'|'solved', hints} or null (not yet available)
      caseUpdate(c, id, patch)  the cases build writes {state, hints} through here
@@ -100,14 +105,24 @@
 
   /* ---------------------------------------------------------------- the child's bee file → the slots (build[id=slots]) */
   const askN = (a) => (Array.isArray(a) ? a.length : typeof a === 'number' && isFinite(a) ? a : null);
+  /* a hall's log, from what the hall reports. Per-word requests come as words[].asks (a count or the Chair's request
+     list) or as r.asked = [{w, ok, asks:[…]}] (mockbee's g.mine); the slot counts them the script's way, the sum of
+     asks.length (build[id=slots]); a bare total (r.asked or r.asks, a number) is used only when no word carries its own */
   function hallLog(r) {
     r = r || {};
-    const words = (Array.isArray(r.words) ? r.words : []).filter((x) => x && x.w).map((x) => ({ w: String(x.w), ok: !!x.ok, asks: askN(x.asks) }));
+    const per = Array.isArray(r.asked) ? r.asked : [];
+    const words = (Array.isArray(r.words) ? r.words : []).filter((x) => x && x.w).map((x, j) => {
+      let a = askN(x.asks);
+      if (a == null) { const p = per[j] && per[j].w === x.w ? per[j] : per.find((y) => y && y.w === x.w); if (p) a = askN(p.asks); }
+      return { w: String(x.w), ok: !!x.ok, asks: a };
+    });
     for (const w of Array.isArray(r.missed) ? r.missed : []) if (w && !words.some((x) => !x.ok && x.w === String(w))) words.push({ w: String(w), ok: false, asks: null });
     const known = words.filter((x) => x.asks != null);
-    const asked = typeof r.asked === 'number' ? r.asked : known.length ? known.reduce((t, x) => t + x.asks, 0) : null;
+    const asked = known.length ? known.reduce((t, x) => t + x.asks, 0) : typeof r.asked === 'number' ? r.asked : typeof r.asks === 'number' ? r.asks : null;
     const miss = words.filter((x) => !x.ok);
-    return { words, asked, beat: miss.length ? miss[miss.length - 1].w : null };
+    const log = { words, asked, beat: miss.length ? miss[miss.length - 1].w : (typeof r.lastMissed === 'string' && r.lastMissed) || null };
+    if (typeof r.spelled === 'string' && r.spelled) log.spelled = r.spelled;
+    return log;
   }
   const diff = (w) => { try { return window.SB_TRICK ? SB_TRICK.diff({ w }) : String(w).length; } catch (e) { return String(w).length; } };
   const trickCls = (w) => { try { return window.SB_TRICK ? SB_TRICK.anal({ w }).cls : null; } catch (e) { return null; } };
@@ -134,7 +149,7 @@
   function slotValue(name, o, log) {
     if (name === 'asked') return log && log.asked != null ? String(log.asked) : null;
     if (name === 'missed') return log && log.beat ? log.beat : null;
-    if (name === 'spelled') { const ok = log ? log.words.filter((x) => x.ok) : []; if (!ok.length) return null;
+    if (name === 'spelled') { if (log && log.spelled) return log.spelled; const ok = log ? log.words.filter((x) => x.ok) : []; if (!ok.length) return null;
       return ok.slice().sort((a, b) => diff(b.w) - diff(a.w) || (a.w < b.w ? -1 : 1))[0].w; }
     if (name === 'weak') { const f = weakFamily(o, log && log.words); return f ? D().slotLines.weak.byFamily[f] : null; }
     return null;
@@ -187,6 +202,7 @@
   const TN_BEATS = ['captaincy', 'idea', 'ravenmere', 'callRules', 'DRAMA', 'LEVEL', 'finalWord', 'after', 'daxPostcard'];
   const TN_HELD = ['sting', 'stingAfter', 'mei', 'coda'];   // story-order holds sting + stingAfter; Mei and the coda follow them
   function bandOf(c, r) {
+    if (r && /^(8-10|11-15)$/.test(r.lectern || '')) return r.lectern;   /* the lectern Team Night seated (mockbee's g.lect) */
     if (r && /^(6-7|8-10|11-15)$/.test(r.band || '')) return r.band === '6-7' ? '8-10' : r.band;
     const k = c && c.ageBand; if (k === '11-13' || k === '14-18') return '11-15'; if (k === '5-7' || k === '8-10') return '8-10';
     return (+(c && c.age) || 9) >= 11 ? '11-15' : '8-10';
@@ -224,10 +240,12 @@
     if (r.calls && isFinite(+r.calls.of)) d.calls = { right: +r.calls.right || 0, of: +r.calls.of || 0 };
     return d;
   }
+  /* halls[hall] = {done, best, last} (§3.3) + `first`: the first result with what its story needs (the letter, the slots,
+     Team Night's band and levelling), kept so a hall played out of order can deliver its story later from it */
   function recordHall(o, hall, r, extra) {
-    const res = Object.assign({ place: +r.place || 0, of: +r.of || 0, at: now() }, extra || {});
+    const res = { place: +r.place || 0, of: +r.of || 0, at: now() };
     const h = o.halls[hall];
-    if (!h || !h.done) { o.halls[hall] = { done: res.at, best: { place: res.place, of: res.of }, last: res, first: res }; return true; }
+    if (!h || !h.done) { o.halls[hall] = { done: res.at, best: { place: res.place, of: res.of }, last: res, first: Object.assign({}, res, extra || {}) }; return true; }
     h.last = res;
     if (!h.best || (res.place > 0 && (!h.best.place || res.place < h.best.place))) h.best = { place: res.place, of: res.of };
     return false;
@@ -316,17 +334,43 @@
   function accuseOpen(c) { const o = rec(c || kid()); return !!o && !!D() && storyDone(o, rounds().length) && !solved(o); }
   function chip(c) { const o = rec(c || kid()); return o && has(o, 'teamNight.beats.coda') ? 'The Bee Circuit · Season 2: Ravenmere' : 'The Bee Circuit · Season 1'; }
   function caseState(c, id) { const o = rec(c || kid()); return (o && o.cases[id]) || null; }
+  /* the cases build keeps its own small record beside state and hints (where a child is in a case, what was tried,
+     dismissed…). Kept as plain JSON, a field at a time: a name of letters and digits, never a string longer than
+     CASE_STR (no child writes free text, so nothing longer can be one), the whole record under CASE_MAX. */
+  const CASE_STR = 64, CASE_MAX = 4096, CASE_KEY = /^[a-zA-Z][a-zA-Z0-9_]{0,23}$/;
+  function caseSafe(v) {
+    if (v === null || typeof v === 'boolean') return true;
+    if (typeof v === 'number') return isFinite(v);
+    if (typeof v === 'string') return v.length <= CASE_STR;
+    if (Array.isArray(v)) return v.every(caseSafe);
+    if (typeof v === 'object') return Object.keys(v).every((k) => k.length <= 24 && !/^(__proto__|constructor|prototype)$/.test(k) && caseSafe(v[k]));
+    return false;
+  }
   function caseUpdate(c, id, patch) {
     c = c || kid(); const o = rec(c); if (!o || !D() || !(D().cases || []).some((x) => x.id === id)) return null;
     const cur = o.cases[id] || { state: 'unseen', hints: 0 }, was = cur.state;
     if (patch && /^(unseen|open|solved)$/.test(patch.state || '') && !(was === 'solved' && patch.state !== 'solved')) cur.state = patch.state;
     if (patch && isFinite(+patch.hints) && patch.hints != null) cur.hints = Math.max(0, Math.floor(+patch.hints));
+    if (patch && typeof patch === 'object') Object.keys(patch).forEach((k) => {
+      if (k === 'state' || k === 'hints' || !CASE_KEY.test(k) || /^(constructor|prototype)$/.test(k)) return;
+      const v = patch[k]; if (v === undefined || !caseSafe(v)) return;
+      const was1 = cur[k]; cur[k] = JSON.parse(JSON.stringify(v));
+      if (JSON.stringify(cur).length > CASE_MAX) { if (was1 === undefined) delete cur[k]; else cur[k] = was1; }
+    });
     o.cases[id] = cur;
     if (was !== 'solved' && cur.state === 'solved') { const cs = D().cases.find((x) => x.id === id); queueMoment(cs.title, 'Solved.'); }
     persist(); return cur;
   }
   function caseLate(c, id) { const o = rec(c || kid()); const cs = D() && D().cases.find((x) => x.id === id); return !!(o && cs && storyDone(o, cs.after + 1)); }
   function visitorFor(unitId) { const d = D(); if (!d) return null; const i = d.visitorAt[unitId]; return i == null ? null : d.visitors[i]; }
+  /* the Mock Bee recap's "Add missed words to revision" filed this hall's misses: its latest bee file says so */
+  function hallFiled(act, c) {
+    const o = rec(c || kid()); if (!o) return false;
+    for (let i = o.mail.length - 1; i >= 0; i--) { const m = o.mail[i]; if (m.key.indexOf('bee.' + act + '.') === 0) { m.d = Object.assign({}, m.d, { filed: 1 }); persist(); return true; } }
+    return false;
+  }
+  /* a line by its path, its slots filled with the script's fallbacks (the halls and Team Night announce from these) */
+  function line(path) { const v = at(path); return typeof v === 'string' ? fill(v, null, path) : ''; }
   function mailWaiting(c) { const o = rec(c || kid()); return !!o && o.mail.some((m) => m && !m.read); }
 
   /* every on-screen line's path (test 8): the strings the app can show, by their place in the data */
@@ -361,7 +405,7 @@
   }
   /* a piece: {kind, label, html, text} — html is the card body, text what Read aloud says */
   function piece(o, m, idx) {
-    const k = m.key; const L = [], cls = [];
+    const k = m.key; const L = [];
     const line = (s, c2) => { L.push({ s, c: c2 || '' }); };
     let label = '', kind = 'note', extra = '';
     let mm = /^rounds\[(\d+)\]\.pieces\.([a-z0-9]+)$/i.exec(k);
@@ -465,8 +509,8 @@
   }
 
   /* ================================================================ THE HIVE POST (Collection → Hive Post) */
-  const ui = { view: 'mail', open: null, pin: null, accusing: false, wrong: null, who: '' };
-  function uiFor(c) { const t = kidTag(); if (ui.who !== t) { Object.assign(ui, { view: 'mail', open: null, pin: null, accusing: false, wrong: null, who: t }); } return ui; }
+  const ui = { view: 'mail', open: null, pin: null, accusing: false, wrong: null, vis: null, who: '' };
+  function uiFor(c) { const t = kidTag(); if (ui.who !== t) { Object.assign(ui, { view: 'mail', open: null, pin: null, accusing: false, wrong: null, vis: null, who: t }); } return ui; }
   /* the mail in the order the list shows it: chapters by first delivery, each in delivery order */
   function sequence(o) {
     const groups = [], by = {};
@@ -485,7 +529,7 @@
     let body;
     if (u.open != null && o.mail[u.open]) body = reader(o, u.open);
     else if (u.view === 'board') body = boardView(c, o, u);
-    else if (u.view === 'visitors') body = visitorsView(c);
+    else if (u.view === 'visitors') body = visitorsView(c, u.vis);
     else if (u.view === 'stamps') body = stampsView(o);
     else body = mailView(o);
     return `<div class="hp-post" data-hp-view="${H(u.open != null ? 'reader' : u.view)}">${fictionLine()}${u.open != null ? '' : subTabs(u.view)}${body}</div>`;
@@ -568,10 +612,11 @@
     if (Object.keys(((t.done || {})[u]) || {}).length) return true;
     return Object.keys(t.st || {}).some((k) => k.split(':')[0] === u && ((t.st[k] || {}).p || 0) >= 70);
   }
-  function visitorsView(c) {
-    /* §10: a visitor stands at a stop whose own list holds their word; the book shows the ones the child has walked past */
+  function visitorsView(c, at1) {
+    /* §10: a visitor stands at a stop whose own list holds their word; the book shows the ones the child has walked past,
+       and the one whose stop card the child has just tapped, first */
     const V = D().visitors.map((v, i) => ({ v, i })).filter((x) => x.v.stop);
-    const met = V.filter((x) => walked(c, x.v.stop)), left = V.length - met.length;
+    const met = V.filter((x) => walked(c, x.v.stop) || x.v.stop === at1).sort((a, b) => (b.v.stop === at1) - (a.v.stop === at1)), left = V.length - met.length;
     return `<ul class="hp-rows">${met.map(({ v, i }) => `<li class="hp-card hp-vis"><p class="hp-k">${H(v.figure)} · <b>${H(v.word)}</b></p><p class="hp-line">${H(v.card)}</p>
           <div class="hp-ctl"><button class="hp-btn" data-act="hivePost" data-arg="sayvis|${i}" aria-label="Read aloud">${ccSpeakSVG()} Read aloud</button></div>
           ${v.sources.length ? `<details class="hp-src"><summary>Sources</summary><ul>${v.sources.map((s) => `<li>${H(s.ref)}</li>`).join('')}</ul></details>` : ''}</li>`).join('')}
@@ -601,12 +646,12 @@
     const c = kid(), o = rec(c); if (!o || !D()) return;
     const u = uiFor(c);
     const a = String(arg == null ? '' : arg).split('|'), v = a[0];
-    if (v === 'open') { open(a[1]); return; }
-    if (v === 'view') { u.view = /^(mail|board|visitors|stamps)$/.test(a[1]) ? a[1] : 'mail'; u.open = null; u.pin = null; u.accusing = false; u.wrong = null; redraw(); refocus('.hp-tab[aria-pressed="true"]'); return; }
+    if (v === 'open') { open(a[1], a[2]); return; }
+    if (v === 'view') { u.vis = null; u.view = /^(mail|board|visitors|stamps)$/.test(a[1]) ? a[1] : 'mail'; u.open = null; u.pin = null; u.accusing = false; u.wrong = null; redraw(); refocus('.hp-tab[aria-pressed="true"]'); return; }
     if (v === 'read') { const i = +a[1]; if (a[1] === 'null' || !readAt(o, i)) return; redraw(); toTop(); refocus('.hp-reader .hp-say'); return; }
     if (v === 'back') { u.open = null; redraw(); refocus('.hp-row'); return; }
     if (v === 'say') { const m = o.mail[+a[1]]; if (m) speak(piece(o, m, +a[1]).text); return; }
-    if (v === 'sayvis') { const vis = D().visitors[+a[1]]; if (vis && vis.stop && walked(c, vis.stop)) speak(vis.figure + '. ' + vis.word + '. ' + vis.card); return; }
+    if (v === 'sayvis') { const vis = D().visitors[+a[1]]; if (vis && vis.stop && (walked(c, vis.stop) || vis.stop === u.vis)) speak(vis.figure + '. ' + vis.word + '. ' + vis.card); return; }
     if (v === 'sayclue') { const cl = cluesIn(o).find((x) => x.id === a[1]); if (cl) speak(cl.text); return; }
     if (v === 'saywrong') { const A = D().accusation; if (u.wrong) speak((A.lookAgainBy || {})[u.wrong] || A.lookAgain); return; }
     if (v === 'pip') { const i = +a[1], m = o.mail[i]; if (!m || !/\.pieces\.pip$/.test(m.key)) return;
@@ -638,9 +683,10 @@
     const i = o.mail.findIndex((m) => m.key === 'accusation.reveal'); readAt(o, i); redraw(); toTop(); refocus('.hp-reader .hp-say');
     return true;
   }
-  function open(tab) {
+  function open(tab, unitId) {
     const c = kid(); if (!rec(c)) return; const u = uiFor(c);
     u.view = /^(mail|board|visitors|stamps)$/.test(tab || '') ? tab : 'mail'; u.open = null; u.pin = null; u.accusing = false; u.wrong = null;
+    u.vis = u.view === 'visitors' && unitId && visitorFor(unitId) ? unitId : null;   /* a stop's "Visitor" line opens that visitor's card */
     try { if (typeof state === 'object' && state) state.collTab = 'post'; } catch (e) {}
     try { if (typeof app !== 'undefined' && app.openCollection) app.openCollection(); else redraw(); } catch (e) { redraw(); }
     toTop();
@@ -790,7 +836,9 @@
 .hp-st-t{font-size:11.5px;font-weight:700}
 .hp-st-p{font-size:12.5px;font-weight:800}
 .hp-pipitem{font-size:14px;line-height:1.5}
-.hp-env{position:absolute;top:58px;right:10px;z-index:6;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.92);border:2px solid #8A5A00;box-shadow:0 4px 14px rgba(0,0,0,.25);cursor:pointer}
+/* the envelope floats over the board's window, whatever layer of the (panning) board it was dropped in: fixed, above the tab bar */
+.hp-env{position:fixed;right:16px;bottom:calc(86px + env(safe-area-inset-bottom,0px));z-index:40;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.92);border:2px solid #8A5A00;box-shadow:0 4px 14px rgba(0,0,0,.25);cursor:pointer}
+@media (min-width:641px){.hp-env{bottom:28px;right:28px}}
 .hp-moment{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:16px;background:rgba(18,12,30,.55)}
 .hp-m-card{width:min(420px,100%);max-height:calc(100vh - 32px);overflow:auto;background:var(--paper,#fff);color:var(--text,#1d1730);border-radius:18px;padding:20px 18px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.35)}
 .hp-m-art{display:grid;place-items:center;margin:0 0 8px}
@@ -802,7 +850,7 @@
 
   window.SB_CIRCUIT = {
     data: D, state: (c) => rec(c || kid()), onHallOpen, onHall, onTeamNight, onRegionDone, onLevelUp,
-    boardExtras, mailWaiting, open, visitorFor, caseState, caseUpdate, caseLate, hallUnlocked, teamOpen, accuseOpen, chip,
+    boardExtras, mailWaiting, open, openVisitor: (unitId) => open('visitors', unitId), visitorFor, hallFiled, line, caseState, caseUpdate, caseLate, hallUnlocked, teamOpen, accuseOpen, chip,
     keys, act, postHTML,
     /* for the tests and the cases build: what a piece shows and says, the season's order, and the moment queue */
     piece: (c, i) => { const o = rec(c || kid()); return o && o.mail[i] ? piece(o, o.mail[i], i) : null; },

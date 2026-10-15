@@ -23,21 +23,30 @@
         who never asks reads "You guess instead of asking."; a child who asked on every miss never does; {missed} prints
         the word as spelled (Wednesday, capital W); {asked} is the hall's count.
      L6: above/below is the child's place against the headliner (r.above, else r.headPlace, else a win).
+     THE HALLS' REPORT: mockbee.js's circReport shape (r.asked = [{w, ok, asks:[…]}], r.asks, r.spelled, r.lastMissed)
+        is read the script's way ({asked} = the sum of asks.length); hallFiled(act) (the recap's own filing) makes the
+        bee file read "On your revision pile"; line(path) reads a line with its fallbacks.
      BEE FILE: one tap files every missed word once (addMiss(…, 'mark'), Mock Bee's own filing); a second tap files
         nothing; a hall with no miss has no button; replays add a bee file and keep the best stamp; the story never repeats.
      L11 / no chance: circuit.js pays nothing (no addCoins / payG / spendCoins) and a whole season runs with Math.random
         throwing.
    module.exports = { harness, careful, randomBot } — tests/circuit-store.cjs and circuit-data.cjs use the harness.
    SB_ROOT=<dir> runs against another tree (a scratch root of symlinks with one file replaced).
-   PROVED BY BREAKING (each in a scratch root, one file replaced, the tree never touched — see circuit/BUILD-core.md):
-     - circuit.js mail filtered by age (`o.mail = o.mail.filter(m => now() - m.at < 300 days)` in norm) → test 3 fails;
-     - circuit.js cascade without the story-order wait (deliver a hall's story on its own result) → story order and
-       test 5 (Round VII's invitation before Round VI's V. note) fail;
-     - circuit.js delivering Team Night's held lines at Team Night → story order fails ("names Vale before");
-     - circuit.js dropping clue2 from DEFAULT_ORDER → test 5 fails (ratchet-cleared not delivered);
-     - circuit.js turn.scene rendering the chosen label as well as the line → test 4's "one line only" fails;
-     - circuit.js `file` action without its filed flag → the bee-file "second tap files nothing" fails;
-     - circuit.js fill() returning the raw token when no value → the slot checks fail.
+   PROVED BY BREAKING (each in a scratch root of symlinks, circuit.js replaced by a copy with one edit, run with SB_ROOT;
+   the tree never touched — circuit/BUILD-core.md keeps the harness and the output):
+     - mail filtered by age in norm() (`o.mail.filter(m => now() - m.at < 300 days)`) → 2 fail (test 3: "still there",
+       "reads the same");
+     - cascade without the story-order wait (a hall's story on its own result) → 2 fail (out of order holds its story;
+       both arrive in story order);
+     - Team Night's held lines delivered at Team Night → 3 fail (the coda last on 14/22 paths; nothing names Vale
+       before; the next mail after naming V.);
+     - clue2 dropped from the round order → 1 fails (test 5: ratchet-cleared missing on every path);
+     - the turn's card printing the chosen label as well as its line → 1 fails (test 4: one line only);
+     - the bee file's `file` action without its filed flag → 1 fails (a second tap files again);
+     - fill() printing the raw token when no value was frozen → 4 fail (raw {token} on random seasons; the no-miss
+       advice; {missed}'s fallback; line(path)'s fallback);
+     - caseUpdate keeping only {state, hints} (the cases build's `dismissed` and progress dropped) → 1 fails;
+     - caseUpdate copying every field unchecked → 1 fails (a 65-letter string and an oversized record kept).
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/circuit-mail.cjs                                       */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -231,6 +240,18 @@ const FINALS = ['teamNight.beats.daxPostcard', 'accusation.closingLetter', 'team
   c.C.caseUpdate(null, 'c1', { state: 'open', hints: 2 }); c.C.caseUpdate(null, 'c1', { state: 'solved' }); c.C.caseUpdate(null, 'c1', { state: 'open' });
   ok(JSON.stringify(c.C.caseState(null, 'c1')) === '{"state":"solved","hints":2}', 'the cases build writes {state, hints}; a solved case stays solved');
   ok(c.C.caseUpdate(null, 'c9', { state: 'open' }) === null, 'a case id the script does not have is refused');
+  /* the cases build's own record (circuit-cases.js: at, res, seen, tr, pp, solvedAt, sticker, acc, dismissed) */
+  c.C.caseUpdate(null, 'c2', { state: 'open', at: 5, res: {}, seen: { taps: [0, 0, 0], esc: 0 } });
+  c.C.caseUpdate(null, 'c2', { res: { 0: 1 }, tr: { 0: 1 }, pp: 3 });
+  c.C.caseUpdate(null, 'c2', { state: 'solved', solvedAt: 9, sticker: 'team', acc: [1] });
+  c.C.caseUpdate(null, 'c2', { dismissed: true, state: 'open' });
+  const s2 = c.C.caseState(null, 'c2') || {};
+  ok(s2.state === 'solved' && s2.dismissed === true && s2.sticker === 'team' && s2.pp === 3 && s2.res[0] === 1 && s2.seen.taps.length === 3 && s2.acc[0] === 1,
+    'the cases build keeps its own fields (where a child is, what was tried, solved, dismissed): ' + JSON.stringify(s2));
+  c.C.caseUpdate(null, 'c2', { note: 'x'.repeat(65), fn: () => 1, constructor: 1, big: Array(3000).fill(1) });
+  const s3 = c.C.caseState(null, 'c2') || {};
+  ok(!('note' in s3) && !('fn' in s3) && !Object.prototype.hasOwnProperty.call(s3, 'constructor') && !('big' in s3) && JSON.stringify(s3).length <= 4096,
+    'a long string, a function, a reserved name or an oversized record is not kept (no free text, the record stays small)');
 }
 
 /* ---- slots ---- */
@@ -283,6 +304,21 @@ const FINALS = ['teamNight.beats.daxPostcard', 'accusation.closingLetter', 'team
   ok(/Origin calls: 5 of 7 right/.test(t.textOf('bee.team.1')), 'Team Night\'s bee file shows origin-calling accuracy (5 of 7)');
   t.C.onTeamNight({ place: 1, of: 2, words: [{ w: 'cat', ok: false }], calls: { right: 1, of: 7 }, replay: true });
   ok(t.keysOf().filter((x) => x === 'teamNight.beats.daxPostcard').length === 1 && t.keysOf().includes('bee.team.2'), 'a Team Night replay adds a bee file; the story does not repeat');
+}
+
+/* ---- the halls build's report (mockbee.js circReport), hallFiled, line ---- */
+{
+  const h = harness(); const { C } = h;
+  ['meadow'].forEach((a) => C.onHall(a, { place: 1, of: 6, above: true, words: [] }));
+  C.onHall('library', { place: 4, of: 6, above: false, words: [{ w: 'knife', ok: false }, { w: 'phantom', ok: true }], missed: ['knife'],
+    asked: [{ w: 'knife', ok: false, asks: [] }, { w: 'phantom', ok: true, asks: ['def', 'org', 'say'] }], asks: 2, spelled: 'phantom', lastMissed: 'knife' });
+  ok(/Questions you asked this round: 3\./.test(h.textOf('rounds[1].pieces.below')), 'a report with r.asked = [{w, ok, asks:[…]}] counts the script\'s way, the sum of asks.length (3, "Say it again" included)');
+  ok(h.textOf('rounds[1].pieces.v').startsWith(h.D.slotLines.weak.byFamily.noask), 'and a miss with an empty request list is a miss with no question asked');
+  const bi = C.state().mail.findIndex((m) => m.key === 'bee.library.1');
+  ok(/Add missed words/.test(C.piece(null, bi).html) && C.hallFiled('library') && /On your revision pile/.test(C.piece(null, bi).html) && !/data-arg="file\|/.test(C.piece(null, bi).html),
+    'hallFiled(act) — the recap\'s own "Add missed words to revision" — makes the hall\'s bee file read "On your revision pile"');
+  ok(C.line('teamNight.beats.levelling') === h.D.teamNight.beats.levelling && C.line('rounds[2].pieces.above').includes('still to come') && C.line('rounds.nope') === '',
+    'line(path) reads a line by its path, a slot filled with the script\'s fallback, and "" for no line');
 }
 
 /* ---- postcards and the diary ---- */

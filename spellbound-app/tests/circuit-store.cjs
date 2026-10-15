@@ -18,11 +18,12 @@
                  transmitted (no fetch, XHR, beacon or socket in circuit.js; supabase-sync's allow-list does not carry
                  `circuit`).
    SB_ROOT=<dir> runs against another tree.
-   PROVED BY BREAKING (scratch root, one file replaced; circuit/BUILD-core.md has the record):
-     - store.js without v11_to_v12 → the migration checks fail (no record, steps end at v10_to_v11);
-     - store.js's step resetting an existing record (ch.circuit = {} always) → "keeps everything valid" fails;
-     - circuit.js keeping one shared record (rec() returning a module-level object) → isolation fails;
-     - circuit.js's persist() without its SB_DEMO guard → the ?demo check fails (save called).
+   PROVED BY BREAKING (scratch root of symlinks, ONE file replaced, SB_ROOT; circuit/BUILD-core.md has the record):
+     - store.js with v11_to_v12 taken out of STEPS → 5 fail (schema v11, no step run, no record, no repair, the v1 walk);
+     - store.js's step replacing an existing record (`ch.circuit = {}` always) → 1 fails (keeps its mail, pins, choice);
+     - circuit.js keeping ONE record for every child → 3 fail (each child's envelope and halls; the second child's own
+       Hive Post; the first child's record untouched);
+     - circuit.js's persist() without its SB_DEMO guard → 1 fails (?demo: save() called).
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/circuit-store.cjs                                     */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');

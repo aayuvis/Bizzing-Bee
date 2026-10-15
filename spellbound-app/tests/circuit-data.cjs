@@ -25,13 +25,13 @@
                  phrase), the stigma list (SB_KID_SAFE.stigma, the page's own scan) and app3's SB_UNSAFE_RE. (CORE_STRIKE is
                  not a text list: it strikes HEADWORDS from the corpus — "come", "nov" — that are ordinary in a sentence.)
    SB_ROOT=<dir> runs against another tree (a scratch root of symlinks with one file replaced).
-   PROVED BY BREAKING (scratch root, one file replaced; circuit/BUILD-core.md has the record):
-     - circuit-data.js hand-edited (one word of Round I's invitation) → GENERATED and SAME PATH fail;
-     - build-data.cjs keeping cast roles → ONLY WHAT IS SHOWN fails (role, and the spoiler scan: "She is V.");
-     - build-data.cjs placing visitors by their act instead of their stop's list → §10 fails;
-     - mockbee.js with Suki back as 'panda' → TEST 11 fails;
-     - script.json with "stupid" in a Pip note (data rebuilt) → TEST 12 fails;
-     - circuit.js with an <input> in the board view → TEST 10 fails.
+   PROVED BY BREAKING (scratch root of symlinks, ONE file replaced, SB_ROOT; circuit/BUILD-core.md has the record):
+     - circuit-data.js hand-edited ("Nine rounds" → "Ten rounds") → 2 fail (GENERATED; SAME PATH at rounds[0].pieces.inv);
+     - circuit-data.js carrying Vale's cast role ("… She is V. …") → 3 fail (GENERATED; the author field; the spoiler scan);
+     - circuit-data.js with Psyche moved to a Storm stop whose list does not hold "psychology" → 2 fail (GENERATED; §10);
+     - mockbee.js with Suki back as 'panda' → 1 fails (TEST 11);
+     - circuit-data.js with "stupid" in Pip's Round II note → 3 fail (GENERATED; SAME PATH; TEST 12 names the word);
+     - circuit.js with an <input> on the Suspect Board → 1 fails (TEST 10).
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/circuit-data.cjs                                       */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
