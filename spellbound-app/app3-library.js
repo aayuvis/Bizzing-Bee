@@ -917,7 +917,14 @@ function libShelf(){
   /* A book lying down is the same drawing turned a quarter turn. Rotating the IMAGE
      rather than shipping a second set of art keeps one file per volume, and the title
      simply stops being vertical. */
-  const laid=(b,i)=>`<button class="bk-lay" ${attrs(b)}>${img(b)}<span class="bk-lt" style="--fs:${fs(b.t,b.s)}px;color:${ink(b.a).c};text-shadow:${ink(b.a).sh}">${esc(b.t)}</span></button>`;
+  /* A LAID BOOK'S TITLE WAITS FOR ITS BOOK (15 Oct 2026). An upright spine is as wide as its picture, so it shows nothing
+     until the picture paints; a laid book is a fixed 158×24 box, so its white title stood on the bare shelf (light grey,
+     1.5:1) until the PNG came in — a11y-axe caught it on a cold start, and a slow connection shows it to a child. The title
+     is transparent (still the button's name) until its picture has loaded once on this page; `_spineIn` remembers which
+     have, so a redraw never blinks them. */
+  const spineIn=window._spineIn||(window._spineIn=new Set());
+  const imgLaid=(b)=>img(b).replace('<img ',`<img onload="(window._spineIn||(window._spineIn=new Set())).add('${b.s}');this.parentNode.classList.add('in')" `);
+  const laid=(b,i)=>`<button class="bk-lay${spineIn.has(b.s)?' in':''}" ${attrs(b)}>${imgLaid(b)}<span class="bk-lt" style="--fs:${fs(b.t,b.s)}px;color:${ink(b.a).c};text-shadow:${ink(b.a).sh}">${esc(b.t)}</span></button>`;
 
   const piece=(b,i)=>{
     const run=inLay.get(i);
