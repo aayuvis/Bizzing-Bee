@@ -89,6 +89,27 @@ Brief: `Bizzing_Schedule/docs/family/FIX-BEE.md`. Guards: `tests/trust-v2.cjs`, 
 - UI icons are the `iconSVG` set; `tests/trust-v2` and the emoji scan hold buttons, tabs and
   headings free of emoji.
 
+## Concept explainers play to the end (8 Nov 2026) — READ FIRST
+Owner: "the animated narrator is not playing fully … the alphabet sound and the stop before it … the 3 or 4th are not
+playing". Guard: **`tests/concept-narration.cjs`** (browser, ~2 min; seven breaks in its header).
+- **A list scene's items may be LINES of text** ("qu = /kw/ — queen"), not only `{word}`: the Spelling Bee Basics
+  scripts (chapters 0–10, the first Atlas stops) write them. renderStage threw on them, and `playScene` renders before it
+  plays, so the narration stopped there (Alphabet Sounds after 3 of 5 clips, The Champion's Routine after 4 of 5) — since
+  the scripts were written, 30 Aug. `stageItem` draws a line as a line; `conceptAnimStage` catches a throw so a picture
+  can never stop the voice again (the test draws every scene itself, so the net hides nothing).
+- **`SB_ADV_CSCRIPT` lives at the end of `adv-concepts-data.js` and a rewrite of that file must keep it.** The 5 Sep
+  rewrite (b777088f4, "wren is a bird again") wrote only `SB_ADV_CONCEPTS` and dropped the 43 Advanced scripts; their 258
+  clips played over the pattern templates (3 scenes for 6 clips). Restored verbatim (same titles, same order, scene
+  count = clip count). Any tool that rewrites the file re-appends it, or the test fails.
+- **The Grand Trunk Road scripts use the book's shorthand** (`{word}`, `{parts}`, `{glyph}`, `{list}`, `{big}`);
+  `stageOf` reads it (all 44 scenes drew an empty stage). They have no clips — the device voice reads them.
+- **A word is never broken across two lines.** Tiles size to the stage (`tileFit`, `cqw` — the stage `.ca-fit` is a size
+  container), floor 16px (13 small); past ~15 letters a row may wrap rather than shrink past reading. A glyph phrase
+  breaks between words or after `·` / `/` (`glyphTiles`; a space is no longer a blank tile). On a phone (≤560px) the
+  stage gives the words its full width and the bee flies along the bottom (`.ca-stage`, index.html). Before: 715 word
+  rows broke at 390 ("rememb / er"), 153 at 768.
+- The "Narrated" chip reads `voiceClip` (`hasVoicePack`), so Advanced chapters say Narrated too.
+
 ## The Bee Circuit, Season 1 (built 14–15 Oct 2026) — READ FIRST; it overrides the sections below
 The season in `circuit/BEE-CIRCUIT.md`, under `circuit/AMENDMENTS.md` (V. is Vale, 16; no new voice clips) and the owner's
 decisions in `circuit/review/REPORT.md` ("COMPLETE ALL open", 14 Oct). Built in parallel parts; each part's full notes —
