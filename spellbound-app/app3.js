@@ -6530,7 +6530,7 @@ function voiceClip(ch,i){ try{
       const arr=V.dur[ai]; if(!arr||i>=arr.length) return null;
       return { url:(V.base||'voice/')+'a'+ai+'-'+i+'.mp3', ms:Math.round(((arr[i]||2)+0.25)*1000) }; }
     const V=window.SB_VOICE; if(!V||!V.dur) return null; const ci=(state.conceptData||[]).indexOf(ch); if(ci<0) return null; const arr=V.dur[ci]; if(!arr||i>=arr.length) return null; return { url:(V.base||'voice/')+'c'+ci+'-'+i+'.mp3', ms:Math.round(((arr[i]||2)+0.25)*1000) }; }catch(e){ return null; } }
-function hasVoicePack(ch){ try{ const V=window.SB_VOICE; return !!(V&&V.dur&&V.dur[(state.conceptData||[]).indexOf(ch)]); }catch(e){ return false; } }
+function hasVoicePack(ch){ return !!voiceClip(ch,0); }   /* free and Advanced chapters alike */
 function narrate(text,onend){ try{ window.speechSynthesis.cancel(); const u=utter(text,0.96); u.onend=onend||null; u.onerror=onend||null; window.speechSynthesis.speak(u); }catch(e){ if(onend) setTimeout(onend,1200); } }
 function spokenScene(s){ let t=String((s&&(s.say||s.cap))||'');
   // safety net for any line without an explicit script: strip symbols TTS reads badly
@@ -6579,7 +6579,7 @@ function conceptAnim(ch){ if(ch._anim) return ch._anim;
          MEASURED clip length from the voice manifest; fall back to a reading-speed
          estimate from the script text; never go below 3s. */
       const measured=(i)=>{ try{ const c=voiceClip(ch,i); return c?c.ms:0; }catch(e){ return 0; } };
-      const scenes=auth.scenes.map((s,i)=>({stage:s.show,cap:s.cap,say:s.say,mood:s.mood||'happy',
+      const scenes=auth.scenes.map((s,i)=>({stage:stageOf(s.show),cap:s.cap,say:s.say,mood:s.mood||'happy',
         dur:s.dur || measured(i) || Math.max(3000, 900+String(s.say||s.cap||'').length*70)}));
       const r={label:auth.label||catGroup(ch.category),scenes,authored:true}; ch._anim=r; return r; } }catch(e){}
   const fam=catGroup(ch.category); const lc=(ch.title+' '+(ch.category||'')+' '+(ch.concept||'')).toLowerCase();
@@ -6646,20 +6646,52 @@ function conceptAnim(ch){ if(ch._anim) return ch._anim;
   if(!S.length){ const w=showcaseWord(ch); add({t:'word',word:w}, '“'+w+'”', "Here's a key word to study: "+w+'.'); }
   const res={label, scenes:S}; try{ ch._anim=res; }catch(e){} return res; }
 // ---- scene-spec stage renderer ----
-function aTile(letter,kind,anim,sm){ const bg=kind==='affix'?'var(--accent)':'var(--surface2)'; const col=kind==='affix'?'#fff':(kind==='dim'?'var(--muted)':'var(--text)'); const op=kind==='dim'?';opacity:.45':'';
-  const w=sm?'clamp(24px,5vw,34px)':'clamp(30px,7vw,48px)', h=sm?'clamp(30px,6vw,42px)':'clamp(38px,9vw,58px)', fs=sm?'clamp(15px,3.4vw,21px)':'clamp(20px,4.6vw,30px)';
+/* A WORD IS NEVER BROKEN ACROSS TWO LINES. Tiles were a fixed size, so a word longer than the stage
+   wrapped mid-word — "rememb / er" on a phone, any 10-letter word on a tablet (8 Nov 2026: 715 of the
+   course's word rows at 390, 153 at 768). A row of n tiles now takes at most the stage's width (`cqw`:
+   the stage is a size container), down to a floor; only past the floor (a 20-letter showpiece on a
+   phone) does a row wrap rather than shrink past reading. `fit` is that width, from tileFit. */
+function tileFit(n,gap,extra){ return n>1?`calc((100cqw - ${(n-1)*(gap||5)+(extra||0)+2}px) / ${n})`:''; }
+function aTile(letter,kind,anim,sm,fit){ const bg=kind==='affix'?'var(--accent)':'var(--surface2)'; const col=kind==='affix'?'#fff':(kind==='dim'?'var(--muted)':'var(--text)'); const op=kind==='dim'?';opacity:.45':'';
+  const w0=sm?'clamp(24px,5vw,34px)':'clamp(30px,7vw,48px)', h0=sm?'clamp(30px,6vw,42px)':'clamp(38px,9vw,58px)', fs0=sm?'clamp(15px,3.4vw,21px)':'clamp(20px,4.6vw,30px)';
+  const w=fit?`max(${sm?13:16}px,min(${w0},${fit}))`:w0, h=fit?`min(${h0},calc(${w} * 1.3))`:h0, fs=fit?`min(${fs0},calc(${w} * .68))`:fs0;
   return `<span style="display:inline-grid;place-items:center;width:${w};height:${h};border-radius:${sm?9:11}px;background:${bg};color:${col};font-family:var(--display);font-weight:800;font-size:${fs};box-shadow:0 3px 8px rgba(43,27,94,.1)${op};${anim?('animation:'+anim):''}">${esc(letter)}</span>`; }
 function aRow(inner,gap){ return `<div style="display:flex;gap:${gap||5}px;justify-content:center;align-items:center;flex-wrap:wrap">${inner}</div>`; }
-function aTiles(str,kind,anim,sm){ return String(str).split('').map((c,i)=>aTile(c,kind,anim?(anim+' .5s ease '+(i*0.05).toFixed(2)+'s both'):'',sm)).join(''); }
+function aTiles(str,kind,anim,sm,fit){ return String(str).split('').map((c,i)=>aTile(c,kind,anim?(anim+' .5s ease '+(i*0.05).toFixed(2)+'s both'):'',sm,fit)).join(''); }
+/* A glyph is often a phrase ("say · spell · say"): each word's tiles hold together and the line breaks
+   only between words (a space used to be a blank accent tile, and the break fell anywhere). */
+function glyphTiles(text){ const ws=[].concat(...String(text||'').split(/\s+/).filter(Boolean).map(x=>x.split(/(?<=[·\/])/))).filter(Boolean);
+  const L=Math.min(15,Math.max(1,...ws.map(x=>x.length)));   /* "bio·geo·photo" breaks after a · or a / too */
+  const fit=tileFit(L,5); let i=0;   /* sized so its longest word fits a line: a phrase breaks between words, never shrinks to fit one line */
+  return ws.map(x=>`<span style="display:inline-flex;gap:5px;flex-wrap:${x.length>15?'wrap':'nowrap'};justify-content:center;max-width:100%">${x.split('').map(c=>aTile(c,'affix','ca-pop .5s ease '+((i++)*0.05).toFixed(2)+'s both',false,fit)).join('')}</span>`).join(''); }
 function aGlow(html){ return `<div style="animation:ca-glow 1.4s ease 1">${html}</div>`; }
-function wTiles(word,hi,dim,sm){ let t=''; for(let i=0;i<word.length;i++){ const on=hi&&i>=hi[0]&&i<hi[0]+hi[1]; const kind=on?(dim?'dim':'affix'):'root'; t+=aTile(word[i],kind,'ca-pop .42s ease '+(i*0.05).toFixed(2)+'s both',sm); } return t; }
+function wTiles(word,hi,dim,sm,gap){ const fit=tileFit(word.length,gap||5); let t=''; for(let i=0;i<word.length;i++){ const on=hi&&i>=hi[0]&&i<hi[0]+hi[1]; const kind=on?(dim?'dim':'affix'):'root'; t+=aTile(word[i],kind,'ca-pop .42s ease '+(i*0.05).toFixed(2)+'s both',sm,fit); } return t; }
+/* The Grand Trunk Road chapters ship with the book, and the book writes its scenes in a
+   shorthand ({word}, {parts}, {glyph}, {list}, {big}) that renderStage did not read: all 44 of
+   their scenes drew an empty stage. Read the shorthand as the stage it names. */
+function stageOf(sh){ if(!sh||typeof sh!=='object'||sh.t) return sh;
+  if(typeof sh.word==='string') return {t:'word',word:sh.word};
+  if(Array.isArray(sh.parts)){ const ps=sh.parts.map(String).filter(p=>p.trim()&&p!=='+'); return {t:'breakdown',word:ps.join(''),parts:ps.map(p=>({txt:p}))}; }
+  if(typeof sh.glyph==='string') return {t:'glyph',text:sh.glyph};
+  if(Array.isArray(sh.list)) return {t:'list',items:sh.list};
+  if(sh.big!=null) return {t:'big',text:String(sh.big)};
+  return sh; }
+/* A list scene's item is a word to tile ({word,hi,dim}, or a bare word) or a short line of text
+   ("qu = /kw/ — queen"). The Spelling Bee Basics chapters write lines, and reading a line as
+   {word} threw on .length — the render stopped and so did the narration, at the fifth scene of
+   The Champion's Routine and the fourth of Alphabet Sounds (11 scenes in the first 11
+   chapters). A line is never cut into letter tiles. */
+function stageItem(it,i){ if(it&&typeof it==='object'&&typeof it.word==='string') return aRow(wTiles(it.word,it.hi,it.dim,true,4),4);
+  const t=String(it==null?'':it).trim(); if(/^[a-z]{1,14}$/i.test(t)) return aRow(wTiles(t,null,false,true,4),4);
+  return `<span class="ca-line" style="display:inline-block;max-width:100%;padding:6px 14px;border-radius:999px;background:var(--surface2);color:var(--text);font-family:var(--display);font-weight:800;font-size:clamp(13px,3.2vw,16px);line-height:1.35;text-align:center;animation:ca-up .4s ease ${(i*0.1).toFixed(2)}s both">${esc(t)}</span>`; }
 function renderStage(s){ if(!s) return '';
-  if(s.t==='glyph') return `<div style="text-align:center">${aRow(aTiles(s.text,'affix','ca-pop'))}${s.sub?`<div style="margin-top:13px;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--accent);font-weight:700;letter-spacing:.02em">${esc(s.sub)}</div>`:''}</div>`;
-  if(s.t==='word') return aGlow(aRow(wTiles(s.word,s.hi,s.dim)));
-  if(s.t==='list') return `<div style="display:flex;flex-direction:column;gap:9px;align-items:center">${s.items.map(it=>aRow(wTiles(it.word,it.hi,it.dim,true),4)).join('')}</div>`;
-  if(s.t==='build'){ const root=s.root||'',aff=s.affix||''; return s.side==='pre'?aRow(aTiles(aff,'affix','ca-sl')+aTiles(root,'root')):aRow(aTiles(root,'root')+aTiles(aff,'affix','ca-sr')); }
+  if(s.t==='big') return `<div style="text-align:center;font-family:var(--display);font-weight:900;font-size:clamp(22px,5.2vw,34px);line-height:1.15;color:var(--accent);animation:ca-pop .45s ease both">${esc(s.text||'')}</div>`;
+  if(s.t==='glyph') return `<div style="text-align:center">${aRow(glyphTiles(s.text),12)}${s.sub?`<div style="margin-top:13px;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:13px;color:var(--accent);font-weight:700;letter-spacing:.02em">${esc(s.sub)}</div>`:''}</div>`;
+  if(s.t==='word') return aGlow(aRow(wTiles(s.word,s.hi,s.dim,false,5)));
+  if(s.t==='list') return `<div style="display:flex;flex-direction:column;gap:9px;align-items:center">${(s.items||[]).map(stageItem).join('')}</div>`;
+  if(s.t==='build'){ const root=s.root||'',aff=s.affix||'', fit=tileFit(root.length+aff.length,5); return s.side==='pre'?aRow(aTiles(aff,'affix','ca-sl',false,fit)+aTiles(root,'root','',false,fit)):aRow(aTiles(root,'root','',false,fit)+aTiles(aff,'affix','ca-sr',false,fit)); }
   if(s.t==='breakdown'){ const word=s.word||''; const parts=s.parts||[];
-    const top=aGlow(aRow(wTiles(word,s.hi,false),4));
+    const top=aGlow(aRow(wTiles(word,s.hi,false,false,4),4));
     const chips=parts.map((pp,i)=>`<span style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:var(--surface2);font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;animation:ca-up .45s ease ${(i*0.12).toFixed(2)}s both"><b style="color:var(--accent)">${esc(pp.txt)}</b><span style="color:var(--muted)">${pp.gloss?('= '+esc(pp.gloss)):''}</span></span>`).join('');
     return `<div style="display:flex;flex-direction:column;gap:12px;align-items:center">${top}${parts.length?`<div style="display:flex;gap:7px;flex-wrap:wrap;justify-content:center">${chips}</div>`:''}</div>`; }
   /* ---- Advanced Mode stages. The general chapters teach word parts, so tiles are
@@ -6679,7 +6711,7 @@ function renderStage(s){ if(!s) return '';
   if(s.t==='rescue'){ // an unreadable schwa, and the relative that exposes it
     const u=s.unclear||{}, c=s.clear;
     const un=`<div style="display:flex;flex-direction:column;align-items:center;gap:5px">
-      ${aRow(String(u.word||'').split('').map((ch,i)=>aTile(ch,i===u.at?'dim':'root','ca-pop .4s ease '+(i*0.04).toFixed(2)+'s both',true)).join(''),4)}
+      ${aRow(String(u.word||'').split('').map((ch,i,a)=>aTile(ch,i===u.at?'dim':'root','ca-pop .4s ease '+(i*0.04).toFixed(2)+'s both',true,tileFit(a.length,4))).join(''),4)}
       <span style="font-family:var(--body);font-size:11.5px;font-weight:700;color:var(--muted)">unstressed &mdash; any vowel fits</span></div>`;
     if(!c) return un;
     const syl=c.syl||[];
@@ -6713,19 +6745,21 @@ function renderStage(s){ if(!s) return '';
           <span style="font-family:var(--body);font-size:12px;font-weight:700;color:var(--text);line-height:1.5">${esc(r)}</span></div>`).join('')}
       </div></div>`; }
   return ''; }
-function conceptAnimStage(an,sc){ const scn=an.scenes[Math.min(Math.max(sc,0),an.scenes.length-1)]; return renderStage(scn&&scn.stage); }
+/* A picture that cannot be drawn must never stop the voice: playScene renders before it plays,
+   so a throw here was a silent stop (tests/concept-narration.cjs draws every scene itself). */
+function conceptAnimStage(an,sc){ const scn=an.scenes[Math.min(Math.max(sc,0),an.scenes.length-1)]; try{ return renderStage(scn&&scn.stage); }catch(e){ return ''; } }
 function conceptPlayer(){ const ch=state.conceptSel; if(!ch) return ''; const an=conceptAnim(ch); const N=an.scenes.length; const sc=Math.min(Math.max(state.animScene||0,0),N-1); const playing=state.animOn;
   const voiceOn=state.sound!==false;
   return `<div style="background:var(--bg2);border:1px solid var(--accent);border-radius:20px;overflow:hidden;box-shadow:var(--glow)">
     <div style="display:flex;align-items:center;gap:8px;padding:11px 16px;border-bottom:1px solid var(--line)"><span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--display);font-weight:800;font-size:13px;color:var(--accent)">${iconSVG('spark',15)} Animated explainer</span><span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;background:var(--chip);color:var(--accent);font-weight:800;font-size:12px">${iconSVG('volume',12)} ${voiceOn?(hasVoicePack(ch)?'Narrated':'Voice on'):'Voice off'}</span><span style="margin-left:auto;font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">${esc(an.label)}</span></div>
-    <div style="position:relative;background:radial-gradient(120% 120% at 50% 0,color-mix(in srgb,var(--accent) 13%,var(--bg2)),var(--bg2));padding:22px clamp(74px,11%,100px);min-height:150px;display:flex;align-items:center">
+    <div style="position:relative;background:radial-gradient(120% 120% at 50% 0,color-mix(in srgb,var(--accent) 13%,var(--bg2)),var(--bg2));padding:22px clamp(74px,11%,100px);min-height:150px;display:flex;align-items:center" class="ca-stage">
       ${(()=>{ const raw=an.scenes[sc].mood||'happy'; const bmood=raw==='oops'?'think':raw;      // happy learning emotions only — no sad/angry bee
         const right=sc%2===1;                                                                    // the bee flies to the other side each scene
-        return `<div style="position:absolute;bottom:6px;left:${right?'calc(100% - 90px)':'10px'};width:78px;height:88px;transition:left 1.1s cubic-bezier(.45,.08,.25,1);z-index:2;pointer-events:none">
+        return `<div class="ca-bee" style="position:absolute;bottom:6px;left:${right?'calc(100% - 90px)':'10px'};width:78px;height:88px;transition:left 1.1s cubic-bezier(.45,.08,.25,1);z-index:2;pointer-events:none">
           <div style="width:100%;height:100%;transform:scaleX(${right?-1:1});transition:transform .5s ease .45s">
             <div class="sb-bee-presenter${playing?' talking':''}" style="width:100%;height:100%;filter:drop-shadow(0 6px 12px rgba(43,27,94,.18))">${mascotSVG(bmood)}</div>
           </div></div>`; })()}
-      <div style="flex:1;min-width:0;display:flex;align-items:center;justify-content:center;min-height:100px">${conceptAnimStage(an,sc)}</div>
+      <div class="ca-fit" style="flex:1;min-width:0;display:flex;align-items:center;justify-content:center;min-height:100px;container-type:inline-size">${conceptAnimStage(an,sc)}</div>
       ${!playing?`<button data-act="conceptPlay" aria-label="Play" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;background:color-mix(in srgb,var(--bg2) 52%,transparent)"><span style="width:60px;height:60px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;padding-left:4px;font-size:24px;box-shadow:0 6px 18px rgba(0,0,0,.22)">▶</span><span style="font-weight:800;font-size:12px;color:var(--text)">Watch &amp; listen</span></button>`:''}
     </div>
     <div style="padding:13px 16px 15px">
