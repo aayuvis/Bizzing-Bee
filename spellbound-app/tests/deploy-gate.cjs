@@ -31,6 +31,10 @@ const rec = () => { try { return JSON.parse(fs.readFileSync(path.join(SRC, 'test
    throwaway repo has no remote, and the staging clone and prod worktree it would use are empty paths in TMP */
 const env = Object.assign({}, process.env, { SB_CHROME: process.env.SB_CHROME || '/bin/true', GIT_TERMINAL_PROMPT: '0',
   STG_DIR: path.join(TMP, 'no-staging-clone'), PRD_DIR: path.join(TMP, 'no-prod-worktree') });
+/* The gate is tested on its OWN switches, never the caller's. The deploy's data gate runs this test INSIDE a deploy, so a
+   deploy made with DEPLOY_ACCEPT_RED=1 handed its override to every script this test expects to refuse — 8 refusals
+   "passed", the data gate went red, and no override deploy could ever ship (10 Nov 2026, the first one tried). */
+delete env.DEPLOY_ACCEPT_RED; delete env.DEPLOY_GATE_ONLY;
 const runner = (...a) => spawnSync(process.execPath, [path.join(SRC, 'tests', 'lib', 'run.cjs'), ...a], { cwd: SRC, env, encoding: 'utf8' });
 const deploy = (script, extra) => { const r = spawnSync('bash', [path.join(SRC, script)], { cwd: SRC, env: Object.assign({}, env, { DEPLOY_GATE_ONLY: '1' }, extra || {}), encoding: 'utf8' });
   return { code: r.status, out: (r.stdout || '') + (r.stderr || '') }; };
