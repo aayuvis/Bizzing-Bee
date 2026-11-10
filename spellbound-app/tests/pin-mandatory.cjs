@@ -21,7 +21,7 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
   const ctx = await b.newContext({ viewport: { width: 900, height: 1000 } });
   await ctx.addInitScript(s => { try { if (!localStorage.getItem('sb_t_seeded')) { localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_t_seeded', '1'); } } catch (e) {} }, seed);
   const pg = await ctx.newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));
-  await pg.goto('file://' + path.resolve(__dirname, '..') + '/index.html'); await pg.waitForTimeout(2800);
+  await pg.goto('file://' + (process.env.SB_ROOT || path.resolve(__dirname, '..')) + '/index.html'); await pg.waitForTimeout(2800);
   await pg.evaluate(() => { state.screen = 'app'; state.nav = 'home'; render(); });
   /* the paywall's opener and the plan sheet live in app3's lazy files since the P1.13 split (app3-gym.js, app3-grownups.js):
      their code arrives at its door, which this test reaches by calling straight in — so it asks for it first */
@@ -115,7 +115,7 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
     await c2.addInitScript(s => { try { window.__startKeys = localStorage.length;
       if (!localStorage.getItem('sb_t_seeded')) { localStorage.setItem('sb_saas_v2', JSON.stringify(s)); localStorage.setItem('sb_t_seeded', '1'); } } catch (e) {} }, old);
     const p2 = c2.pages()[0] || await c2.newPage(); p2.on('pageerror', e => errs.push(e.message));
-    await p2.goto('file://' + path.resolve(__dirname, '..') + '/index.html'); await booted(p2);
+    await p2.goto('file://' + (process.env.SB_ROOT || path.resolve(__dirname, '..')) + '/index.html'); await booted(p2);
     const m = await p2.evaluate(() => ({ ran: SB_STORE.migrated(), disk: JSON.parse(localStorage.getItem('sb_saas_v2')).pin, mem: state.parentPin }));
     /* 4 Oct 2026 (games foundations): steps v9→v10 (levels) and v10→v11 (bests) now follow v8→v9, so
        a pre-v9 household runs v8_to_v9 FIRST and once, then the later steps — no longer v8_to_v9 alone */
@@ -125,17 +125,22 @@ const seed = { theme: 'spellbound', mode: 'light', premium: false, activeIdx: 0,
     const opened = await p2.evaluate(() => state.nav === 'progress' && state.progTab === 'parent' && !state.pinDlg);
     ok(opened, 'and its old PIN, 1357, still opens the parent zone');
     const keys = await p2.evaluate(() => Object.keys(localStorage)), kept = keys.length;
-    /* the browser must hold those keys before the reload (tests/lib/wait.cjs storageSettled) */
-    /* reloadSettled waits until a second page of the profile sees the keys (8 s at most) before it reloads. It is a WAIT,
-       not a witness: 1 run in 6 at --cpu 4 its probe saw only the two seeded keys for the whole 8 s while the reloaded
-       page started on all five — so its view is a note, and the check below, what the new document started on, decides. */
-    const W = require('./lib/wait.cjs'), held = await W.reloadSettled(p2);
-    if (!held) console.log(`  note the probe page saw ${JSON.stringify(W.reloadSettled.last)} of the page's ${JSON.stringify(keys)} before the reload`);
-    await booted(p2);
-    const m2 = await p2.evaluate(() => ({ ran: SB_STORE.migrated(), disk: JSON.parse(localStorage.getItem('sb_saas_v2')).pin, start: window.__startKeys }));
-    ok(m2.start === kept && kept > 0, `the reloaded page starts on the storage the first boot left (${m2.start} keys of ${kept})`);
-    ok(m2.ran.length === 0 && m2.disk === m.disk, 'a second boot migrates nothing and keeps the same record');
-    await c2.close(); fs.rmSync(dir, { recursive: true, force: true }); }
+    /* THE SECOND BOOT starts from exactly what the first boot left — every key, read from the page — in a fresh context,
+       as the app opened again tomorrow (10 Nov 2026). It was a reload of this tab after reloadSettled: on Chrome 153, even
+       in this on-disk profile and after the carry, the reloaded page booted on the two SEEDED keys (full run 3, "2 keys of
+       5") and the migration "ran again" — the broken storage link, not the app. store-seam's second boot is built the same
+       way. The question stays the app's: given what it saved, does a second boot migrate anything? Proved by breaking (a
+       scratch root, SB_ROOT): store.js re-running its last step on every boot → "a second boot migrates nothing" fails (1 step). */
+    const saved = await p2.evaluate(() => { const o = {}; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); o[k] = localStorage.getItem(k); } return o; });
+    await c2.close(); fs.rmSync(dir, { recursive: true, force: true });
+    const c3 = await b.newContext({ viewport: { width: 900, height: 1000 } });
+    await c3.addInitScript((o) => { try { if (!sessionStorage.getItem('__boot2')) { localStorage.clear(); for (const k in o) localStorage.setItem(k, o[k]); sessionStorage.setItem('__boot2', '1'); } window.__startKeys = localStorage.length; } catch (e) {} }, saved);
+    const p3 = await c3.newPage(); p3.on('pageerror', e => errs.push(e.message));
+    await p3.goto('file://' + (process.env.SB_ROOT || path.resolve(__dirname, '..')) + '/index.html'); await booted(p3);
+    const m2 = await p3.evaluate(() => ({ ran: SB_STORE.migrated(), disk: JSON.parse(localStorage.getItem('sb_saas_v2')).pin, start: window.__startKeys }));
+    ok(m2.start === kept && kept > 0, `the second boot starts on the storage the first boot left (${m2.start} keys of ${kept})`);
+    ok(m2.ran.length === 0 && m2.disk === m.disk, `a second boot migrates nothing and keeps the same record (${m2.ran.length} steps)`);
+    await c3.close(); }
 
   ok(errs.length === 0, 'no page errors' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));
   await b.close();
