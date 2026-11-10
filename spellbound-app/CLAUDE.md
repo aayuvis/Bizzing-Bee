@@ -113,7 +113,9 @@ playing". Guard: **`tests/concept-narration.cjs`** (browser, ~2 min; seven break
   and two tests failed on the live code too — lore-hubs (Magic Squares at 390: the bare painted floor under the grid 6.1%
   one flat colour, T14's ceiling 6%) and store-seam (a same-tab reload booted on the seed: the broken storage link). Fixed
   after, never by loosening: the squares grow taller in a tall play area (lore.js, `@container sgplay
-  (max-aspect-ratio: 4/5)`, 4.4%), and store-seam's second boot starts from what the first left, in a fresh context.
+  (max-aspect-ratio: 4/5)`, 4.4%), and store-seam's and pin-mandatory's second boots start from what the first left, in a fresh context (full run 3 then
+  caught pin-mandatory's same-tab reload starting on 2 keys of 5). A test that asks "does a second boot run anything?"
+  builds its second boot that way — never a same-tab reload on this Chrome.
   **deploy-gate.cjs passed the caller's environment to the scripts it tests**, so the first override deploy failed its
   own data gate (8 refusals "passed"); it strips `DEPLOY_ACCEPT_RED` / `DEPLOY_GATE_ONLY` now. **Keep the repo's PINNED
   Playwright (1.56.1)** with the machine's Chrome (`SB_CHROME=/opt/pw-browsers/chromium`, run.cjs falls back to it): the
