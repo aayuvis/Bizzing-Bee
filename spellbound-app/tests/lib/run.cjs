@@ -130,6 +130,9 @@ function chromePath() {
   const pinned = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
   if (fs.existsSync(pinned)) return pinned;
   try { const p = require(resolvePlaywright()).chromium.executablePath(); if (p && fs.existsSync(p)) return p; } catch (e) {}
+  /* the cloud machine's own Chrome (10 Nov 2026: it moved to 153 and the pinned 1194 is gone; the repo's Playwright 1.56.1
+     still drives it — keep the PINNED Playwright: 1.63's screenshot clip broke mockbee-stage's pixel checks) */
+  if (fs.existsSync('/opt/pw-browsers/chromium')) return '/opt/pw-browsers/chromium';
   return '';
 }
 function resolvePlaywright() {

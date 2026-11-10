@@ -875,6 +875,9 @@
 .qz-chip{position:absolute;left:50%;bottom:8px;transform:translateX(-50%)}
 .qz-board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:min(460px,100cqw,calc(100cqh - 64px))}
 .qz-cell{position:relative;aspect-ratio:1;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:color-mix(in srgb,var(--bg2) 90%,transparent);border:2px solid var(--line);color:var(--text);box-shadow:var(--sh-rest);font-weight:800}
+/* a tall play area (a phone held upright): the squares grow taller so the grid fills it, instead of a band of empty floor
+   under it (10 Nov 2026: at 390 the grid left ~90px of bare painted floor, 6.1% one flat colour on Chrome 153 — T14) */
+@container sgplay (max-aspect-ratio: 4/5){.qz-board{width:min(460px,100cqw,calc((100cqh - 64px) / 1.3))}.qz-cell{aspect-ratio:10/13}}
 .qz-cell.s1{border-color:#1f9d57;background:color-mix(in srgb,#1f9d57 22%,var(--bg2));color:#B07A00}.qz-cell.s2{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,var(--bg2));color:var(--bad)}
 .qz-cl{font-size:12px;color:var(--text);padding:0 4px}.qz-cn{position:absolute;top:6px;left:8px;font-size:11px;color:var(--muted)}
 .qz-line{background:var(--treasure-tint,#FFF3D6);border:1.5px solid var(--treasure,#F0B429);font-weight:800;color:var(--text);text-align:center}
