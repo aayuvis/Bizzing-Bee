@@ -34,6 +34,11 @@ const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fai
 const KID = { name: 'Ahana', age: 9, ageBand: '8-10', avatar: 'panda', theme: 'spellbound', coins: 0, lists: { journey: { xp: 30 } }, activeList: 'journey' };
 
 async function settle(pg) {
+  /* the app has stopped redrawing first (10 Nov 2026): a lazy file landing after the screen's first paint redraws it, and a
+     reading taken mid-redraw saw the bee's lobby in a passing layout — its controls under the tab bar, or the floor read
+     10.8% one flat colour — 4 of 8 runs at --cpu 4 and once in a full run, never on a settled screen (mockbee-stage and
+     circuit-post wait the same way) */
+  await W.quietRender(pg, 300);
   /* the plate is a CSS background: wait until the image itself has loaded, then two frames */
   await pg.evaluate(async () => { const st = document.querySelector('.sb-stage'); if (!st) return;
     const m = /url\(["']?([^"')]+)["']?\)/.exec(getComputedStyle(st).backgroundImage || ''); if (!m) return;
