@@ -10,11 +10,16 @@
    3. a household written by a NEWER build is ever written over (an old tab must not downgrade
       a family), or a newer backup is restored;
    4. an unregistered key gets through.
+   The second boot (10 Nov 2026) starts from exactly what the first boot left in the page, in a fresh context — not a
+   reload of the same tab, which on Chrome 153 often booted on the seed (the broken storage link). Proved by breaking (a
+   scratch root with ONE file replaced, SB_ROOT): store.js saving the household at sv 1 → 2 fail ("saved at sv 1", and the
+   second boot runs 11 steps); store.js re-running its last step on every boot → 1 fails (the second boot runs 1 step
+   from a saved sv 12).
    Run: NODE_PATH=/opt/node22/lib/node_modules node tests/store-seam.cjs                       */
 const { chromium } = require('playwright');
 const fs = require('fs'), path = require('path');
 const { booted, until } = require('./lib/wait.cjs');
-const ROOT = path.resolve(__dirname, '..');
+const ROOT = process.env.SB_ROOT || path.resolve(__dirname, '..');
 let fails = 0;
 const ok = (b, m) => { console.log((b ? '  OK   ' : '  FAIL ') + m); if (!b) fails++; };
 
@@ -61,10 +66,20 @@ ok(firstDefer === 'store.js', 'store.js is the first deferred script (' + firstD
     ok(r.wallet === 30 + 120 + 400 + 400 && r.themes.join() === 'spellbound' && r.theme === 'spellbound' && r.top === 'spellbound' && !r.acc,
       `the refunds that used to be ad-hoc init blocks still pay — crown 120 + origami 400 + aurora 400 + 30 = ${r.wallet} 🪙, and a removed world moves to the Hive`);
     ok(r.mast === 'cat,dog', 'the shared mastery map is carried onto the child once (' + r.mast + ')');
-    await require('./lib/wait.cjs').reloadSettled(pg); await booted(pg);
-    const r2 = await pg.evaluate(() => ({ ran: SB_STORE.migrated(), wallet: BZ_WALLET.balance('Ahana') }));
-    ok(r2.ran.length === 0 && r2.wallet === r.wallet, `a second boot runs nothing and pays nothing (${r2.ran.length} steps, ${r2.wallet} 🪙)`);
-    await ctx.close(); fs.rmSync(dir, { recursive: true, force: true }); }
+    /* THE SECOND BOOT starts from exactly what the first boot left — every key, read from the page, the truth the app
+       wrote — in a fresh context, as the app opened again tomorrow. It used to be a reload of the same tab (reloadSettled):
+       on Chrome 153 the browser often never received the page's writes (the broken storage link, CLAUDE.md 13 Oct), the
+       carry did not always land, and the reloaded page booted on the SEED — "11 steps ran again", 2 full runs in 2, a
+       second migration the app never made (10 Nov 2026). The question is the app's: given what it saved, does it run
+       anything again? Not the browser's storage link. */
+    const saved = await pg.evaluate(() => { const o = {}; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); o[k] = localStorage.getItem(k); } return o; });
+    await ctx.close(); fs.rmSync(dir, { recursive: true, force: true });
+    const ctx2 = await b.newContext({ viewport: { width: 1000, height: 800 } });
+    await ctx2.addInitScript((o) => { if (!sessionStorage.getItem('__boot2')) { localStorage.clear(); for (const k in o) localStorage.setItem(k, o[k]); sessionStorage.setItem('__boot2', '1'); } }, saved);
+    const pg2 = await ctx2.newPage(); pg2.on('pageerror', e => errs.push(e.message)); await pg2.goto(URL); await booted(pg2);
+    const r2 = await pg2.evaluate(() => ({ ran: SB_STORE.migrated(), wallet: BZ_WALLET.balance('Ahana'), sv: JSON.parse(localStorage.getItem('sb_saas_v2')).sv }));
+    ok(JSON.parse(saved.sb_saas_v2 || '{}').sv === r.schema && r2.ran.length === 0 && r2.wallet === r.wallet, `a second boot runs nothing and pays nothing (${r2.ran.length} steps, ${r2.wallet} 🪙, from a saved sv ${JSON.parse(saved.sb_saas_v2 || '{}').sv})`);
+    await ctx2.close(); }
 
   /* ---- 3. a household from a NEWER build is never written over ---- */
   { const newer = { sv: 999, theme: 'spellbound', mode: 'light', pin: '1234', activeIdx: 0, futureField: { keep: 'me' },

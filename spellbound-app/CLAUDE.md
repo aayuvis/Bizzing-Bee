@@ -109,6 +109,17 @@ playing". Guard: **`tests/concept-narration.cjs`** (browser, ~2 min; seven break
   stage gives the words its full width and the bee flies along the bottom (`.ca-stage`, index.html). Before: 715 word
   rows broke at 390 ("rememb / er"), 153 at 768.
 - The "Narrated" chip reads `voiceClip` (`hasVoicePack`), so Advanced chapters say Narrated too.
+- **Deployed 9 Nov 2026, 6:54 PM PT with `DEPLOY_ACCEPT_RED=1` (owner's call)**: the cloud machine had moved to Chrome 153,
+  and two tests failed on the live code too — lore-hubs (Magic Squares at 390: the bare painted floor under the grid 6.1%
+  one flat colour, T14's ceiling 6%) and store-seam (a same-tab reload booted on the seed: the broken storage link). Fixed
+  after, never by loosening: the squares grow taller in a tall play area (lore.js, `@container sgplay
+  (max-aspect-ratio: 4/5)`, 4.4%), and store-seam's second boot starts from what the first left, in a fresh context.
+  **deploy-gate.cjs passed the caller's environment to the scripts it tests**, so the first override deploy failed its
+  own data gate (8 refusals "passed"); it strips `DEPLOY_ACCEPT_RED` / `DEPLOY_GATE_ONLY` now. **Keep the repo's PINNED
+  Playwright (1.56.1)** with the machine's Chrome (`SB_CHROME=/opt/pw-browsers/chromium`, run.cjs falls back to it): the
+  machine's Playwright 1.63 offsets a screenshot clip and mockbee-stage's pixel checks fail. A games-bots run of a SUBSET
+  draws differently from the full run (earlier bots shape the child's history): hive/squares' random bot reads 15/36 alone
+  on any tree — judge T2 on the full run.
 
 ## The Bee Circuit, Season 1 (built 14–15 Oct 2026) — READ FIRST; it overrides the sections below
 The season in `circuit/BEE-CIRCUIT.md`, under `circuit/AMENDMENTS.md` (V. is Vale, 16; no new voice clips) and the owner's
